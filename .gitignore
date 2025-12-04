@@ -20,6 +20,15 @@
 # production
 /build
 
+# pwa
+/public/workbox-*.js
+/public/sw.js
+
+
+
+
+
+
 # misc
 .DS_Store
 *.pem
