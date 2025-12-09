@@ -6,37 +6,37 @@ interface PostingLoaderProps {
 
 export default function PostingLoader({ message = "Posting your job..." }: PostingLoaderProps) {
     return (
-        <div className="absolute inset-0 z-50 bg-white/95 backdrop-blur-lg rounded-md flex flex-col items-center justify-center overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 bottom-0 z-50 bg-white rounded-md flex items-center justify-center">
             {/* Horizontal Flashlight Effect */}
             <div 
-                className="absolute inset-0 opacity-30 rounded-md"
+                className="absolute inset-0 opacity-20 rounded-md"
                 style={{
-                    background: 'linear-gradient(90deg, transparent 0%, rgba(56, 189, 248, 0.4) 50%, transparent 100%)',
+                    background: 'linear-gradient(90deg, transparent 0%, rgba(56, 189, 248, 0.3) 50%, transparent 100%)',
                     animation: 'postingFlashlight 2s ease-in-out infinite',
                 }}
             ></div>
             
             {/* Posting Text with Animated Dots */}
-            <div className="text-center w-full px-6 flex flex-col items-center justify-center relative z-10">
-                <h3 className="text-base font-semibold bg-gradient-to-r from-[#38bdf8] to-[#2dd4bf] bg-clip-text text-transparent mb-2 flex items-center justify-center gap-1">
+            <div className="text-center px-4 relative z-10 flex flex-col items-center gap-2">
+                <h3 className="text-base font-semibold bg-gradient-to-r from-[#38bdf8] to-[#2dd4bf] bg-clip-text text-transparent flex items-center justify-center gap-2">
                     <span>Posting</span>
-                    <span className="flex gap-0.5">
+                    <span className="flex gap-1">
                         <span 
-                            className="inline-block w-1 h-1 rounded-full bg-[#38bdf8]"
+                            className="inline-block w-2 h-2 rounded-full bg-[#38bdf8]"
                             style={{
                                 animation: 'postingBounce 1.4s ease-in-out infinite',
                                 animationDelay: '0s'
                             }}
                         ></span>
                         <span 
-                            className="inline-block w-1 h-1 rounded-full bg-[#2dd4bf]"
+                            className="inline-block w-2 h-2 rounded-full bg-[#2dd4bf]"
                             style={{
                                 animation: 'postingBounce 1.4s ease-in-out infinite',
                                 animationDelay: '0.2s'
                             }}
                         ></span>
                         <span 
-                            className="inline-block w-1 h-1 rounded-full bg-[#14b8a6]"
+                            className="inline-block w-2 h-2 rounded-full bg-[#14b8a6]"
                             style={{
                                 animation: 'postingBounce 1.4s ease-in-out infinite',
                                 animationDelay: '0.4s'
@@ -44,7 +44,7 @@ export default function PostingLoader({ message = "Posting your job..." }: Posti
                         ></span>
                     </span>
                 </h3>
-                <p className="text-xs text-gray-500 whitespace-nowrap overflow-hidden text-ellipsis max-w-full">
+                <p className="text-sm text-gray-500 max-w-[320px] text-center leading-relaxed">
                     {message}
                 </p>
             </div>

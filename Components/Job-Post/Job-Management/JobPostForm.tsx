@@ -1,4 +1,4 @@
-
+ "use client";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { PenTool, X, Wand2 } from "lucide-react";
@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import Placeholder from "@tiptap/extension-placeholder";
 import TurndownService from "turndown";
 import { AIJobPostAPI, PostJobAPI } from "@/api/JobPostApi/JobPostApi";
 import AILoader from "./AILoader";
@@ -20,11 +21,13 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
     const [isExpanded, setIsExpanded] = useState(false);
     const [markdownText, setMarkdownText] = useState("");
     const [characterCount, setCharacterCount] = useState(0);
+    const [wordCount, setWordCount] = useState(0);
     const [isAILoading, setIsAILoading] = useState(false);
     const [error, setError] = useState<string>("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const MAX_CHARACTERS = 1500;
-
+    const DiableCharacterCount = 20;
+    const DiableWordCount = 20;
     // Configure TurndownService for all formatting types with proper line breaks
     const turndownService = new TurndownService({
         headingStyle: 'atx', // Use # for headings
@@ -35,7 +38,7 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
     // Override paragraph rule to preserve single line breaks
     turndownService.addRule('paragraph', {
         filter: 'p',
-        replacement: function (content, node) {
+        replacement: function (content: string, node: any) {
             // If paragraph is inside a list, don't add extra spacing
             if (node.parentElement?.tagName === 'LI') {
                 return content.trim() + '\n';
@@ -65,28 +68,33 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
                 orderedList: {},  // ✅ Enable lists
                 bulletList: {},  // ✅ Enable bullet lists
             }),
+            Placeholder.configure({
+                placeholder: "Describe the role, responsibilities, and requirements...",
+            }),
         ],
 
         content: "",
         editorProps: {
             attributes: {
                 class:
-                    "prose prose-sm max-w-none min-h-[200px] w-full outline-none text-base placeholder:text-lg placeholder:opacity-50 focus:outline-none",
+                    "prose prose-sm max-w-none min-h-[200px] w-full outline-none text-base focus:outline-none",
+                'data-placeholder': "Describe the role, responsibilities, and requirements...",
             },
         },
 
         onUpdate({ editor }) {
             const html = editor.getHTML();
             const markdown = turndownService.turndown(html);
+            characterCount == 0 && setError("")
 
             // Get plain text character count (without HTML tags)
             const textContent = editor.getText();
             const currentCount = textContent.length;
 
-            // Clear error when user starts typing
-            if (error && currentCount > 0) {
-                setError("");
-            }
+            // Calculate word count (properly handle spaces)
+            const trimmedText = textContent.trim();
+            const words = trimmedText.split(/\s+/).filter(word => word.length > 0);
+            setWordCount(words.length);
 
             // Limit to MAX_CHARACTERS
             if (currentCount > MAX_CHARACTERS) {
@@ -102,25 +110,29 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
         },
 
         onCreate({ editor }) {
-            // Initialize character count when editor is created
+            // Initialize character count and word count when editor is created
             const textContent = editor.getText();
             setCharacterCount(textContent.length);
+            const trimmedText = textContent.trim();
+            const words = trimmedText.split(/\s+/).filter(word => word.length > 0);
+            setWordCount(words.length);
         },
+        
     });
 
-    // Disable editor when AI is loading
+    // Disable editor when AI is loading or submitting
     useEffect(() => {
         if (!editor) return;
-        editor.setEditable(!isAILoading);
-    }, [editor, isAILoading]);
+        editor.setEditable(!isAILoading && !isSubmitting);
+    }, [editor, isAILoading, isSubmitting]);
 
-  
-    
+
 
  // ⭐ STEP 3 — Apply To TipTap
  const handleGenerateAI = async () => {
     if (!editor) return;
-  
+    setError("");
+    setIsAILoading(true);
     // ✅ Get FULL HTML including bold, italic, lists, etc.
     //  let html=`<p>🚨 <strong>Urgent Hiring – Flutter Developer</strong> 🚨</p><p>👉 <strong>Position:</strong> Flutter Developer</p><p>💼 <strong>Experience:</strong> 0 – 1.5 Years</p><p>📍 <strong>Location:</strong> Mota Varachha, Surat (On-site Only)</p><p>🎓 <strong>Education:</strong> B.E / B.Tech / BCA / MCA</p><p>🗣️ <strong>Communication:</strong> Good communication skills required</p><p>⚠️ <strong>Please Note:</strong></p><ul><li><p>Only <strong>local Surat candidates</strong> will be considered.</p></li></ul><p>📧 <strong>To Apply:</strong><br>Send your updated resume to: <a target="_blank" rel="noopener noreferrer nofollow" href="mailto:hrskytouchinfotech1@gmail.com"><strong>hrskytouchinfotech1@gmail.com</strong></a></p><p>📞 <strong>Contact:</strong><br><strong>+91 81408 81209</strong></p>`
    
@@ -128,22 +140,41 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
     // editor.commands.setContent(html);
 
     const htmlContent = editor.getHTML();
+   
   
     try {
-        setIsAILoading(true);
         const response = await AIJobPostAPI({
             description: htmlContent,
         });
+
+        // console.log("API Response >>>>>>>>>>>:", response);
+    
+        // Handle API wrapper error (network/HTTP errors)
+        // Response structure: { error: true, data: { message: "...", success: false } }
         if (response.error) {
-            const errorMessage = (response.data as any)?.message || "An error occurred. Please try again.";
+            const responseData = response.data as any;
+            // Error message is in response.data.message (not response.data.data.message)
+            const errorMessage = responseData?.message || responseData?.data?.message || "An error occurred. Please try again.";
+           
             setError(errorMessage);
-            return;
+            setIsAILoading(false);
+          
         }
-        setIsAILoading(false);
-        editor.commands.setContent(response.data?.data?.message || "");
+
+
+
+        // Success case - set content
+        if (!response.error) {
+            const responseData = response.data;
+            setIsAILoading(false);
+            // setError("");
+            editor.commands.setContent(responseData?.data?.message || "");
+        }
+       
     } catch (error) {
-        setIsAILoading(false);
         console.error("API Error:", error);
+        setError("An unexpected error occurred. Please try again.");
+        setIsAILoading(false);
     }
   
      
@@ -161,6 +192,13 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
     const textContent = editor.getText().trim();
     if (!textContent) {
         setError("Job description cannot be empty. Please enter a job description.");
+        return;
+    }
+
+    // Check minimum word count
+    const words = textContent.split(/\s+/).filter(word => word.length > 0);
+    if (words.length < DiableWordCount) {
+        setError(`Job description must be at least ${DiableWordCount} words long.`);
         return;
     }
 
@@ -206,8 +244,6 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
     }
 };
 
-
-
     const userImageUrl =
         "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face";
 
@@ -235,7 +271,7 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
                             alt="User"
                             width={40}
                             height={40}
-                            className="rounded-full object-cover w-10 h-10"
+                            className="rounded-[8px] object-cover w-10 h-10"
                         />
 
                         <div className="flex-1 text-base text-gray-400">
@@ -257,14 +293,28 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
                 >
                     <div className="p-6">
                         <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-lg font-semibold text-gray-900">
-                                New Job Post
-                            </h2>
+                            <div className="flex items-center gap-2">
+                                <Image
+                                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face"
+                                    alt="Profile"
+                                    width={40}
+                                    height={40}
+                                    className="rounded-[8px] object-cover w-10 h-10"
+                                />
+                                <div>
+                                    <h2 className="text-lg font-semibold text-[#1E293B]">
+                                        New Job Post
+                                    </h2>
+                                    <p className="text-[12px] text-[#64748b] font-semibold">
+                                        Sarah Connor • HR Manager
+                                    </p>
+                                </div>
+                            </div>
 
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-8 w-8"
+                                className="h-8 w-8 cursor-pointer"
                                 onClick={() => setIsExpanded(false)}
                             >
                                 <X className="h-4 w-4" />
@@ -273,34 +323,27 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
 
                         {/* ⭐ TIPTAP EDITOR */}
                         <div className={cn(
-                            "relative border rounded-md mb-2 transition-all duration-500",
-                            (isAILoading || isSubmitting)
-                                ? "border-blue-200 bg-gradient-to-br from-blue-50/60 via-cyan-50/40 to-teal-50/60 backdrop-blur-md shadow-lg shadow-blue-100/50 overflow-hidden h-[300px]"
-                                : error
-                                    ? "border-red-500 border-2 min-h-[200px] max-h-[300px]"
-                                    : "border-gray-200 min-h-[200px] max-h-[300px]"
+                            "relative border rounded-md mb-2",
+                            (isAILoading || isSubmitting) 
+                                ? "h-[300px] overflow-hidden" 
+                                : "min-h-[200px] max-h-[300px] overflow-hidden"
                         )}>
                             <div className={cn(
-                                "overflow-y-auto p-3",
-                                (isAILoading || isSubmitting)
-                                    ? "h-full overflow-hidden"
-                                    : "min-h-[200px] max-h-[300px]"
+                                "p-3",
+                                (isAILoading || isSubmitting) 
+                                    ? "h-full overflow-hidden pointer-events-none" 
+                                    : "min-h-[200px] max-h-[300px] overflow-y-auto"
                             )}>
-                                {editor && <EditorContent editor={editor} />}
+                                {editor && <EditorContent editor={editor}  />}
                             </div>
 
-                            {/* AI Loading Overlay - Covers entire editor area including padding */}
+                            {/* AI Loading Overlay - Covers entire editor area */}
                             {isAILoading && <AILoader />}
 
-                            {/* Posting Loader Overlay - Covers entire editor area including padding */}
+                            {/* Posting Loader Overlay - Covers entire editor area */}
                             {isSubmitting && <PostingLoader message="Please wait while we post your job..." />}
                         </div>
-                        {/* Error Message */}
-                        {error && (
-                            <div className="mb-2">
-                                <p className="text-sm text-red-500 font-medium">{error}</p>
-                            </div>
-                        )}
+                       
 
                         {/* Character Counter */}
                         <div className="flex justify-end mb-4">
@@ -316,26 +359,46 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
                             </span>
                         </div>
 
+                        {/* Error Message - Above AI Button */}
+                      {error && (
+                        <p className="text-sm text-gray-500">{error}</p>
+                      )}
+     
+                          
+                       
                         {/* FOOTER */}
                         <div className="flex items-center justify-between pt-4 border-t border-slate-50">
-                            <Button
-                                variant="default"
-                                className="bg-gradient-to-r from-[#38bdf8] to-[#2dd4bf] hover:from-[#0ea5e9] hover:to-[#14b8a6] text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                onClick={handleGenerateAI}
-                                disabled={isAILoading}
-                            >
-                                <Wand2 className={cn("h-4 w-4 mr-2", isAILoading && "animate-spin")} />
-                                {isAILoading ? "AI Generating..." : "Generate With AI"}
-                            </Button>
-
-                            <Button
-                                variant="outline"
-                                className="bg-transparent shadow-none px-6 py-2 border border-slate-200 text-slate-600 font-medium rounded-lg hover:bg-slate-50 text-sm transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                                onClick={handleSubmit}
-                                disabled={isSubmitting || isAILoading}
-                            >
-                                {isSubmitting ? "Posting..." : "Post Job"}
-                            </Button>
+                            <div className="flex items-center gap-3">
+                                <Button
+                                    variant="default"
+                                    className="bg-gradient-to-r cursor-pointer from-[#38bdf8] to-[#2dd4bf] hover:from-[#0ea5e9] hover:to-[#14b8a6] text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    onClick={handleGenerateAI}
+                                    disabled={isAILoading || wordCount < DiableWordCount}
+                                >
+                                    <Wand2 className={cn("h-4 w-4 mr-2", isAILoading && "animate-spin")} />
+                                    {isAILoading ? "AI Generating..." : "Generate With AI"}
+                                </Button>
+                                {wordCount < DiableWordCount && (
+                                    <p className="text-sm font-medium text-gray-500">
+                                        {wordCount}/{DiableWordCount}
+                                    </p>
+                                )}
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <Button
+                                    variant="outline"
+                                    className="bg-transparent shadow-none px-6 py-2 border border-slate-200 text-slate-600 font-medium rounded-lg hover:bg-slate-50 text-sm transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                    onClick={handleSubmit}
+                                    disabled={isSubmitting || isAILoading || wordCount < DiableWordCount}
+                                >
+                                    {isSubmitting ? "Posting..." : "Post Job"}
+                                </Button>
+                                {wordCount < DiableWordCount && (
+                                    <p className="text-sm font-medium text-gray-500">
+                                        {wordCount}/{DiableWordCount}
+                                    </p>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

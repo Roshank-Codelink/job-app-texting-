@@ -9,6 +9,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarFooter,
+  SidebarProvider,
 } from "@/Components/ui/sidebar";
 
 import {
@@ -25,6 +26,7 @@ import { Button } from "@/Components/ui/button";
 
 export default function AppSidebar() {
   return (
+ 
     <Sidebar className="bg-white">
 
       {/* ✅ Only ONE wrapper inside Sidebar */}

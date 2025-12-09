@@ -155,3 +155,18 @@
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
 }
+
+/* TipTap Placeholder Styling */
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #94a3b8;
+  pointer-events: none;
+  height: 0;
+  opacity: 0.6;
+  font-size: 1rem;
+}
+
+.ProseMirror p.is-editor-empty:first-child:focus::before {
+  opacity: 0.5;
+}

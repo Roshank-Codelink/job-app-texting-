@@ -1,16 +1,16 @@
 import { customFetch } from "@/api/apiconfig";
 import { JobListingsResponseType, JobPost, JobPostPayload, JobPostResponseType } from "./type";
 
-export const AIJobPostAPI = async (data: JobPostPayload) => {
-    const response = await customFetch<JobPostResponseType>({
-        url: "/enhance-job-description",
-        method: 'POST',
-        body: {
-            description: data.description,
-        },
-    });
-    return response;
-}
+    export const AIJobPostAPI = async (data: JobPostPayload) => {
+        const response = await customFetch<JobPostResponseType>({
+            url: "/enhance-job-description",
+            method: 'POST',
+            body: {
+                description: data.description,
+            },
+        });
+        return response;
+    }
 
 
 
@@ -27,7 +27,7 @@ export const PostJobAPI = async (data: JobPost) => {
 
 
 
-export const GetAllJobsAPI = async (page: number , limit: number) => {
+export const GetAllJobsAPI = async (page: number, limit: number) => {
     const response = await customFetch<JobListingsResponseType>({
         url: `/get-jobs?page=${page}&limit=${limit}`,
         method: 'GET',

@@ -1,173 +1,169 @@
 "use client";
 
-import { JobListingItem } from "@/api/JobPostApi/type";
+import { useEffect, useRef, useState, useCallback } from "react";
 import JobListingCards from "./Job-Management/JobListingCards";
 import JobPostForm from "./Job-Management/JobPostForm";
-import { useEffect, useRef, useState } from "react";
 import { GetAllJobsAPI } from "@/api/JobPostApi/JobPostApi";
+import { JobListingItem } from "@/api/JobPostApi/type";
 
-export default function JobPost() {
-  const [jobs, setJobs] = useState<JobListingItem[]>([]);
+interface JobPostProps {
+  initialJobs: JobListingItem[];
+}
+
+export default function JobPost({ initialJobs }: JobPostProps) {
+  const [jobs, setJobs] = useState(initialJobs);
   const [page, setPage] = useState(1);
   const limit = 10;
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const loaderRef = useRef<HTMLDivElement | null>(null);
+  const isLoadingRef = useRef(false);
+  const pageRef = useRef(1);
 
-  // 🔹 Function to fetch jobs with pagination
-  const fetchJobs = async (pageNum: number, append: boolean = false) => {
-    if (isLoading) return; // Prevent multiple simultaneous requests
-    
+  // Sync refs with state
+  useEffect(() => {
+    isLoadingRef.current = isLoading;
+  }, [isLoading]);
+
+  useEffect(() => {
+    pageRef.current = page;
+  }, [page]);
+
+  // ⭐ Refresh Jobs After Posting
+  const refreshJobs = async () => {
     setIsLoading(true);
+    isLoadingRef.current = true;
+
+    const response = await GetAllJobsAPI(1, limit);
+    const { success, data } = response.data;
+
+    if (success) {
+      setJobs(data);
+      setPage(1);
+      pageRef.current = 1;
+      setHasMore(true);
+    }
+
+    setIsLoading(false);
+    isLoadingRef.current = false;
+  };
+
+  // ⭐ Fetch More Jobs (Infinite Scroll) - Using refs to avoid dependency issues
+  const fetchMoreJobs = useCallback(async () => {
+    if (isLoadingRef.current) return;
+
+    setIsLoading(true);
+    isLoadingRef.current = true;
+    
+    const nextPage = pageRef.current + 1;
+    const startTime = Date.now();
+    const minLoadingTime = 600; // Minimum 600ms loader display time
+
     try {
-      // Add delay for slow loading effect (only when appending)
-      if (append) {
-        await new Promise(resolve => setTimeout(resolve, 800)); // 800ms delay
-      }
+      const response = await GetAllJobsAPI(nextPage, limit);
+      const { success, data } = response.data;
 
-      const response = await GetAllJobsAPI(pageNum, limit);
+      // Calculate remaining time to show loader
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(0, minLoadingTime - elapsedTime);
 
-      if (response.error) {
-        console.error("API Error:", response.data);
-        setIsLoading(false);
-        return;
-      }
+      // Wait for minimum display time
+      await new Promise((resolve) => setTimeout(resolve, remainingTime));
 
-      const responseData = response.data;
-      // console.log("API Response:", responseData);
+      if (success && Array.isArray(data)) {
+        setJobs((prev) => {
+          // Avoid duplicates
+          const existingIds = new Set(prev.map((job) => job._id));
+          const newJobs = data.filter((job) => !existingIds.has(job._id));
+          return [...prev, ...newJobs];
+        });
 
-      if (responseData?.success && Array.isArray(responseData.data)) {
-        if (append) {
-          // Append new jobs to existing list, filter out duplicates
-          setJobs((prev) => {
-            const existingIds = new Set(prev.map(job => job._id));
-            const newJobs = responseData.data.filter((job: JobListingItem) => !existingIds.has(job._id));
-            return [...prev, ...newJobs];
-          });
-        } else {
-          // Replace jobs (for refresh)
-          setJobs(responseData.data);
-        }
+        setPage(nextPage);
+        pageRef.current = nextPage;
 
-        // Check if there are more pages
-        if (responseData.data.length < limit) {
+        if (data.length < limit) {
           setHasMore(false);
         }
       } else {
-        console.error("Invalid response format:", responseData);
         setHasMore(false);
       }
-
     } catch (error) {
-      console.error("Failed to fetch jobs:", error);
+      console.error("Fetch Error:", error);
       setHasMore(false);
     } finally {
       setIsLoading(false);
+      isLoadingRef.current = false;
     }
-  };
+  }, [limit]);
 
-  // 🔹 Fetch first page on mount
+  // ⭐ Infinite Scroll Observer
   useEffect(() => {
-    fetchJobs(1, false);
-  }, []);
+    if (!hasMore) return;
 
-  // 🔹 Infinite scroll observer
-  useEffect(() => {
-    if (!hasMore || isLoading) return;
+    const target = loaderRef.current;
+    if (!target) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isLoading) {
-          // Load next page
-          setPage((prevPage) => {
-            const nextPage = prevPage + 1;
-            fetchJobs(nextPage, true);
-            return nextPage;
-          });
+        if (entries[0].isIntersecting && !isLoadingRef.current) {
+          fetchMoreJobs();
         }
       },
       { threshold: 0.1 }
     );
 
-    const currentLoader = loaderRef.current;
-    if (currentLoader) {
-      observer.observe(currentLoader);
-    }
+    observer.observe(target);
 
     return () => {
-      if (currentLoader) {
-        observer.disconnect();
-      }
+      observer.disconnect();
     };
-  }, [hasMore, isLoading]);
-
-  // 🔹 Refresh jobs when new job is posted
-  const refreshJobs = () => {
-    setJobs([]);
-    setPage(1);
-    setHasMore(true);
-    fetchJobs(1, false);
-  };
+  }, [hasMore, fetchMoreJobs]);
 
   return (
-    <div>
-      {/* Job Form → sending refresh function */}
-      <div className="mb-[20px]">
-        <JobPostForm refreshJobs={refreshJobs} />
-      </div>
+    <div className="flex w-full h-full gap-0">
+      {/* MAIN CONTENT */}
+      <div className="flex-1 min-w-0 p-4 sm:p-6 md:p-8 lg:p-[32px]">
 
-      {/* Listing Cards → sending jobs array */}
-      <div className="mt-4">
-        <JobListingCards jobs={jobs} />
-      </div>
-
-      {/* Infinite Scroll Loader */}
-      {hasMore && (
-        <div 
-          ref={loaderRef} 
-          className="py-8 text-center"
-        >
-          {isLoading ? (
-            <div className="flex items-center justify-center gap-1.5">
-              <span 
-                className="inline-block w-2 h-2 rounded-full bg-[#38bdf8]"
-                style={{
-                  animation: 'bounce 1.4s ease-in-out infinite',
-                  animationDelay: '0s'
-                }}
-              ></span>
-              <span 
-                className="inline-block w-2 h-2 rounded-full bg-[#2dd4bf]"
-                style={{
-                  animation: 'bounce 1.4s ease-in-out infinite',
-                  animationDelay: '0.2s'
-                }}
-              ></span>
-              <span 
-                className="inline-block w-2 h-2 rounded-full bg-[#14b8a6]"
-                style={{
-                  animation: 'bounce 1.4s ease-in-out infinite',
-                  animationDelay: '0.4s'
-                }}
-              ></span>
-            </div>
-          ) : null}
-          <style dangerouslySetInnerHTML={{
-            __html: `
-              @keyframes bounce {
-                0%, 80%, 100% {
-                  transform: translateY(0);
-                  opacity: 0.5;
-                }
-                40% {
-                  transform: translateY(-8px);
-                  opacity: 1;
-                }
-              }
-            `
-          }} />
+        {/* Job Post Form */}
+        <div className="mb-6">
+          <JobPostForm refreshJobs={refreshJobs} />
         </div>
-      )}
+
+        {/* Job Listing Cards */}
+        <JobListingCards jobs={jobs} />
+
+        {/* Infinite Loader */}
+        {hasMore && jobs.length > 0 && (
+          <div className="py-10 text-center" ref={loaderRef}>
+            {isLoading && (
+              <div className="flex items-center justify-center gap-2">
+                <span className="inline-block w-2 h-2 rounded-full bg-sky-400 animate-[bounce_1.4s_0s_infinite]" />
+                <span className="inline-block w-2 h-2 rounded-full bg-teal-400 animate-[bounce_1.4s_0.2s_infinite]" />
+                <span className="inline-block w-2 h-2 rounded-full bg-cyan-500 animate-[bounce_1.4s_0.4s_infinite]" />
+              </div>
+            )}
+
+            <style
+              dangerouslySetInnerHTML={{
+                __html: `
+                @keyframes bounce {
+                  0%, 80%, 100% { transform: translateY(0); opacity: .5; }
+                  40% { transform: translateY(-8px); opacity: 1; }
+                }
+              `,
+              }}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* RIGHT SIDEBAR */}
+      <div className="hidden xl:flex w-[23%] shrink-0 border-l border-[#e5e7eb] bg-white sticky top-0 self-start h-[calc(100vh-60px)] overflow-y-auto">
+        <div className="w-full h-full p-4">
+          {/* Add widgets later */}
+          <div className="text-gray-500 text-sm">Right Sidebar Content</div>
+        </div>
+      </div>
     </div>
   );
 }
