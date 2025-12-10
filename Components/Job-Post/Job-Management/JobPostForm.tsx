@@ -1,17 +1,18 @@
- "use client";
-import { useState, useEffect } from "react";
+"use client";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { PenTool, X, Wand2 } from "lucide-react";
 import { Button } from "@/Components/ui/button";
 import { cn } from "@/lib/utils";
 
-import { EditorContent, useEditor } from "@tiptap/react";
+import { EditorContent, useEditor,useEditorState  } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import TurndownService from "turndown";
 import { AIJobPostAPI, PostJobAPI } from "@/api/JobPostApi/JobPostApi";
 import AILoader from "./AILoader";
 import PostingLoader from "./PostingLoader";
+import { CharacterCount } from '@tiptap/extensions'
 
 
 
@@ -20,14 +21,14 @@ import PostingLoader from "./PostingLoader";
 export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [markdownText, setMarkdownText] = useState("");
-    const [characterCount, setCharacterCount] = useState(0);
-    const [wordCount, setWordCount] = useState(0);
     const [isAILoading, setIsAILoading] = useState(false);
     const [error, setError] = useState<string>("");
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const MAX_CHARACTERS = 1500;
-    const DiableCharacterCount = 20;
     const DiableWordCount = 20;
+    const lastValidContentRef = useRef<string>("");
+
+    const MAX_CHARACTERS = 1500;
+
     // Configure TurndownService for all formatting types with proper line breaks
     const turndownService = new TurndownService({
         headingStyle: 'atx', // Use # for headings
@@ -55,11 +56,17 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
         }
     });
 
+
+
     // ⭐ FINAL WORKING TIPTAP CONFIG
     const editor = useEditor({
         immediatelyRender: false,   // 🔥 REQUIRED FIX FOR SSR ERROR
 
         extensions: [
+            CharacterCount.configure({
+                limit: MAX_CHARACTERS,
+                
+              }),
             StarterKit.configure({
                 bold: {},  // ✅ Enable bold
                 italic: {},  // ✅ Enable italic
@@ -83,42 +90,36 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
         },
 
         onUpdate({ editor }) {
+            // Store current valid HTML content
             const html = editor.getHTML();
+            lastValidContentRef.current = html;
+
+            // Process markdown
             const markdown = turndownService.turndown(html);
-            characterCount == 0 && setError("")
+            setMarkdownText(markdown);
 
-            // Get plain text character count (without HTML tags)
             const textContent = editor.getText();
-            const currentCount = textContent.length;
-
-            // Calculate word count (properly handle spaces)
-            const trimmedText = textContent.trim();
-            const words = trimmedText.split(/\s+/).filter(word => word.length > 0);
-            setWordCount(words.length);
-
-            // Limit to MAX_CHARACTERS
-            if (currentCount > MAX_CHARACTERS) {
-                // Truncate content if exceeds limit
-                const truncatedText = textContent.substring(0, MAX_CHARACTERS);
-                editor.commands.setContent(truncatedText);
-                setCharacterCount(MAX_CHARACTERS);
-            } else {
-                setCharacterCount(currentCount);
+            if (textContent.length === 0) {
+                setError("");
             }
-
-            setMarkdownText(markdown); // 🔥 Save to state
         },
 
         onCreate({ editor }) {
-            // Initialize character count and word count when editor is created
-            const textContent = editor.getText();
-            setCharacterCount(textContent.length);
-            const trimmedText = textContent.trim();
-            const words = trimmedText.split(/\s+/).filter(word => word.length > 0);
-            setWordCount(words.length);
+            // Store initial valid content
+            lastValidContentRef.current = editor.getHTML();
         },
-        
+
     });
+
+
+    const { charactersCount, wordsCount } = useEditorState({
+        editor,
+        selector: context => ({
+          charactersCount: context?.editor?.storage.characterCount.characters() ?? 0,
+          wordsCount: context?.editor?.storage.characterCount.words() ?? 0,
+        }),
+      }) ?? { charactersCount: 0, wordsCount: 0 }
+
 
     // Disable editor when AI is loading or submitting
     useEffect(() => {
@@ -126,123 +127,135 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
         editor.setEditable(!isAILoading && !isSubmitting);
     }, [editor, isAILoading, isSubmitting]);
 
+    const cleanTipTapHTML = (html: string): string => {
+        return html
+            .replace(/<p>(\s|&nbsp;)*<\/p>/g, "<br>") // Replace empty lines with <br>
+        //   .replace(/(<br>\s*){2,}/g, "<br>")       // Remove multiple <br>
+        //   .trim();
+    };
+
+    // ⭐ STEP 3 — Apply To TipTap
+    const handleGenerateAI = async () => {
+        if (!editor) return;
+        setError("");
+        setIsAILoading(true);
+        // ✅ Get FULL HTML including bold, italic, lists, etc.
+
+        // let html = `<p> <strong>#Urgent Hiring (Immediate Joiners Needed!) </strong> \nWe are urgently looking for individuals who can start immediately at an American company.\n\nApply for Referral: <a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"https://lnkd.in/gczHBv7t\"><strong>https://lnkd.in/gczHBv7t</strong></a>\n\nLast Date: 15/12/2025\n\nWe welcome both <strong>#Freshers</strong> and <strong>#ExperiencedProfessionals</strong>.\n\n<strong>Open positions:</strong> Full Stack Developer - <strong>#Frontend</strong>, <strong>#Backend</strong> Developer, <strong>#Software</strong> Developer, <strong>#Web</strong> Designer, Graphic Designer, Social Media Manager, Business Development Associate, &amp; <strong>#HR</strong>\n\n<strong>#Experience</strong>: 0-3 years\n\n<strong>#Working</strong> hours: Flexible\n\n<strong>#Income</strong>: 24k - 85k / Monthly in hand\n\n<strong>#Location</strong>: Remote\n\nWork schedule: 5 days a week. Training will be provided for <strong>#Freshers</strong>.\n\n<strong>Note</strong>: Please respond only to personal replies, not anonymous messages.\n\nComment \"<strong>#Interested</strong>\" to get shortlisted within 24 hours.</p>`
 
 
- // ⭐ STEP 3 — Apply To TipTap
- const handleGenerateAI = async () => {
-    if (!editor) return;
-    setError("");
-    setIsAILoading(true);
-    // ✅ Get FULL HTML including bold, italic, lists, etc.
-    //  let html=`<p>🚨 <strong>Urgent Hiring – Flutter Developer</strong> 🚨</p><p>👉 <strong>Position:</strong> Flutter Developer</p><p>💼 <strong>Experience:</strong> 0 – 1.5 Years</p><p>📍 <strong>Location:</strong> Mota Varachha, Surat (On-site Only)</p><p>🎓 <strong>Education:</strong> B.E / B.Tech / BCA / MCA</p><p>🗣️ <strong>Communication:</strong> Good communication skills required</p><p>⚠️ <strong>Please Note:</strong></p><ul><li><p>Only <strong>local Surat candidates</strong> will be considered.</p></li></ul><p>📧 <strong>To Apply:</strong><br>Send your updated resume to: <a target="_blank" rel="noopener noreferrer nofollow" href="mailto:hrskytouchinfotech1@gmail.com"><strong>hrskytouchinfotech1@gmail.com</strong></a></p><p>📞 <strong>Contact:</strong><br><strong>+91 81408 81209</strong></p>`
-   
-   
-    // editor.commands.setContent(html);
+        // editor.commands.setContent(html);
 
-    const htmlContent = editor.getHTML();
-   
-  
-    try {
-        const response = await AIJobPostAPI({
-            description: htmlContent,
-        });
+        const htmlContent = editor.getHTML();
+        const cleanedHTML = cleanTipTapHTML(htmlContent);
 
-        // console.log("API Response >>>>>>>>>>>:", response);
-    
-        // Handle API wrapper error (network/HTTP errors)
-        // Response structure: { error: true, data: { message: "...", success: false } }
-        if (response.error) {
-            const responseData = response.data as any;
-            // Error message is in response.data.message (not response.data.data.message)
-            const errorMessage = responseData?.message || responseData?.data?.message || "An error occurred. Please try again.";
-           
-            setError(errorMessage);
+        console.log("htmlContent", htmlContent);
+
+
+        try {
+            const response = await AIJobPostAPI({
+                description: cleanedHTML,
+            });
+
+            // console.log("API Response >>>>>>>>>>>:", response);
+
+            // Handle API wrapper error (network/HTTP errors)
+            // Response structure: { error: true, data: { message: "...", success: false } }
+            if (response.error) {
+                const responseData = response.data as any;
+                // Error message is in response.data.message (not response.data.data.message)
+                const errorMessage = responseData?.message || responseData?.data?.message || "An error occurred. Please try again.";
+
+                setError(errorMessage);
+                setIsAILoading(false);
+
+            }
+
+
+
+            // Success case - set content
+            if (!response.error) {
+                const responseData = response.data;
+                setIsAILoading(false);
+                // setError("");
+                const aiContent = responseData?.data?.message || "";
+                editor.commands.setContent(aiContent);
+                // Update the ref to store this as valid content
+                lastValidContentRef.current = aiContent;
+            }
+
+        } catch (error) {
+            console.error("API Error:", error);
+            setError("An unexpected error occurred. Please try again.");
             setIsAILoading(false);
-          
         }
 
 
+    };
 
-        // Success case - set content
-        if (!response.error) {
-            const responseData = response.data;
-            setIsAILoading(false);
-            // setError("");
-            editor.commands.setContent(responseData?.data?.message || "");
-        }
-       
-    } catch (error) {
-        console.error("API Error:", error);
-        setError("An unexpected error occurred. Please try again.");
-        setIsAILoading(false);
-    }
-  
-     
-  };
-  
 
-    
 
-  const handleSubmit = async () => {
-    if (!editor) return;
 
-    setError("");
+    const handleSubmit = async () => {
+        if (!editor) return;
 
-    // Get plain text just to check if empty (do not send this)
-    const textContent = editor.getText().trim();
-    if (!textContent) {
-        setError("Job description cannot be empty. Please enter a job description.");
-        return;
-    }
-
-    // Check minimum word count
-    const words = textContent.split(/\s+/).filter(word => word.length > 0);
-    if (words.length < DiableWordCount) {
-        setError(`Job description must be at least ${DiableWordCount} words long.`);
-        return;
-    }
-
-    // ✅ Get FULL FORMATTED HTML (bold, italic, lists… preserved)
-    const html = editor.getHTML();
-
-    try {
-        setIsSubmitting(true);
         setError("");
 
-        const response = await PostJobAPI({
-            description: html,   // ⭐ SEND HTML DIRECTLY (NO MARKDOWN)
-        });
-
-        refreshJobs();
-        console.log("API Response:", response);
-
-        const responseData = response.data;
-
-        // Handle different error cases
-        if (response.error || responseData?.error === true || responseData?.success === false) {
-            setError(responseData?.message || "Failed to post job. Please try again.");
+        // Get plain text just to check if empty (do not send this)
+        const textContent = editor.getText().trim();
+        if (!textContent) {
+            setError("Job description cannot be empty. Please enter a job description.");
             return;
         }
 
-        if ((responseData?.statusCode || response.statusCode) >= 400) {
-            setError(responseData?.message || "Something went wrong.");
+        // Check minimum word count
+        if (wordsCount < DiableWordCount) {
+            setError(`Job description must be at least ${DiableWordCount} words long.`);
             return;
         }
 
-        // Successful post
-        if (responseData?.success === true || responseData?.statusCode === 200) {
-            editor.commands.clearContent();
-            setIsExpanded(false);
+        // ✅ Get FULL FORMATTED HTML (bold, italic, lists… preserved)
+        const html = editor.getHTML();
+        const cleanedHTML = cleanTipTapHTML(html);
+        try {
+            setIsSubmitting(true);
             setError("");
-        }
 
-    } catch (error) {
-        console.error("API Error:", error);
-        setError("An unexpected error occurred. Please try again.");
-    } finally {
-        setIsSubmitting(false);
-    }
-};
+            const response = await PostJobAPI({
+                description: cleanedHTML,   // ⭐ SEND HTML DIRECTLY (NO MARKDOWN)
+            });
+
+            refreshJobs();
+            console.log("API Response:", response);
+
+            const responseData = response.data;
+
+            // Handle different error cases
+            if (response.error || responseData?.error === true || responseData?.success === false) {
+                setError(responseData?.message || "Failed to post job. Please try again.");
+                return;
+            }
+
+            if ((responseData?.statusCode || response.statusCode) >= 400) {
+                setError(responseData?.message || "Something went wrong.");
+                return;
+            }
+
+            // Successful post
+            if (responseData?.success === true || responseData?.statusCode === 200) {
+                editor.commands.clearContent();
+                lastValidContentRef.current = "";
+                setIsExpanded(false);
+                setError("");
+            }
+
+        } catch (error) {
+            console.error("API Error:", error);
+            setError("An unexpected error occurred. Please try again.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     const userImageUrl =
         "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face";
@@ -263,7 +276,7 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
                     )}
                 >
                     <div
-                        className="flex items-center gap-3 px-4 py-3 cursor-pointer"
+                        className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 cursor-pointer"
                         onClick={() => setIsExpanded(true)}
                     >
                         <Image
@@ -271,15 +284,15 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
                             alt="User"
                             width={40}
                             height={40}
-                            className="rounded-[8px] object-cover w-10 h-10"
+                            className="rounded-[8px] object-cover w-8 h-8 sm:w-10 sm:h-10 shrink-0"
                         />
 
-                        <div className="flex-1 text-base text-gray-400">
-                            Create a job post...
+                        <div className="flex-1 text-sm sm:text-base text-gray-400 min-w-0">
+                            <span className="truncate block">Create a job post...</span>
                         </div>
 
-                        <div className="h-8 w-8 rounded-full bg-blue-50 flex items-center justify-center">
-                            <PenTool className="h-4 w-4 text-blue-600" />
+                        <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
+                            <PenTool className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-600" />
                         </div>
                     </div>
                 </div>
@@ -288,24 +301,24 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
                 <div
                     className={cn(
                         "transition-all duration-500 ease-in-out overflow-hidden",
-                        isExpanded ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
+                        isExpanded ? "max-h-[800px] sm:max-h-[600px] opacity-100" : "max-h-0 opacity-0"
                     )}
                 >
-                    <div className="p-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center gap-2">
+                    <div className="p-4 sm:p-6">
+                        <div className="flex items-center justify-between mb-4 gap-2">
+                            <div className="flex items-center gap-2 min-w-0 flex-1">
                                 <Image
                                     src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face"
                                     alt="Profile"
                                     width={40}
                                     height={40}
-                                    className="rounded-[8px] object-cover w-10 h-10"
+                                    className="rounded-[8px] object-cover w-8 h-8 sm:w-10 sm:h-10 shrink-0"
                                 />
-                                <div>
-                                    <h2 className="text-lg font-semibold text-[#1E293B]">
+                                <div className="min-w-0 flex-1">
+                                    <h2 className="text-base sm:text-lg font-semibold text-[#1E293B] truncate">
                                         New Job Post
                                     </h2>
-                                    <p className="text-[12px] text-[#64748b] font-semibold">
+                                    <p className="text-[10px] sm:text-[12px] text-[#64748b] font-semibold truncate">
                                         Sarah Connor • HR Manager
                                     </p>
                                 </div>
@@ -314,7 +327,7 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-8 w-8 cursor-pointer"
+                                className="h-8 w-8 cursor-pointer shrink-0"
                                 onClick={() => setIsExpanded(false)}
                             >
                                 <X className="h-4 w-4" />
@@ -324,17 +337,17 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
                         {/* ⭐ TIPTAP EDITOR */}
                         <div className={cn(
                             "relative border rounded-md mb-2",
-                            (isAILoading || isSubmitting) 
-                                ? "h-[300px] overflow-hidden" 
-                                : "min-h-[200px] max-h-[300px] overflow-hidden"
+                            (isAILoading || isSubmitting)
+                                ? "h-[250px] sm:h-[300px] overflow-hidden"
+                                : "min-h-[180px] sm:min-h-[200px] max-h-[250px] sm:max-h-[300px] overflow-hidden"
                         )}>
                             <div className={cn(
-                                "p-3",
-                                (isAILoading || isSubmitting) 
-                                    ? "h-full overflow-hidden pointer-events-none" 
-                                    : "min-h-[200px] max-h-[300px] overflow-y-auto"
+                                "p-2 sm:p-3",
+                                (isAILoading || isSubmitting)
+                                    ? "h-full overflow-hidden pointer-events-none"
+                                    : "min-h-[180px] sm:min-h-[200px] max-h-[250px] sm:max-h-[300px] overflow-y-auto"
                             )}>
-                                {editor && <EditorContent editor={editor}  />}
+                                {editor && <EditorContent editor={editor} />}
                             </div>
 
                             {/* AI Loading Overlay - Covers entire editor area */}
@@ -343,59 +356,49 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
                             {/* Posting Loader Overlay - Covers entire editor area */}
                             {isSubmitting && <PostingLoader message="Please wait while we post your job..." />}
                         </div>
-                       
 
-                        {/* Character Counter */}
-                        <div className="flex justify-end mb-4">
-                            <span className={cn(
-                                "text-sm",
-                                characterCount > MAX_CHARACTERS
-                                    ? "text-red-500 font-semibold"
-                                    : characterCount > MAX_CHARACTERS * 0.9
-                                        ? "text-orange-500"
-                                        : "text-gray-500"
-                            )}>
-                                {MAX_CHARACTERS - characterCount} characters remaining
-                            </span>
-                        </div>
-
+                           {/* Character Count */}
+                           <div className="flex justify-end text-xs sm:text-sm text-gray-500">
+                            {charactersCount}/{MAX_CHARACTERS} characters
+                           </div>
                         {/* Error Message - Above AI Button */}
-                      {error && (
-                        <p className="text-sm text-gray-500">{error}</p>
-                      )}
-     
-                          
-                       
+                        {error && (
+                            <p className="text-xs sm:text-sm text-gray-500 wrap-break-word">{error}</p>
+                        )}
+
+
+
                         {/* FOOTER */}
-                        <div className="flex items-center justify-between pt-4 border-t border-slate-50">
-                            <div className="flex items-center gap-3">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-0 pt-4 border-t border-slate-50">
+                            <div className="flex items-center gap-2 sm:gap-3 flex-1 sm:flex-initial">
                                 <Button
                                     variant="default"
-                                    className="bg-gradient-to-r cursor-pointer from-[#38bdf8] to-[#2dd4bf] hover:from-[#0ea5e9] hover:to-[#14b8a6] text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="bg-gradient-to-r cursor-pointer from-[#38bdf8] to-[#2dd4bf] hover:from-[#0ea5e9] hover:to-[#14b8a6] text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base px-3 sm:px-4 py-2 flex-1 sm:flex-initial whitespace-nowrap"
                                     onClick={handleGenerateAI}
-                                    disabled={isAILoading || wordCount < DiableWordCount}
+                                    disabled={isAILoading || wordsCount < DiableWordCount}
                                 >
-                                    <Wand2 className={cn("h-4 w-4 mr-2", isAILoading && "animate-spin")} />
-                                    {isAILoading ? "AI Generating..." : "Generate With AI"}
+                                    <Wand2 className={cn("h-4 w-4 sm:mr-2", isAILoading && "animate-spin")} />
+                                    <span className="hidden sm:inline">{isAILoading ? "AI Generating..." : "Generate With AI"}</span>
+                                    <span className="sm:hidden">{isAILoading ? "Generating..." : "Generate AI"}</span>
                                 </Button>
-                                {wordCount < DiableWordCount && (
-                                    <p className="text-sm font-medium text-gray-500">
-                                        {wordCount}/{DiableWordCount}
+                                {wordsCount < DiableWordCount && (
+                                    <p className="text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap">
+                                        {wordsCount}/{DiableWordCount}
                                     </p>
                                 )}
                             </div>
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2 sm:gap-3 flex-1 sm:flex-initial justify-end">
                                 <Button
                                     variant="outline"
-                                    className="bg-transparent shadow-none px-6 py-2 border border-slate-200 text-slate-600 font-medium rounded-lg hover:bg-slate-50 text-sm transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="bg-transparent shadow-none px-3 sm:px-6 py-2 border border-slate-200 text-slate-600 font-medium rounded-lg hover:bg-slate-50 text-sm transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-initial whitespace-nowrap"
                                     onClick={handleSubmit}
-                                    disabled={isSubmitting || isAILoading || wordCount < DiableWordCount}
+                                    disabled={isSubmitting || isAILoading || wordsCount < DiableWordCount}
                                 >
                                     {isSubmitting ? "Posting..." : "Post Job"}
                                 </Button>
-                                {wordCount < DiableWordCount && (
-                                    <p className="text-sm font-medium text-gray-500">
-                                        {wordCount}/{DiableWordCount}
+                                {wordsCount < DiableWordCount && (
+                                    <p className="text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap">
+                                        {wordsCount}/{DiableWordCount}
                                     </p>
                                 )}
                             </div>

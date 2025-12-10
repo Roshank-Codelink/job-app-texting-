@@ -57,7 +57,7 @@ export default function Navbar() {
          />
        </div>
      </Button>
-    {/* UserProfiles - Visible only on desktop */}
+    {/* UserProfiles - Visible only on desktop (hidden on mobile) */}
     <div className="user-profile shrink-0 hidden md:block">
       <UserProfiles />
     </div>

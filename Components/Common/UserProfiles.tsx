@@ -14,12 +14,14 @@ interface UserProfileProps {
     name?: string;
     title?: string;
     imageUrl?: string;
+    variant?: "navbar" | "sidebar";
 }
 
 export default function UserProfiles({
     name = "Sarah Connor",
     title = "HR Manager",
     imageUrl = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
+    variant = "navbar",
 }: UserProfileProps) {
     const [open, setOpen] = useState(false);
 
@@ -33,21 +35,18 @@ export default function UserProfiles({
             .slice(0, 2);
     };
 
+    const isSidebar = variant === "sidebar";
+
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <button className="flex items-center gap-1.5 sm:gap-2 md:gap-3 border-l border-[#f1f5f9] pl-2 sm:pl-3 md:pl-[16px] cursor-pointer">
-                    {/* Text Content - Left Side */}
-                    <div className="flex flex-col items-start text-left">
-                        <h3 className="text-xs sm:text-sm md:text-base font-bold text-[#1E293B] leading-tight whitespace-nowrap">
-                            {name}
-                        </h3>
-                        <p className="text-[10px] sm:text-xs md:text-sm text-gray-500 leading-tight whitespace-nowrap">
-                            {title}
-                        </p>
-                    </div>
-
-                    {/* Profile Picture - Right Side */}
+                <button className={cn(
+                    "flex items-center cursor-pointer w-full",
+                    isSidebar 
+                        ? "px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors" 
+                        : "gap-1.5 sm:gap-2 md:gap-3 border-l border-[#f1f5f9] pl-2 sm:pl-3 md:pl-[16px]"
+                )}>
+                    {/* Profile Picture */}
                     <div className="relative shrink-0">
                         {imageUrl ? (
                             <Image
@@ -55,22 +54,51 @@ export default function UserProfiles({
                                 alt={name}
                                 width={40}
                                 height={40}
-                                className="rounded-full object-cover border-2 border-gray-200 w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10"
+                                className={cn(
+                                    "object-cover",
+                                    isSidebar 
+                                        ? "w-10 h-10 rounded-lg" 
+                                        : "rounded-full border-2 border-gray-200 w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10"
+                                )}
                             />
                         ) : (
-                            <div className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center border-2 border-gray-200">
-                                <span className="text-white text-[10px] sm:text-xs md:text-sm font-semibold">
+                            <div className={cn(
+                                "bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center",
+                                isSidebar 
+                                    ? "w-10 h-10 rounded-lg" 
+                                    : "rounded-full border-2 border-gray-200 w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10"
+                            )}>
+                                <span className={cn(
+                                    "text-white font-semibold",
+                                    isSidebar ? "text-sm" : "text-[10px] sm:text-xs md:text-sm"
+                                )}>
                                     {getInitials(name)}
                                 </span>
                             </div>
                         )}
+                    </div>
+
+                    {/* Text Content */}
+                    <div className="flex flex-col items-start text-left flex-1 min-w-0 ml-3">
+                        <h3 className={cn(
+                            "font-semibold text-[#1E293B] leading-tight",
+                            isSidebar ? "text-sm" : "text-xs sm:text-sm md:text-base whitespace-nowrap"
+                        )}>
+                            {name}
+                        </h3>
+                        <p className={cn(
+                            "text-gray-500 leading-tight",
+                            isSidebar ? "text-xs" : "text-[10px] sm:text-xs md:text-sm whitespace-nowrap"
+                        )}>
+                            {title}
+                        </p>
                     </div>
                 </button>
             </PopoverTrigger>
             <PopoverContent
                 className="w-64 p-0"
                 side="bottom"
-                align="end"
+                align={isSidebar ? "center" : "end"}
                 sideOffset={8}
             >
                 <div className="flex flex-col">

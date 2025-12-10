@@ -5,13 +5,17 @@ import JobListingCards from "./Job-Management/JobListingCards";
 import JobPostForm from "./Job-Management/JobPostForm";
 import { GetAllJobsAPI } from "@/api/JobPostApi/JobPostApi";
 import { JobListingItem } from "@/api/JobPostApi/type";
+import { CharacterLimit } from "@/utils/extensions/CharacterLimit";
+import StarterKit from "@tiptap/starter-kit";
 
 interface JobPostProps {
   initialJobs: JobListingItem[];
 }
 
 export default function JobPost({ initialJobs }: JobPostProps) {
-  const [jobs, setJobs] = useState(initialJobs);
+  // Ensure initialJobs is always an array to prevent crashes
+  const safeInitialJobs = Array.isArray(initialJobs) ? initialJobs : [];
+  const [jobs, setJobs] = useState(safeInitialJobs);
   const [page, setPage] = useState(1);
   const limit = 10;
   const [hasMore, setHasMore] = useState(true);
@@ -34,19 +38,44 @@ export default function JobPost({ initialJobs }: JobPostProps) {
     setIsLoading(true);
     isLoadingRef.current = true;
 
-    const response = await GetAllJobsAPI(1, limit);
-    const { success, data } = response.data;
+    try {
+      const response = await GetAllJobsAPI(1, limit);
 
-    if (success) {
-      setJobs(data);
-      setPage(1);
-      pageRef.current = 1;
-      setHasMore(true);
+      if (response.error || !response.data) {
+        console.error("Error refreshing jobs:", response.error ? "API error" : "No data received");
+        setIsLoading(false);
+        isLoadingRef.current = false;
+        return;
+      }
+
+      const { success, data } = response.data;
+
+      if (success && Array.isArray(data)) {
+        setJobs(data);
+        setPage(1);
+        pageRef.current = 1;
+        setHasMore(true);
+      } else {
+        // If success is false or data is not an array, set empty array
+        setJobs([]);
+        setPage(1);
+        pageRef.current = 1;
+        setHasMore(false);
+      }
+    } catch (error) {
+      console.error("Unexpected error refreshing jobs:", error);
+      // On error, keep existing jobs but stop loading
+      setHasMore(false);
+    } finally {
+      setIsLoading(false);
+      isLoadingRef.current = false;
     }
-
-    setIsLoading(false);
-    isLoadingRef.current = false;
   };
+
+
+ 
+
+
 
   // ⭐ Fetch More Jobs (Infinite Scroll) - Using refs to avoid dependency issues
   const fetchMoreJobs = useCallback(async () => {
@@ -54,13 +83,21 @@ export default function JobPost({ initialJobs }: JobPostProps) {
 
     setIsLoading(true);
     isLoadingRef.current = true;
-    
+
     const nextPage = pageRef.current + 1;
     const startTime = Date.now();
     const minLoadingTime = 600; // Minimum 600ms loader display time
 
     try {
       const response = await GetAllJobsAPI(nextPage, limit);
+
+      // Check if response has error or data is null
+      if (response.error || !response.data) {
+        console.error("Error fetching more jobs:", response.error ? "API error" : "No data received");
+        setHasMore(false);
+        return;
+      }
+
       const { success, data } = response.data;
 
       // Calculate remaining time to show loader
@@ -72,10 +109,12 @@ export default function JobPost({ initialJobs }: JobPostProps) {
 
       if (success && Array.isArray(data)) {
         setJobs((prev) => {
+          // Ensure prev is an array
+          const prevArray = Array.isArray(prev) ? prev : [];
           // Avoid duplicates
-          const existingIds = new Set(prev.map((job) => job._id));
-          const newJobs = data.filter((job) => !existingIds.has(job._id));
-          return [...prev, ...newJobs];
+          const existingIds = new Set(prevArray.map((job) => job?._id).filter(Boolean));
+          const newJobs = data.filter((job) => job?._id && !existingIds.has(job._id));
+          return [...prevArray, ...newJobs];
         });
 
         setPage(nextPage);
@@ -85,6 +124,7 @@ export default function JobPost({ initialJobs }: JobPostProps) {
           setHasMore(false);
         }
       } else {
+        // If success is false or data is not an array, stop fetching more
         setHasMore(false);
       }
     } catch (error) {
@@ -159,10 +199,10 @@ export default function JobPost({ initialJobs }: JobPostProps) {
 
       {/* RIGHT SIDEBAR */}
       <div className="hidden xl:flex w-[23%] shrink-0 border-l border-[#e5e7eb] bg-white sticky top-0 self-start h-[calc(100vh-60px)] overflow-y-auto">
-        <div className="w-full h-full p-4">
-          {/* Add widgets later */}
+        {/* <div className="w-full h-full p-4">
+          
           <div className="text-gray-500 text-sm">Right Sidebar Content</div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

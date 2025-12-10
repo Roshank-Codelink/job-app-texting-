@@ -23,6 +23,7 @@ import {
 
 import { BiSolidZap } from "react-icons/bi";
 import { Button } from "@/Components/ui/button";
+import UserProfiles from "./UserProfiles";
 
 export default function AppSidebar() {
   return (
@@ -30,10 +31,10 @@ export default function AppSidebar() {
     <Sidebar className="bg-white">
 
       {/* ✅ Only ONE wrapper inside Sidebar */}
-      <div className="h-full md:h-[calc(100vh-60px)] w-full flex flex-col px-[16px] py-[16px] md:py-[16px] bg-white">
+      <div className="h-full md:h-[calc(100vh-60px)] w-full flex flex-col px-[16px] py-[16px] md:py-[16px] bg-white relative">
 
         {/* TOP MENU */}
-        <div className="flex-1 min-h-0 flex flex-col overflow-y-auto custom-scrollbar">
+        <div className="flex-1 min-h-0 flex flex-col overflow-y-auto custom-scrollbar pb-20 md:pb-0">
           <SidebarContent className="flex-1 min-h-0 flex flex-col pt-4 md:pt-0 pb-2">
             <SidebarGroup>
               <SidebarGroupContent>
@@ -108,7 +109,7 @@ export default function AppSidebar() {
           </SidebarContent>
 
           {/* UPGRADE CARD - At Bottom */}
-          <div className="mt-auto p-2 pb-6 md:pb-2 shrink-0">
+          <div className="mt-auto p-2 shrink-0">
             <div className="bg-gradient-to-br from-[#f0f9ff] to-white border rounded-lg p-4 flex flex-col items-center gap-3 w-full">
               <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
                 <BiSolidZap className="w-6 h-6 text-[#0284C7]" />
@@ -125,9 +126,14 @@ export default function AppSidebar() {
             </div>
           </div>
         </div>
+
+        {/* USER PROFILE - At Absolute Bottom - Visible only on mobile */}
+        <div className="absolute bottom-0 left-0 right-0 p-2 pb-4 md:hidden">
+          <UserProfiles variant="sidebar" />
+        </div>
       </div>
       {/* END WRAPPER */}
 
-    </Sidebar>
+    </Sidebar>  
   );
 }
