@@ -5,8 +5,11 @@ import JobListingCards from "./Job-Management/JobListingCards";
 import JobPostForm from "./Job-Management/JobPostForm";
 import { GetAllJobsAPI } from "@/api/JobPostApi/JobPostApi";
 import { JobListingItem } from "@/api/JobPostApi/type";
-import { CharacterLimit } from "@/utils/extensions/CharacterLimit";
-import StarterKit from "@tiptap/starter-kit";
+
+
+
+
+
 
 interface JobPostProps {
   initialJobs: JobListingItem[];
@@ -165,7 +168,12 @@ export default function JobPost({ initialJobs }: JobPostProps) {
       <div className="flex-1 min-w-0 p-4 sm:p-6 md:p-8 lg:p-[32px]">
 
         {/* Job Post Form */}
+
+        
         <div className="mb-6">
+
+
+         
           <JobPostForm refreshJobs={refreshJobs} />
         </div>
 

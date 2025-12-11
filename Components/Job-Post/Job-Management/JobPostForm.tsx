@@ -13,6 +13,9 @@ import { AIJobPostAPI, PostJobAPI } from "@/api/JobPostApi/JobPostApi";
 import AILoader from "./AILoader";
 import PostingLoader from "./PostingLoader";
 import { CharacterCount } from '@tiptap/extensions'
+import { LimitPasteHTML } from "@/utils/extensions/LimitPasteHTML";
+
+
 
 
 
@@ -58,15 +61,11 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
 
 
 
-    // ⭐ FINAL WORKING TIPTAP CONFIG
-    const editor = useEditor({
+  const editor = useEditor({
         immediatelyRender: false,   // 🔥 REQUIRED FIX FOR SSR ERROR
-
+      
         extensions: [
-            CharacterCount.configure({
-                limit: MAX_CHARACTERS,
-                
-              }),
+            LimitPasteHTML.configure(),
             StarterKit.configure({
                 bold: {},  // ✅ Enable bold
                 italic: {},  // ✅ Enable italic
@@ -74,6 +73,10 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
                 heading: false,
                 orderedList: {},  // ✅ Enable lists
                 bulletList: {},  // ✅ Enable bullet lists
+            }),
+            CharacterCount.configure({
+                limit: MAX_CHARACTERS,
+                mode: "textSize",
             }),
             Placeholder.configure({
                 placeholder: "Describe the role, responsibilities, and requirements...",
@@ -112,11 +115,13 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
     });
 
 
+   
+
     const { charactersCount, wordsCount } = useEditorState({
         editor,
         selector: context => ({
-          charactersCount: context?.editor?.storage.characterCount.characters() ?? 0,
-          wordsCount: context?.editor?.storage.characterCount.words() ?? 0,
+          charactersCount: context?.editor?.storage?.characterCount?.characters() ?? 0,
+          wordsCount: context?.editor?.storage?.characterCount?.words() ?? 0,
         }),
       }) ?? { charactersCount: 0, wordsCount: 0 }
 
@@ -358,7 +363,10 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
                         </div>
 
                            {/* Character Count */}
-                           <div className="flex justify-end text-xs sm:text-sm text-gray-500">
+                           <div className={cn(
+                               "flex justify-end text-xs sm:text-sm font-medium",
+                               charactersCount >= MAX_CHARACTERS ? "text-red-600" : "text-gray-500"
+                           )}>
                             {charactersCount}/{MAX_CHARACTERS} characters
                            </div>
                         {/* Error Message - Above AI Button */}
