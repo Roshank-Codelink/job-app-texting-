@@ -12,7 +12,7 @@ export const LimitPasteHTML = Extension.create({
             new Plugin({
                 key: new PluginKey('limitPasteHTML'),
                 props: {
-                    // Handle plain text paste
+                    // Handle plain text paste - preserve line breaks
                     clipboardTextParser: (text, context, plain, view) => {
                         const currentLength = context.doc.textContent.length;
                         const remaining = limit - currentLength;
@@ -25,11 +25,24 @@ export const LimitPasteHTML = Extension.create({
                         // Truncate text to fit remaining space
                         const truncatedText = text.length > remaining ? text.substring(0, remaining) : text;
                         
-                        // Create a text node from the truncated text (preserves all characters including spaces)
-                        const textNode = context.doc.type.schema.text(truncatedText);
-                        const fragment = Fragment.from(textNode);
+                        // Split by line breaks and create paragraph nodes for each line
+                        const lines = truncatedText.split(/\r\n|\r|\n/);
+                        const schema = context.doc.type.schema;
                         
-                        // Return a Slice with the truncated content
+                        // Create paragraph nodes for each line
+                        const paragraphNodes = lines.map(line => {
+                            if (line.trim() === '') {
+                                // Empty line - create empty paragraph
+                                return schema.nodes.paragraph.create();
+                            }
+                            // Create text node and wrap in paragraph
+                            const textNode = schema.text(line);
+                            return schema.nodes.paragraph.create(null, textNode);
+                        });
+                        
+                        const fragment = Fragment.from(paragraphNodes);
+                        
+                        // Return a Slice with the content
                         return new Slice(fragment, 0, 0);
                     },
                     

@@ -43,8 +43,8 @@ export default function UserProfiles({
                 <button className={cn(
                     "flex items-center cursor-pointer w-full",
                     isSidebar 
-                        ? "px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors" 
-                        : "gap-1.5 sm:gap-2 md:gap-3 border-l border-[#f1f5f9] pl-2 sm:pl-3 md:pl-[16px]"
+                        ? "px-3 py-2.5 rounded-lg hover:bg-(--Profile-hover-bg) transition-colors cursor-pointer" 
+                        : "gap-1.5 sm:gap-2 md:gap-3 border-l border-(--profile-border-color) pl-2 sm:pl-3 md:pl-[16px]"
                 )}>
                     {/* Profile Picture */}
                     <div className="relative shrink-0">
@@ -58,18 +58,18 @@ export default function UserProfiles({
                                     "object-cover",
                                     isSidebar 
                                         ? "w-10 h-10 rounded-lg" 
-                                        : "rounded-full border-2 border-gray-200 w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10"
+                                        : "rounded-[8px] border-2 border-(--profile-image-border-color) w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10"
                                 )}
                             />
                         ) : (
                             <div className={cn(
-                                "bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center",
+                                "bg-linear-to-br from-(--profile-liner-from-color) to-(--profile-liner-to-color) flex items-center justify-center",
                                 isSidebar 
                                     ? "w-10 h-10 rounded-lg" 
-                                    : "rounded-full border-2 border-gray-200 w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10"
+                                    : "rounded-full border-2 border-(--profile-image-border-color) w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10"
                             )}>
                                 <span className={cn(
-                                    "text-white font-semibold",
+                                    "text-(--navbar-bg-parent) font-semibold",
                                     isSidebar ? "text-sm" : "text-[10px] sm:text-xs md:text-sm"
                                 )}>
                                     {getInitials(name)}
@@ -81,13 +81,13 @@ export default function UserProfiles({
                     {/* Text Content */}
                     <div className="flex flex-col items-start text-left flex-1 min-w-0 ml-3">
                         <h3 className={cn(
-                            "font-semibold text-[#1E293B] leading-tight",
+                            "font-semibold text-(--profile-text-color) leading-tight",
                             isSidebar ? "text-sm" : "text-xs sm:text-sm md:text-base whitespace-nowrap"
                         )}>
                             {name}
                         </h3>
                         <p className={cn(
-                            "text-gray-500 leading-tight",
+                            "text-(--profile-title-color) leading-tight",
                             isSidebar ? "text-xs" : "text-[10px] sm:text-xs md:text-sm whitespace-nowrap"
                         )}>
                             {title}
@@ -103,7 +103,7 @@ export default function UserProfiles({
             >
                 <div className="flex flex-col">
                     {/* Profile Header */}
-                    <div className="p-4 border-b border-gray-200">
+                    <div className="p-4 border-b border-(--profile-image-border-color)">
                         <div className="flex items-center gap-3">
                             {imageUrl ? (
                                 <Image
@@ -111,20 +111,20 @@ export default function UserProfiles({
                                     alt={name}
                                     width={48}
                                     height={48}
-                                    className="rounded-full object-cover border-2 border-gray-200"
+                                    className="rounded-[8px] object-cover border-2 border-(--profile-image-border-color)"
                                 />
                             ) : (
-                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center border-2 border-gray-200">
-                                    <span className="text-white text-base font-semibold">
+                                <div className="w-12 h-12 rounded-full bg-linear-to-br from-(--profile-liner-from-color) to-(--profile-liner-to-color) flex items-center justify-center border-2 border-(--profile-image-border-color)">
+                                    <span className="text-(--navbar-bg-parent) text-base font-semibold">
                                         {getInitials(name)}
                                     </span>
                                 </div>
                             )}
                             <div className="flex flex-col">
-                                <h3 className="text-sm font-semibold text-gray-900">
+                                <h3 className="text-sm font-semibold text-(--profile-name-color)">
                                     {name}
                                 </h3>
-                                <p className="text-xs text-gray-500">{title}</p>
+                                <p className="text-xs text-(--profile-title-color)">{title}</p>
                             </div>
                         </div>
                     </div>
@@ -132,26 +132,26 @@ export default function UserProfiles({
                     {/* Menu Items */}
                     <div className="py-2">
                         <button
-                            className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                            className="w-full px-4 py-2 text-left text-sm text-(--profile-menu-text-color) hover:bg-(--Profile-hover-bg) cursor-pointer transition-colors"
                             onClick={() => setOpen(false)}
                         >
                             View Profile
                         </button>
                         <button
-                            className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                            className="w-full px-4 py-2 text-left text-sm text-(--profile-menu-text-color) hover:bg-(--Profile-hover-bg) cursor-pointer transition-colors"
                             onClick={() => setOpen(false)}
                         >
                             Settings
                         </button>
                         <button
-                            className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                            className="w-full px-4 py-2 text-left text-sm text-(--profile-menu-text-color) hover:bg-(--Profile-hover-bg) cursor-pointer transition-colors"
                             onClick={() => setOpen(false)}
                         >
                             Help & Support
                         </button>
                         <div className="border-t border-gray-200 my-1" />
                         <button
-                            className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 transition-colors"
+                            className="w-full px-4 py-2 text-left text-sm text-(--profile-menu-sign-out-color) hover:bg-(--profile-menu-sign-out-bg) cursor-pointer transition-colors"
                             onClick={() => setOpen(false)}
                         >
                             Sign Out

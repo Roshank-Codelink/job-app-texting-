@@ -113,10 +113,58 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
-/* custom theme */
-@theme{
-  --navbar-bg-perent:#fffdff
-}
+/* custom theme variables */
+
+  :root {
+    --navbar-bg-parent: #fffdff;
+    --navbar-bg-button: #f0f9ff;
+    --navbar-text-color: #0ea5e9;
+    --navbar-logo-text-color: #1e293b;
+  
+    --Profile-hover-bg: #f9fafb; /* gray-50 */
+    --profile-border-color: #f1f5f9; /* slate-100 */
+    --profile-image-border-color: #e5e7eb; /* gray-200 */
+    --profile-menu-text-color: #374151;/* gray-700 */
+    --profile-title-color: #6b7280; /* gray-500 */
+    --job-post-bg-color: #9CA3AF;  /* slate-400 */
+    --job-post-text-color:  #3b82f6;  /* blue-500 */
+    --job-post-icone-color: #eff6ff;  /* blue-50*/
+
+    --job-post-button-bg-from:#38bdf8;
+    --job-post-button-bg-to:#2dd4bf;
+    --job-post-button-hover:#14b8a6;
+    --job-post-button-border-color:#e2e8f0; /* slate-200 */
+    --job-post-button-disabled-text-color:#64748b; /* slate-600 */
+    --job-post-button-disabled-bg:#f8fafc; /* slate-50 */
+    
+    --post-card-bg-color:#1f2937; /* gray-800 */
+
+
+    
+    --profile-liner-from-color: #3b82f6; /* blue-500 */
+    --profile-liner-to-color: #9333ea;   /* purple-600 */
+  
+    --profile-text-color: #1e293b;  /* slate-800 */
+
+    --profile-name-color: #111827; /* gray-900 */
+    --profile-menu-sign-out-color: #ef4444; /* red-500 */
+    --profile-menu-sign-out-bg: #fef2f2; /* red-50 */
+    --sidebar-bg-color: #ffffff; 
+    --sidebar-menu-icone-color: #64748b;
+
+
+
+    
+
+  }
+  
+
+  
+
+
+  
+
+
 
 @layer base {
   * {

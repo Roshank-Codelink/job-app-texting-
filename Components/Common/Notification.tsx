@@ -10,7 +10,7 @@ import {
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <button className="relative p-2 rounded-full hover:bg-[#e5e7eb] cursor-pointer bg-slate-50">
+                <button className="relative p-2 rounded-full hover:bg-(--profile-image-border-color) cursor-pointer bg-slate-50">
                     <FaRegBell className="text-1xl text-[#64748b]" />
                 </button>
             </PopoverTrigger>

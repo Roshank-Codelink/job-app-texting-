@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { EditorContent, useEditor,useEditorState  } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
+import Link from "@tiptap/extension-link";
 import TurndownService from "turndown";
 import { AIJobPostAPI, PostJobAPI } from "@/api/JobPostApi/JobPostApi";
 import AILoader from "./AILoader";
@@ -73,6 +74,14 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
                 heading: false,
                 orderedList: {},  // ✅ Enable lists
                 bulletList: {},  // ✅ Enable bullet lists
+                hardBreak: {},  // ✅ Enable hard breaks for line breaks
+            }),
+            Link.configure({
+                openOnClick: false,
+                HTMLAttributes: {
+                    target: '_blank',
+                    rel: 'noopener noreferrer nofollow',
+                },
             }),
             CharacterCount.configure({
                 limit: MAX_CHARACTERS,
@@ -89,6 +98,10 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
                 class:
                     "prose prose-sm max-w-none min-h-[200px] w-full outline-none text-base focus:outline-none",
                 'data-placeholder': "Describe the role, responsibilities, and requirements...",
+            },
+            transformPastedHTML(html) {
+                // Preserve HTML exactly as pasted
+                return html;
             },
         },
 
@@ -133,10 +146,21 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
     }, [editor, isAILoading, isSubmitting]);
 
     const cleanTipTapHTML = (html: string): string => {
-        return html
-            .replace(/<p>(\s|&nbsp;)*<\/p>/g, "<br>") // Replace empty lines with <br>
-        //   .replace(/(<br>\s*){2,}/g, "<br>")       // Remove multiple <br>
-        //   .trim();
+        // Don't modify HTML - preserve exact format
+        return html;
+    };
+
+    // Helper function to preserve line breaks when setting content from AI
+    const preserveLineBreaks = (content: string): string => {
+        // If content has <p> tags with \r\n inside, we need to convert \r\n to <br>
+        if (content.includes('<p>')) {
+            // Replace \r\n, \r, or \n with <br> tags inside paragraphs
+            return content.replace(/\r\n|\r|\n/g, '<br>');
+        }
+        
+        // If plain text with line breaks, convert to HTML
+        const lines = content.split(/\r\n|\r|\n/);
+        return lines.map(line => `<p>${line || '<br>'}</p>`).join('');
     };
 
     // ⭐ STEP 3 — Apply To TipTap
@@ -178,15 +202,17 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
 
 
 
-            // Success case - set content
+            // Success case - set content with preserved line breaks
             if (!response.error) {
                 const responseData = response.data;
                 setIsAILoading(false);
                 // setError("");
                 const aiContent = responseData?.data?.message || "";
-                editor.commands.setContent(aiContent);
+                // Preserve line breaks in the content
+                const formattedContent = preserveLineBreaks(aiContent);
+                editor.commands.setContent(formattedContent);
                 // Update the ref to store this as valid content
-                lastValidContentRef.current = aiContent;
+                lastValidContentRef.current = formattedContent;
             }
 
         } catch (error) {
@@ -269,7 +295,7 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
         <div className="w-full">
             <div
                 className={cn(
-                    "bg-white rounded-[20px] overflow-hidden transition-all duration-300 ease-in-out",
+                    "bg-(--sidebar-bg-color) rounded-[20px] overflow-hidden transition-all duration-300 ease-in-out",
                     isExpanded ? " " : "shadow-sm hover:shadow-md"
                 )}
             >
@@ -292,12 +318,12 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
                             className="rounded-[8px] object-cover w-8 h-8 sm:w-10 sm:h-10 shrink-0"
                         />
 
-                        <div className="flex-1 text-sm sm:text-base text-gray-400 min-w-0">
+                        <div className="flex-1 text-sm sm:text-base text-(--job-post-bg-color) min-w-0">
                             <span className="truncate block">Create a job post...</span>
                         </div>
 
-                        <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
-                            <PenTool className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-600" />
+                        <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-(--job-post-icone-color) flex items-center justify-center shrink-0">
+                            <PenTool className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-(--job-post-text-color)" />
                         </div>
                     </div>
                 </div>
@@ -320,10 +346,10 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
                                     className="rounded-[8px] object-cover w-8 h-8 sm:w-10 sm:h-10 shrink-0"
                                 />
                                 <div className="min-w-0 flex-1">
-                                    <h2 className="text-base sm:text-lg font-semibold text-[#1E293B] truncate">
+                                    <h2 className="text-base sm:text-lg font-semibold text-(--navbar-logo-text-color) truncate">
                                         New Job Post
                                     </h2>
-                                    <p className="text-[10px] sm:text-[12px] text-[#64748b] font-semibold truncate">
+                                    <p className="text-[10px] sm:text-[12px] text-(--sidebar-menu-icone-color) font-semibold truncate">
                                         Sarah Connor • HR Manager
                                     </p>
                                 </div>
@@ -365,13 +391,13 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
                            {/* Character Count */}
                            <div className={cn(
                                "flex justify-end text-xs sm:text-sm font-medium",
-                               charactersCount >= MAX_CHARACTERS ? "text-red-600" : "text-gray-500"
+                               charactersCount >= MAX_CHARACTERS ? "text-(--profile-menu-sign-out-color)" : "text-(--profile-title-color)"
                            )}>
                             {charactersCount}/{MAX_CHARACTERS} characters
                            </div>
                         {/* Error Message - Above AI Button */}
                         {error && (
-                            <p className="text-xs sm:text-sm text-gray-500 wrap-break-word">{error}</p>
+                            <p className="text-xs sm:text-sm text-(--profile-title-color) wrap-break-word">{error}</p>
                         )}
 
 
@@ -381,7 +407,7 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
                             <div className="flex items-center gap-2 sm:gap-3 flex-1 sm:flex-initial">
                                 <Button
                                     variant="default"
-                                    className="bg-gradient-to-r cursor-pointer from-[#38bdf8] to-[#2dd4bf] hover:from-[#0ea5e9] hover:to-[#14b8a6] text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base px-3 sm:px-4 py-2 flex-1 sm:flex-initial whitespace-nowrap"
+                                    className="bg-gradient-to-r cursor-pointer from-(--job-post-button-bg-from) to-(--job-post-button-bg-to) hover:from-(--navbar-text-color) hover:to-(--job-post-button-hover) text-(--sidebar-bg-color) transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base px-3 sm:px-4 py-2 flex-1 sm:flex-initial whitespace-nowrap"
                                     onClick={handleGenerateAI}
                                     disabled={isAILoading || wordsCount < DiableWordCount}
                                 >
@@ -390,7 +416,7 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
                                     <span className="sm:hidden">{isAILoading ? "Generating..." : "Generate AI"}</span>
                                 </Button>
                                 {wordsCount < DiableWordCount && (
-                                    <p className="text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap">
+                                    <p className="text-xs sm:text-sm font-medium text-(--profile-title-color) whitespace-nowrap">
                                         {wordsCount}/{DiableWordCount}
                                     </p>
                                 )}
@@ -398,14 +424,14 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
                             <div className="flex items-center gap-2 sm:gap-3 flex-1 sm:flex-initial justify-end">
                                 <Button
                                     variant="outline"
-                                    className="bg-transparent shadow-none px-3 sm:px-6 py-2 border border-slate-200 text-slate-600 font-medium rounded-lg hover:bg-slate-50 text-sm transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-initial whitespace-nowrap"
+                                    className="bg-transparent shadow-none px-3 sm:px-6 py-2 border border-(--job-post-button-border-color) text-(--job-post-button-disabled-text-color) font-medium rounded-lg hover:bg-(--job-post-button-disabled-bg) text-sm transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-initial whitespace-nowrap"
                                     onClick={handleSubmit}
                                     disabled={isSubmitting || isAILoading || wordsCount < DiableWordCount}
                                 >
                                     {isSubmitting ? "Posting..." : "Post Job"}
                                 </Button>
                                 {wordsCount < DiableWordCount && (
-                                    <p className="text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap">
+                                    <p className="text-xs sm:text-sm font-medium text-(--profile-title-color) whitespace-nowrap">
                                         {wordsCount}/{DiableWordCount}
                                     </p>
                                 )}

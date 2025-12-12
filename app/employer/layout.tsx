@@ -1,5 +1,5 @@
 import CompanyLayoutClient from "@/Components/layout/CompanyLayoutClient";
-
+import "../globals.css";
 
 
 
