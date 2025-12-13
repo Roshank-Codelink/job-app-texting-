@@ -32,13 +32,7 @@ function JobHeader({ companyName, postedTime }: JobHeaderProps) {
         </div>
 
         <div className="shrink-0">
-          <Image
-            src={userImageUrl}
-            alt="Profile"
-            width={32}
-            height={32}
-            className="rounded-full object-cover"
-          />
+          <span className="text-xs text-emerald-700 bg-emerald-100 rounded-md px-2 py-1 font-medium">Live</span>
         </div>
       </div>
     </CardHeader>

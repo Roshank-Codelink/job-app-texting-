@@ -58,7 +58,7 @@ export default function UserProfiles({
                                     "object-cover",
                                     isSidebar 
                                         ? "w-10 h-10 rounded-lg" 
-                                        : "rounded-[8px] border-2 border-(--profile-image-border-color) w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10"
+                                        : "rounded-[8px]  w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10"
                                 )}
                             />
                         ) : (
@@ -66,7 +66,7 @@ export default function UserProfiles({
                                 "bg-linear-to-br from-(--profile-liner-from-color) to-(--profile-liner-to-color) flex items-center justify-center",
                                 isSidebar 
                                     ? "w-10 h-10 rounded-lg" 
-                                    : "rounded-full border-2 border-(--profile-image-border-color) w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10"
+                                    : "rounded-full  w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10"
                             )}>
                                 <span className={cn(
                                     "text-(--navbar-bg-parent) font-semibold",
@@ -111,7 +111,7 @@ export default function UserProfiles({
                                     alt={name}
                                     width={48}
                                     height={48}
-                                    className="rounded-[8px] object-cover border-2 border-(--profile-image-border-color)"
+                                    className="rounded-[8px] object-cover "
                                 />
                             ) : (
                                 <div className="w-12 h-12 rounded-full bg-linear-to-br from-(--profile-liner-from-color) to-(--profile-liner-to-color) flex items-center justify-center border-2 border-(--profile-image-border-color)">
