@@ -25,6 +25,7 @@ import {
 import { BiSolidZap } from "react-icons/bi";
 import { Button } from "@/Components/ui/button";
 import UserProfiles from "./UserProfiles";
+import Link from "next/link";
 
 export default function AppSidebar() {
   const [activeItem, setActiveItem] = useState("dashboard");
@@ -51,7 +52,7 @@ export default function AppSidebar() {
                         : ""
                     }`}
                   >
-                    <SidebarMenuButton 
+                     <Link href="/employer/dashboard">  <SidebarMenuButton 
                       onClick={() => setActiveItem("dashboard")}
                       className={`flex items-center gap-3 px-4 py-5 rounded-lg w-full cursor-pointer border-none shadow-none outline-none [&_svg]:transition ${
                         activeItem === "dashboard"
@@ -61,7 +62,7 @@ export default function AppSidebar() {
                     >
                       <AlertCircle className="w-5 h-5" />
                       <span className={activeItem === "dashboard" ? "font-medium" : ""}>Dashboard</span>
-                    </SidebarMenuButton>
+                    </SidebarMenuButton></Link>
                   </SidebarMenuItem>
 
                   {/* Job Posts */}
@@ -72,7 +73,7 @@ export default function AppSidebar() {
                         : ""
                     }`}
                   >
-                    <SidebarMenuButton 
+                    <Link href="/employer/job-post"> <SidebarMenuButton 
                       onClick={() => setActiveItem("job-posts")}
                       className={`flex items-center gap-3 px-4 py-5 rounded-lg w-full cursor-pointer border-none shadow-none outline-none [&_svg]:transition ${
                         activeItem === "job-posts"
@@ -82,7 +83,7 @@ export default function AppSidebar() {
                     >
                       <FileText className="w-5 h-5" />
                       <span>Job Posts</span>
-                    </SidebarMenuButton>
+                    </SidebarMenuButton></Link>
                   </SidebarMenuItem>
 
                   {/* Candidates */}

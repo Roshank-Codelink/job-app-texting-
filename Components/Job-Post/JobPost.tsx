@@ -211,7 +211,7 @@ export default function JobPost({ initialJobs }: JobPostProps) {
           
           <div className="text-gray-500 text-sm">Right Sidebar Content</div>
         </div> */}
-      </div>
+      </div>  
     </div>
   );
 }

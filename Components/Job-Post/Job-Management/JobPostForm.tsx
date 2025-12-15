@@ -390,48 +390,48 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
 
                            {/* Character Count */}
                            <div className={cn(
-                               "flex justify-end text-xs sm:text-sm font-medium",
+                               "flex justify-end text-xs md:text-sm font-medium px-1",
                                charactersCount >= MAX_CHARACTERS ? "text-(--profile-menu-sign-out-color)" : "text-(--profile-title-color)"
                            )}>
                             {charactersCount}/{MAX_CHARACTERS} characters
                            </div>
                         {/* Error Message - Above AI Button */}
                         {error && (
-                            <p className="text-xs sm:text-sm text-(--profile-title-color) wrap-break-word">{error}</p>
+                            <p className="text-xs md:text-sm text-(--profile-title-color) wrap-break-word px-1">{error}</p>
                         )}
 
 
 
                         {/* FOOTER */}
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-0 pt-4 border-t border-slate-50">
-                            <div className="flex items-center gap-2 sm:gap-3 flex-1 sm:flex-initial">
+                        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 md:gap-4 pt-4 border-t border-slate-50">
+                            <div className="flex items-center gap-2 flex-1 md:flex-initial">
                                 <Button
                                     variant="default"
-                                    className="bg-gradient-to-r cursor-pointer from-(--job-post-button-bg-from) to-(--job-post-button-bg-to) hover:from-(--navbar-text-color) hover:to-(--job-post-button-hover) text-(--sidebar-bg-color) transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base px-3 sm:px-4 py-2 flex-1 sm:flex-initial whitespace-nowrap"
+                                    className="bg-gradient-to-r cursor-pointer from-(--job-post-button-bg-from) to-(--job-post-button-bg-to) hover:from-(--navbar-text-color) hover:to-(--job-post-button-hover) text-(--sidebar-bg-color) transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-xs md:text-sm px-2 md:px-4 py-2 flex-1 md:flex-initial whitespace-nowrap"
                                     onClick={handleGenerateAI}
                                     disabled={isAILoading || wordsCount < DiableWordCount}
                                 >
-                                    <Wand2 className={cn("h-4 w-4 sm:mr-2", isAILoading && "animate-spin")} />
-                                    <span className="hidden sm:inline">{isAILoading ? "AI Generating..." : "Generate With AI"}</span>
-                                    <span className="sm:hidden">{isAILoading ? "Generating..." : "Generate AI"}</span>
+                                    <Wand2 className={cn("h-3.5 w-3.5 md:h-4 md:w-4 md:mr-2", isAILoading && "animate-spin")} />
+                                    <span className="hidden md:inline">{isAILoading ? "AI Generating..." : "Generate With AI"}</span>
+                                    <span className="md:hidden text-[11px]">{isAILoading ? "Generate..." : "Generate AI"}</span>
                                 </Button>
                                 {wordsCount < DiableWordCount && (
-                                    <p className="text-xs sm:text-sm font-medium text-(--profile-title-color) whitespace-nowrap">
+                                    <p className="text-[11px] md:text-sm font-medium text-(--profile-title-color) whitespace-nowrap">
                                         {wordsCount}/{DiableWordCount}
                                     </p>
                                 )}
                             </div>
-                            <div className="flex items-center gap-2 sm:gap-3 flex-1 sm:flex-initial justify-end">
+                            <div className="flex items-center gap-2 flex-1 md:flex-initial justify-end">
                                 <Button
                                     variant="outline"
-                                    className="bg-transparent shadow-none px-3 sm:px-6 py-2 border border-(--job-post-button-border-color) text-(--job-post-button-disabled-text-color) font-medium rounded-lg hover:bg-(--job-post-button-disabled-bg) text-sm transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-initial whitespace-nowrap"
+                                    className="bg-transparent shadow-none px-2 md:px-6 py-2 border border-(--job-post-button-border-color) text-(--job-post-button-disabled-text-color) font-medium rounded-lg hover:bg-(--job-post-button-disabled-bg) text-xs md:text-sm transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex-1 md:flex-initial whitespace-nowrap"
                                     onClick={handleSubmit}
                                     disabled={isSubmitting || isAILoading || wordsCount < DiableWordCount}
                                 >
                                     {isSubmitting ? "Posting..." : "Post Job"}
                                 </Button>
                                 {wordsCount < DiableWordCount && (
-                                    <p className="text-xs sm:text-sm font-medium text-(--profile-title-color) whitespace-nowrap">
+                                    <p className="text-[11px] md:text-sm font-medium text-(--profile-title-color) whitespace-nowrap">
                                         {wordsCount}/{DiableWordCount}
                                     </p>
                                 )}
