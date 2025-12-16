@@ -8,7 +8,12 @@ import Link from "next/link";
 export default function Home() {
   return (
 <>
-    <Link href="/employer/dashboard">Company Dashboard</Link>
+<div className="w-full h-full flex justify-center items-center gap-10">
+  <Link href="/employer/dashboard">Company Dashboard</Link>
+  <Link href="/signin">Candidate Login</Link>
+</div>
+
+   
 
 </>
   );
