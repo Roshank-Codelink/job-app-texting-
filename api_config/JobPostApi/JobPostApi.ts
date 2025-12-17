@@ -1,4 +1,4 @@
-import { customFetch } from "@/api/apiconfig";
+import { customFetch } from "@/api_config/apiconfig";
 import { JobListingsResponseType, JobPost, JobPostPayload, JobPostResponseType } from "./type";
 
     export const AIJobPostAPI = async (data: JobPostPayload) => {

@@ -23,8 +23,7 @@ export default function Otp({ email, onEdit }: OtpProps) {
         console.log("OTP Submitted:", values.otp);
         router.push("/profile-onboarding");
 
-        // Add your OTP verification API call here
-        // Example: await verifyOtp(email, values.otp);
+    
     };
 
     return (

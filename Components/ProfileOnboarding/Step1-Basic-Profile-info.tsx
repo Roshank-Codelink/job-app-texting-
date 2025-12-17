@@ -4,11 +4,7 @@ import { useState } from "react";
 import { Input } from "@/Components/ui/input";
 import { User, Mail, Phone } from "lucide-react";
 import { Step1Validation } from "@/Validation/ProfileOnboardingValidation";
-
-interface Step1Props {
-  values: any;
-  setFieldValue: (field: string, value: any) => void;
-}
+import { Step1Props } from "../../types/types";
 
 export default function Step1BasicProfileInfo({ values, setFieldValue }: Step1Props) {
   const [errors, setErrors] = useState({
@@ -51,15 +47,15 @@ export default function Step1BasicProfileInfo({ values, setFieldValue }: Step1Pr
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="space-y-6">
+    <div className="w-full max-w-full mx-auto px-0 sm:px-2 md:px-4">
+      <div className="space-y-4 sm:space-y-5 md:space-y-6">
         {/* Full Name */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
             Full Name <span className="text-red-500">*</span>
           </label>
           <div className="relative">
-            <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <User className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
             <Input
               type="text"
               name="fullName"
@@ -67,21 +63,21 @@ export default function Step1BasicProfileInfo({ values, setFieldValue }: Step1Pr
               onChange={handleChange}
               onBlur={handleBlur}
               placeholder="Enter your full name"
-              className={`pl-10 ${errors.fullName && touched.fullName ? "border-red-500" : ""}`}
+              className="w-full pl-9 sm:pl-10 text-sm sm:text-base h-10 sm:h-11"
             />
           </div>
           {errors.fullName && touched.fullName && (
-            <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>
+            <p className="text-gray-500 text-xs sm:text-sm mt-1">{errors.fullName}</p>
           )}
         </div>
 
         {/* Email */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
             Email Address <span className="text-red-500">*</span>
           </label>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Mail className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
             <Input
               type="email"
               name="email"
@@ -89,21 +85,21 @@ export default function Step1BasicProfileInfo({ values, setFieldValue }: Step1Pr
               onChange={handleChange}
               onBlur={handleBlur}
               placeholder="your.email@example.com"
-              className={`pl-10 ${errors.email && touched.email ? "border-red-500" : ""}`}
+              className="w-full pl-9 sm:pl-10 text-sm sm:text-base h-10 sm:h-11"
             />
           </div>
           {errors.email && touched.email && (
-            <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+            <p className="text-gray-500 text-xs sm:text-sm mt-1">{errors.email}</p>
           )}
         </div>
 
         {/* Phone Number */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
             Phone Number <span className="text-red-500">*</span>
           </label>
           <div className="relative">
-            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Phone className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
             <Input
               type="tel"
               name="phoneNumber"
@@ -112,11 +108,11 @@ export default function Step1BasicProfileInfo({ values, setFieldValue }: Step1Pr
               onBlur={handleBlur}
               placeholder="9876543210"
               maxLength={10}
-              className={`pl-10 ${errors.phoneNumber && touched.phoneNumber ? "border-red-500" : ""}`}
+              className="w-full pl-9 sm:pl-10 text-sm sm:text-base h-10 sm:h-11"
             />
           </div>
           {errors.phoneNumber && touched.phoneNumber && (
-            <p className="text-red-500 text-sm mt-1">{errors.phoneNumber}</p>
+            <p className="text-gray-500 text-xs sm:text-sm mt-1">{errors.phoneNumber}</p>
           )}
         </div>
       </div>

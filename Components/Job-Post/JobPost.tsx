@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import JobListingCards from "./Job-Management/JobListingCards";
 import JobPostForm from "./Job-Management/JobPostForm";
-import { GetAllJobsAPI } from "@/api/JobPostApi/JobPostApi";
-import { JobListingItem } from "@/api/JobPostApi/type";
+import { GetAllJobsAPI } from "@/api_config/JobPostApi/JobPostApi";
+import { JobListingItem } from "@/api_config/JobPostApi/type";
 
 
 

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Card, CardHeader, CardContent } from "@/Components/ui/card";
-import { JobListingItem } from "@/api/JobPostApi/type";
+import { JobListingItem } from "@/api_config/JobPostApi/type";
 import { Briefcase, Eye, Heart, Award, MoreVertical, Edit, Trash2, BarChart3, Copy, Archive } from "lucide-react";
 
 // ✅ Three Dot Menu Component

@@ -10,7 +10,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import Link from "@tiptap/extension-link";
 import TurndownService from "turndown";
-import { AIJobPostAPI, PostJobAPI } from "@/api/JobPostApi/JobPostApi";
+import { AIJobPostAPI, PostJobAPI } from "@/api_config/JobPostApi/JobPostApi";
 import AILoader from "./AILoader";
 import PostingLoader from "./PostingLoader";
 import { CharacterCount } from '@tiptap/extensions'

@@ -1,5 +1,5 @@
 import JobPost from "@/Components/Job-Post/JobPost";
-import { GetAllJobsAPI } from "@/api/JobPostApi/JobPostApi";
+import { GetAllJobsAPI } from "@/api_config/JobPostApi/JobPostApi";
 
 export default async function EmployerDashboard() {
   const limit = 10;

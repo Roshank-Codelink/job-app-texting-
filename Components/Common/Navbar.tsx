@@ -51,7 +51,7 @@ export default function Navbar() {
          />
          <X 
            className={cn(
-             "absolute w-5 h-5 text-(--navbar-text-color) transition-all duration-300 ease-in-out",
+             "absolute w-5 h-5 text-(--navbar-text-color) transition-all duration-300 ease-in-out cursor-pointer",
              openMobile ? "opacity-100 rotate-0 scale-100" : "opacity-0 -rotate-90 scale-0"
            )} 
          />
