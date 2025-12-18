@@ -424,7 +424,7 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
                             <div className="flex items-center gap-2 flex-1 md:flex-initial justify-end">
                                 <Button
                                     variant="outline"
-                                    className="bg-transparent shadow-none px-2 md:px-6 py-2 border border-(--job-post-button-border-color) text-(--job-post-button-disabled-text-color) font-medium rounded-lg hover:bg-(--job-post-button-disabled-bg) text-xs md:text-sm transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex-1 md:flex-initial whitespace-nowrap"
+                                    className="bg-transparent shadow-none px-2 md:px-6 py-2 border border-(--job-post-button-border-color) text-(--job-post-button-disabled-text-color) font-medium rounded-lg   text-xs md:text-sm transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex-1 md:flex-initial whitespace-nowrap"
                                     onClick={handleSubmit}
                                     disabled={isSubmitting || isAILoading || wordsCount < DiableWordCount}
                                 >

@@ -15,6 +15,7 @@ export default function MultiStepForm() {
     email: "",
     phoneNumber: "",
     jobTitle: [] as string[],
+    skill: [] as string[],
     location: "",
   };
 
@@ -162,11 +163,7 @@ export default function MultiStepForm() {
               <button
                 type="button"
                 onClick={handlePrevious}
-                disabled={activeStep === 0}
-                className={`flex-1 sm:flex-none cursor-pointer sm:w-auto px-4 sm:px-6 py-2.5 rounded-lg font-semibold text-xs sm:text-sm transition-all border-2 ${activeStep === 0
-                    ? 'border-gray-300 text-gray-400 cursor-not-allowed'
-                    : 'border-[#e2e8f0] text-[#64748b] hover:border-[#0ea5e9] hover:text-[#0ea5e9]'
-                  }`}
+                className={`flex-1 sm:flex-none cursor-pointer sm:w-auto px-4 sm:px-6 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors border bg-transparent shadow-none border-(--job-post-button-border-color) text-(--job-post-button-disabled-text-color) hover:bg-(--job-post-button-disabled-bg) hover:text-(--navbar-text-color) disabled:opacity-50 disabled:cursor-not-allowed ${activeStep === 0 ? 'invisible' : ''}`}
               >
                 Previous
               </button>
@@ -175,7 +172,7 @@ export default function MultiStepForm() {
                 <button
                   type="button"
                   onClick={() => handleComplete(values)}
-                  className="flex-1 sm:flex-none sm:w-auto px-4  sm:px-6 py-2.5 rounded-lg font-semibold text-xs sm:text-sm transition-all bg-linear-to-r from-[#38bdf8] to-[#2dd4bf] text-white hover:from-[#0ea5e9] hover:to-[#14b8a6] shadow-lg shadow-cyan-500/30"
+                  className="flex-1 sm:flex-none sm:w-auto px-4 cursor-pointer  sm:px-6 py-2.5 rounded-lg font-semibold text-xs sm:text-sm transition-all bg-linear-to-r from-[#38bdf8] to-[#2dd4bf] text-white hover:from-[#0ea5e9] hover:to-[#14b8a6] shadow-lg shadow-cyan-500/30"
                 >
                   Complete
                 </button>

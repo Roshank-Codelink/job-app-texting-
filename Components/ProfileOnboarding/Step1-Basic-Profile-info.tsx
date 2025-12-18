@@ -63,7 +63,7 @@ export default function Step1BasicProfileInfo({ values, setFieldValue }: Step1Pr
               onChange={handleChange}
               onBlur={handleBlur}
               placeholder="Enter your full name"
-              className="w-full pl-9 sm:pl-10 text-sm sm:text-base h-10 sm:h-11"
+              className="w-full pl-9 sm:pl-10 text-sm sm:text-base h-10 sm:h-11 focus-visible:border-[#0ea5e9] focus-visible:ring-[#0ea5e9]"
             />
           </div>
           {errors.fullName && touched.fullName && (
@@ -85,7 +85,7 @@ export default function Step1BasicProfileInfo({ values, setFieldValue }: Step1Pr
               onChange={handleChange}
               onBlur={handleBlur}
               placeholder="your.email@example.com"
-              className="w-full pl-9 sm:pl-10 text-sm sm:text-base h-10 sm:h-11"
+              className="w-full pl-9 sm:pl-10 text-sm sm:text-base h-10 sm:h-11 focus-visible:border-[#0ea5e9] focus-visible:ring-[#0ea5e9]"
             />
           </div>
           {errors.email && touched.email && (
@@ -108,7 +108,7 @@ export default function Step1BasicProfileInfo({ values, setFieldValue }: Step1Pr
               onBlur={handleBlur}
               placeholder="9876543210"
               maxLength={10}
-              className="w-full pl-9 sm:pl-10 text-sm sm:text-base h-10 sm:h-11"
+              className="w-full pl-9 sm:pl-10 text-sm sm:text-base h-10 sm:h-11 focus-visible:border-[#0ea5e9] focus-visible:ring-[#0ea5e9]"
             />
           </div>
           {errors.phoneNumber && touched.phoneNumber && (

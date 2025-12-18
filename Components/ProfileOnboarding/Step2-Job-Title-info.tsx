@@ -17,19 +17,73 @@ export default function Step2JobTitleInfo({ values, setFieldValue }: Step2Props)
     { value: 'business-analyst', label: 'Business Analyst' },
   ];
 
-  const customStyles = {
+  const skillOptions = [
+    { value: 'html', label: 'HTML' },
+    { value: 'css', label: 'CSS' },
+    { value: 'javascript', label: 'JavaScript' },
+    { value: 'typescript', label: 'TypeScript' },
+    { value: 'python', label: 'Python' },
+    { value: 'java', label: 'Java' },
+    { value: 'c++', label: 'C++' },
+    { value: 'c#', label: 'C#' },
+    { value: 'react', label: 'React' },
+    { value: 'angular', label: 'Angular' },
+    { value: 'vue', label: 'Vue' },
+    { value: 'nodejs', label: 'Node.js' },
+    { value: 'mongodb', label: 'MongoDB' },
+    { value: 'mysql', label: 'MySQL' },
+    { value: 'postgresql', label: 'PostgreSQL' },
+    { value: 'oracle', label: 'Oracle' },
+    { value: 'sql', label: 'SQL' },
+    { value: 'nosql', label: 'NoSQL' },
+    { value: 'docker', label: 'Docker' },
+    { value: 'kubernetes', label: 'Kubernetes' },
+    { value: 'aws', label: 'AWS' },
+    { value: 'azure', label: 'Azure' },
+    { value: 'gcp', label: 'GCP' },
+    { value: 'linux', label: 'Linux' },
+    { value: 'windows', label: 'Windows' },
+    { value: 'macos', label: 'macOS' },
+    { value: 'ios', label: 'iOS' },
+    { value: 'android', label: 'Android' },
+    { value: 'flutter', label: 'Flutter' },
+    { value: 'dart', label: 'Dart' },
+    { value: 'kotlin', label: 'Kotlin' },
+    { value: 'swift', label: 'Swift' },
+    { value: 'rust', label: 'Rust' },
+    { value: 'golang', label: 'Golang' },
+    { value: 'ruby', label: 'Ruby' },
+    { value: 'php', label: 'PHP' },
+    { value: 'laravel', label: 'Laravel' },
+    { value: 'symfony', label: 'Symfony' },
+    { value: 'django', label: 'Django' },
+  ];
+
+  const selectedSkillValues = values.skill?.map((val: string) => 
+    skillOptions.find(option => option.value === val)
+  ).filter(Boolean);
+
+  const handleSkillChange = (selectedOptions: any) => {
+    const values = selectedOptions ? selectedOptions.map((option: any) => option.value) : [];
+    setFieldValue('skill', values);
+  };
+
+
+const customStyles = {
     control: (base: any, state: any) => ({
       ...base,
       minHeight: '40px',
+      backgroundColor: 'transparent',
       borderColor: state.isFocused ? '#0ea5e9' : '#e2e8f0',
       boxShadow: state.isFocused ? '0 0 0 2px rgba(14, 165, 233, 0.2)' : 'none',
       fontSize: '14px',
+      '&:hover': {
+        borderColor: state.isFocused ? '#0ea5e9' : '#e2e8f0',
+        backgroundColor: 'transparent',
+      },
       '@media (min-width: 640px)': {
         minHeight: '42px',
         fontSize: '16px',
-      },
-      '&:hover': {
-        borderColor: '#0ea5e9',
       },
     }),
     multiValue: (base: any) => ({
@@ -144,6 +198,26 @@ export default function Step2JobTitleInfo({ values, setFieldValue }: Step2Props)
             />
           </div>
           <p className="text-xs sm:text-sm text-gray-500 mt-1.5 sm:mt-2">You can select multiple job titles</p>
+        </div>
+
+
+        <div>
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
+            Skills <span className="text-red-500">*</span>
+          </label>
+          <div className="w-full">
+            <Select
+              isMulti
+              options={skillOptions}
+              value={selectedSkillValues}
+              onChange={handleSkillChange}
+              placeholder="Select skills..."
+              styles={customStyles}
+              className="text-sm sm:text-base cursor-pointer w-full"
+              classNamePrefix="react-select"
+            />
+          </div>
+          <p className="text-xs sm:text-sm text-gray-500 mt-1.5 sm:mt-2">You can select multiple skills</p>
         </div>
       </div>
     </div>

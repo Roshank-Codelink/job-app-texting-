@@ -12,7 +12,7 @@ interface OtpProps {
     email?: string;
     onEdit?: () => void;
 }
-
+    
 export default function Otp({ email, onEdit }: OtpProps) {
     
 

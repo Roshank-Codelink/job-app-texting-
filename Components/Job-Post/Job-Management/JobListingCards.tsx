@@ -127,11 +127,11 @@ function JobHeader({ companyName, postedTime, jobId }: JobHeaderProps) {
 
             {/* Saved Box */}
             <div className="relative group">
-              <div className="bg-(--sidebar-bg-color) border border-(--profile-border-color) rounded-lg px-3 py-2 hover:border-red-400 hover:shadow-md transition-all duration-200 cursor-pointer">
+              <div className="bg-(--sidebar-bg-color) border border-(--profile-border-color) rounded-lg px-3 py-2 hover:border-(--navbar-text-color) hover:shadow-md transition-all duration-200 cursor-pointer">
                 <div className="flex items-center gap-2.5">
-                  <Heart className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-red-500 group-hover:fill-red-500 transition-all" strokeWidth={2.5} />
+                  <Heart className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-(--navbar-text-color) transition-all" strokeWidth={2.5} />
                   <div className="flex flex-col leading-none">
-                    <span className="text-xs font-bold text-(--profile-name-color) group-hover:text-red-500 transition-colors">42</span>
+                    <span className="text-xs font-bold text-(--profile-name-color)">42</span>
                     <span className="text-[9px] text-(--profile-title-color)">Saved</span>
                   </div>
                 </div>
@@ -242,11 +242,11 @@ export default function JobListingCards({ jobs }: JobListingCardsProps) {
 
                     {/* Saved Box */}
                     <div className="relative group flex-1">
-                      <div className="bg-(--sidebar-bg-color) border border-(--profile-border-color) rounded-lg px-2.5 py-2 hover:border-red-400 hover:shadow-md transition-all duration-200 cursor-pointer">
+                      <div className="bg-(--sidebar-bg-color) border border-(--profile-border-color) rounded-lg px-2.5 py-2 hover:border-(--navbar-text-color) hover:shadow-md transition-all duration-200 cursor-pointer">
                         <div className="flex items-center justify-center gap-2">
-                          <Heart className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-red-500 group-hover:fill-red-500 transition-all" strokeWidth={2.5} />
+                          <Heart className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-(--navbar-text-color) transition-all" strokeWidth={2.5} />
                           <div className="flex flex-col leading-none">
-                            <span className="text-xs font-bold text-(--profile-name-color) group-hover:text-red-500 transition-colors">42</span>
+                            <span className="text-xs font-bold text-(--profile-name-color)">42</span>
                             <span className="text-[9px] text-(--profile-title-color)">Saved</span>
                           </div>
                         </div>
