@@ -1,3 +1,4 @@
+
 "use client";
 import {
     InputOTP,
@@ -12,30 +13,28 @@ interface OtpProps {
     email?: string;
     onEdit?: () => void;
 }
-    
+
+
 export default function Otp({ email, onEdit }: OtpProps) {
-    
 
-
-   const router = useRouter();
+    const router = useRouter();
 
     const handleSubmit = (values: { otp: string }) => {
         console.log("OTP Submitted:", values.otp);
         router.push("/profile-onboarding");
 
-    
-    };
 
+    };
     return (
         <div>
             {/* Email Display with Edit Button */}
             {email && (
                 <div className="mb-4 flex items-center justify-between">
                     <div>
-                        <label className="text-xs font-semibold text-[#374151] block mb-1">
-                        We have sent an OTP on your email address
+                        <label className="text-xs font-semibold text-(--profile-menu-text-color) block mb-1">
+                            We have sent an OTP on your email address
                         </label>
-                        <p className="text-sm text-[#374151]">
+                        <p className="text-sm text-(--profile-menu-text-color)">
                             {email}
                         </p>
                     </div>
@@ -43,7 +42,7 @@ export default function Otp({ email, onEdit }: OtpProps) {
                         <button
                             type="button"
                             onClick={onEdit}
-                            className="flex cursor-pointer items-center gap-1 text-xs text-[#0ea5e9] hover:text-[#0284c7] transition-colors"
+                            className="flex cursor-pointer items-center gap-1 text-xs text-(--navbar-text-color) hover:text-(--otp-hover-color) transition-colors"
                             title="Edit email"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -56,9 +55,9 @@ export default function Otp({ email, onEdit }: OtpProps) {
             )}
 
             {/* OTP Input Section */}
-            <Formik 
-                initialValues={{ otp: '' }} 
-                validationSchema={OtpValidation} 
+            <Formik
+                initialValues={{ otp: '' }}
+                validationSchema={OtpValidation}
                 onSubmit={handleSubmit}
                 validateOnChange={true}
                 validateOnBlur={true}
@@ -66,32 +65,32 @@ export default function Otp({ email, onEdit }: OtpProps) {
                 {({ values, setFieldValue, setFieldTouched, isValid, dirty, isSubmitting }) => (
                     <Form>
                         <div className="mb-4">
-                            <label className="text-xs font-semibold text-[#374151] block mb-1.5">
-                                Enter OTP
+                            <label className="text-xs font-semibold text-(--profile-menu-text-color) block mb-1.5">
+                                Enter OTP <span className="text-(--profile-menu-sign-in-color)">*</span>
                             </label>
-                          
-                            <InputOTP 
-                                maxLength={6} 
-                                value={values.otp} 
+
+                            <InputOTP
+                                maxLength={6}
+                                value={values.otp}
                                 onChange={(newValue) => {
                                     setFieldValue('otp', newValue);
                                     setFieldTouched('otp', true, false);
                                 }}
                             >
                                 <InputOTPGroup className="gap-2">
-                                    <InputOTPSlot index={0} className="w-11! h-11! border-2! border-[#e2e8f0]! rounded-lg! shadow-none! ring-0! focus:border-[#0ea5e9]! data-[active=true]:border-[#0ea5e9]! data-[active=true]:ring-0!" />
-                                    <InputOTPSlot index={1} className="w-11! h-11! border-2! border-[#e2e8f0]! rounded-lg! shadow-none! ring-0! focus:border-[#0ea5e9]! data-[active=true]:border-[#0ea5e9]! data-[active=true]:ring-0!" />
-                                    <InputOTPSlot index={2} className="w-11! h-11! border-2! border-[#e2e8f0]! rounded-lg! shadow-none! ring-0! focus:border-[#0ea5e9]! data-[active=true]:border-[#0ea5e9]! data-[active=true]:ring-0!" />
-                                    <InputOTPSlot index={3} className="w-11! h-11! border-2! border-[#e2e8f0]! rounded-lg! shadow-none! ring-0! focus:border-[#0ea5e9]! data-[active=true]:border-[#0ea5e9]! data-[active=true]:ring-0!" />
-                                    <InputOTPSlot index={4} className="w-11! h-11! border-2! border-[#e2e8f0]! rounded-lg! shadow-none! ring-0! focus:border-[#0ea5e9]! data-[active=true]:border-[#0ea5e9]! data-[active=true]:ring-0!" />
-                                    <InputOTPSlot index={5} className="w-11! h-11! border-2! border-[#e2e8f0]! rounded-lg! shadow-none! ring-0! focus:border-[#0ea5e9]! data-[active=true]:border-[#0ea5e9]! data-[active=true]:ring-0!" />
+                                    <InputOTPSlot index={0} className="w-11 h-11 border-2 border-(--job-post-button-border-color) rounded-lg shadow-none! ring-0 focus:border-(--navbar-text-color) data-[active=true]:border-(--navbar-text-color) data-[active=true]:ring-0" />
+                                    <InputOTPSlot index={1} className="w-11 h-11 border-2 border-(--job-post-button-border-color) rounded-lg shadow-none! ring-0 focus:border-(--navbar-text-color) data-[active=true]:border-(--navbar-text-color) data-[active=true]:ring-0" />
+                                    <InputOTPSlot index={2} className="w-11 h-11 border-2 border-(--job-post-button-border-color) rounded-lg shadow-none! ring-0 focus:border-(--navbar-text-color) data-[active=true]:border-(--navbar-text-color) data-[active=true]:ring-0" />
+                                    <InputOTPSlot index={3} className="w-11 h-11 border-2 border-(--job-post-button-border-color) rounded-lg shadow-none! ring-0 focus:border-(--navbar-text-color) data-[active=true]:border-(--navbar-text-color) data-[active=true]:ring-0" />
+                                    <InputOTPSlot index={4} className="w-11 h-11 border-2 border-(--job-post-button-border-color) rounded-lg shadow-none! ring-0 focus:border-(--navbar-text-color) data-[active=true]:border-(--navbar-text-color) data-[active=true]:ring-0" />
+                                    <InputOTPSlot index={5} className="w-11 h-11 border-2 border-(--job-post-button-border-color) rounded-lg shadow-none! ring-0 focus:border-(--navbar-text-color) data-[active=true]:border-(--navbar-text-color) data-[active=true]:ring-0" />
                                 </InputOTPGroup>
                             </InputOTP>
-                            
+
                             {/* Error Message Display */}
                             <ErrorMessage name="otp">
                                 {(msg) => (
-                                    <div className="mt-3 text-xs text-gray-500 font-medium">
+                                    <div className="mt-3 text-xs text-(--profile-title-color) font-medium">
                                         {msg}
                                     </div>
                                 )}
@@ -99,22 +98,22 @@ export default function Otp({ email, onEdit }: OtpProps) {
                         </div>
 
                         {/* Verify Button */}
-                        <button 
+                        <button
                             type="submit"
                             disabled={!email || !isValid || !dirty || isSubmitting}
-                            className="w-full bg-gradient-to-r cursor-pointer from-[#38bdf8] to-[#2dd4bf] text-white py-2.5 rounded-lg font-semibold hover:from-[#0ea5e9] hover:to-[#14b8a6] transition-all shadow-lg shadow-cyan-500/30 text-sm mb-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-[#38bdf8] disabled:hover:to-[#2dd4bf]"
+                            className="w-full bg-gradient-to-r cursor-pointer from-(--job-post-button-bg-from) to-(--job-post-button-bg-to) text-(--navbar-bg-parent) py-2.5 rounded-lg font-semibold hover:from-(--navbar-text-color) hover:to-(--job-post-button-hover) transition-all shadow-lg shadow-cyan-500/30 text-sm mb-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-(--job-post-button-bg-from) disabled:hover:to-(--job-post-button-bg-to"
                         >
                             {isSubmitting ? 'Verifying...' : 'Verify OTP'}
                         </button>
                     </Form>
                 )}
             </Formik>
-            
+
 
             {/* Resend Code */}
             <div className="text-center">
-                <button className="text-xs text-[#6b7280]  transition-colors">
-                    Didn't receive code? <span className="font-semibold text-[#0ea5e9] cursor-pointer">Resend</span>
+                <button className="text-xs text-(--profile-title-color)  transition-colors">
+                    Didn't receive code? <span className="font-semibold text-(--navbar-text-color) cursor-pointer">Resend</span>
                 </button>
             </div>
         </div>

@@ -110,8 +110,8 @@ export default function Step3LocationInfo({ values, setFieldValue }: Step3Props)
                 <div className="space-y-4 sm:space-y-5 md:space-y-6">
                     {/* Location Input */}
                     <div>
-                        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
-                            Job Location <span className="text-red-500">*</span>
+                        <label className="block text-xs sm:text-sm font-medium text-(--profile-menu-text-color) mb-1.5 sm:mb-2">
+                            Job Location <span className="text-(--profile-menu-sign-out-color)">*</span>
                         </label>
                         <div className="relative">
                             <MapPin className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5 z-10" />
@@ -121,16 +121,16 @@ export default function Step3LocationInfo({ values, setFieldValue }: Step3Props)
                                 value={values.location || ""}
                                 onChange={(e) => handleLocationInput(e.target.value)}
                                 placeholder="Enter city or area (e.g. Bengaluru, Mumbai)"
-                                className="w-full pl-9 sm:pl-10 pr-9 sm:pr-10 text-sm sm:text-base h-10 sm:h-11 focus-visible:border-[#0ea5e9] focus-visible:ring-[#0ea5e9]"
+                                className="w-full pl-9 sm:pl-10 pr-9 sm:pr-10 text-sm sm:text-base h-10 sm:h-11 focus-visible:border-(--navbar-text-color) focus-visible:ring-(--navbar-text-color)"
                                 disabled={isDetecting}
                             />
                             {isDetecting && (
                                 <div className="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2">
-                                    <div className="w-4 h-4 border-2 border-[#0ea5e9] border-t-transparent rounded-full animate-spin" />
+                                    <div className="w-4 h-4 border-2 border-(--navbar-text-color) border-t-transparent rounded-full animate-spin" />
                                 </div>
                             )}
                         </div>
-                        <p className="text-gray-500 text-xs sm:text-sm mt-1">
+                        <p className="text-(--profile-title-color) text-xs sm:text-sm mt-1">
                             Type your preferred work location or use auto-detect
                         </p>
 
@@ -142,10 +142,10 @@ export default function Step3LocationInfo({ values, setFieldValue }: Step3Props)
                             type="button"
                             onClick={detectLocation}
                             disabled={isDetecting}
-                            className="flex items-center justify-center cursor-pointer gap-2 px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-[#0ea5e9] border-2 border-[#0ea5e9] rounded-lg hover:bg-[#0ea5e9] hover:text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
+                            className="flex items-center justify-center cursor-pointer gap-2 px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-(--navbar-text-color) border-2 border-(--navbar-text-color) rounded-lg hover:bg-(--navbar-text-color) hover:text-(--navbar-bg-parent) transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
                         >
                             {isDetecting ? (
-                                <div className="w-4 h-4 border-2 border-[#0ea5e9] border-t-transparent rounded-full animate-spin shrink-0" />
+                                <div className="w-4 h-4 border-2 border-(--navbar-text-color) border-t-transparent rounded-full animate-spin shrink-0" />
                             ) : (
                                 <Navigation className="w-4 h-4 shrink-0" />
                             )}

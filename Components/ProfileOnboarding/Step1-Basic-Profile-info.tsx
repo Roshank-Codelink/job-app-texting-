@@ -51,8 +51,8 @@ export default function Step1BasicProfileInfo({ values, setFieldValue }: Step1Pr
       <div className="space-y-4 sm:space-y-5 md:space-y-6">
         {/* Full Name */}
         <div>
-          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
-            Full Name <span className="text-red-500">*</span>
+          <label className="block text-xs sm:text-sm font-medium text-(--profile-menu-text-color) mb-1.5 sm:mb-2">
+            Full Name <span className="text-(--profile-menu-sign-out-color)">*</span>
           </label>
           <div className="relative">
             <User className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
@@ -63,18 +63,18 @@ export default function Step1BasicProfileInfo({ values, setFieldValue }: Step1Pr
               onChange={handleChange}
               onBlur={handleBlur}
               placeholder="Enter your full name"
-              className="w-full pl-9 sm:pl-10 text-sm sm:text-base h-10 sm:h-11 focus-visible:border-[#0ea5e9] focus-visible:ring-[#0ea5e9]"
+              className="w-full pl-9 sm:pl-10 text-sm sm:text-base h-10 sm:h-11 focus-visible:border-(--navbar-text-color) focus-visible:ring-(--navbar-text-color)"
             />
           </div>
           {errors.fullName && touched.fullName && (
-            <p className="text-gray-500 text-xs sm:text-sm mt-1">{errors.fullName}</p>
+            <p className="text-(--profile-title-color) text-xs sm:text-sm mt-1">{errors.fullName}</p>
           )}
         </div>
 
         {/* Email */}
         <div>
-          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
-            Email Address <span className="text-red-500">*</span>
+          <label className="block text-xs sm:text-sm font-medium text-(--profile-menu-text-color) mb-1.5 sm:mb-2">
+            Email Address <span className="text-(--profile-menu-sign-out-color)">*</span>
           </label>
           <div className="relative">
             <Mail className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
@@ -85,18 +85,18 @@ export default function Step1BasicProfileInfo({ values, setFieldValue }: Step1Pr
               onChange={handleChange}
               onBlur={handleBlur}
               placeholder="your.email@example.com"
-              className="w-full pl-9 sm:pl-10 text-sm sm:text-base h-10 sm:h-11 focus-visible:border-[#0ea5e9] focus-visible:ring-[#0ea5e9]"
+              className="w-full pl-9 sm:pl-10 text-sm sm:text-base h-10 sm:h-11 focus-visible:border-(--navbar-text-color) focus-visible:ring-(--navbar-text-color)"
             />
           </div>
           {errors.email && touched.email && (
-            <p className="text-gray-500 text-xs sm:text-sm mt-1">{errors.email}</p>
+            <p className="text-(--profile-title-color) text-xs sm:text-sm mt-1">{errors.email}</p>
           )}
         </div>
 
         {/* Phone Number */}
         <div>
-          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
-            Phone Number <span className="text-red-500">*</span>
+          <label className="block text-xs sm:text-sm font-medium text-(--profile-menu-text-color) mb-1.5 sm:mb-2">
+            Phone Number <span className="text-(--profile-menu-sign-out-color)">*</span>
           </label>
           <div className="relative">
             <Phone className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
@@ -108,11 +108,11 @@ export default function Step1BasicProfileInfo({ values, setFieldValue }: Step1Pr
               onBlur={handleBlur}
               placeholder="9876543210"
               maxLength={10}
-              className="w-full pl-9 sm:pl-10 text-sm sm:text-base h-10 sm:h-11 focus-visible:border-[#0ea5e9] focus-visible:ring-[#0ea5e9]"
+              className="w-full pl-9 sm:pl-10 text-sm sm:text-base h-10 sm:h-11 focus-visible:border-(--navbar-text-color) focus-visible:ring-(--navbar-text-color)"
             />
           </div>
           {errors.phoneNumber && touched.phoneNumber && (
-            <p className="text-gray-500 text-xs sm:text-sm mt-1">{errors.phoneNumber}</p>
+            <p className="text-(--profile-title-color) text-xs sm:text-sm mt-1">{errors.phoneNumber}</p>
           )}
         </div>
       </div>

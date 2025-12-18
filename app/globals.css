@@ -120,6 +120,12 @@
     --navbar-bg-button: #f0f9ff;
     --navbar-text-color: #0ea5e9;
     --navbar-logo-text-color: #1e293b;
+
+    --signin-bg-color-to: #dcfce7;
+
+
+
+
   
     --Profile-hover-bg: #f9fafb; /* gray-50 */
     --profile-border-color: #f1f5f9; /* slate-100 */
@@ -152,7 +158,7 @@
     --sidebar-bg-color: #ffffff; 
     --sidebar-menu-icone-color: #64748b;
 
-
+  --otp-hover-color: #0284c7;
 
     
 

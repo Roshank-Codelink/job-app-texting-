@@ -80,9 +80,9 @@ export default function MultiStepForm() {
                       {/* Connecting Line - Hidden on mobile */}
                       {!isLast && (
                         <div className="hidden sm:block absolute top-[25px] sm:top-[35px] left-[50%] w-full h-[2px] sm:h-[3px] -z-10">
-                          <div className="w-full h-full bg-gray-200" />
+                          <div className="w-full h-full bg-(--profile-image-border-color)" />
                           <div
-                            className={`absolute top-0 left-0 h-full transition-all duration-500 ${activeStep > index ? 'w-full bg-linear-to-r from-[#0ea5e9] to-[#2dd4bf]' : 'w-0'
+                            className={`absolute top-0 left-0 h-full transition-all duration-500 ${activeStep > index ? 'w-full bg-linear-to-r from-(--navbar-text-color) to-(--job-post-button-bg-to)' : 'w-0'
                               }`}
                           />
                         </div>
@@ -94,10 +94,10 @@ export default function MultiStepForm() {
                     w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] md:w-[70px] md:h-[70px] rounded-full flex items-center justify-center
                     transition-all duration-300 relative z-10
                     ${isCompleted
-                            ? "bg-linear-to-r from-[#2dd4bf] to-[#14b8a6] text-white shadow-md"
+                            ? "bg-linear-to-r from-(--job-post-button-bg-to) to-(--job-post-button-hover) text-(--navbar-bg-parent) shadow-md"
                             : isCurrent
-                              ? "bg-white border-[2px] sm:border-[3px] border-[#0ea5e9] text-[#0ea5e9] shadow-md"
-                              : "bg-white border-[2px] sm:border-[3px] border-gray-300 text-gray-400"
+                              ? "bg-(--navbar-bg-parent) border-[2px] sm:border-[3px] border-(--navbar-text-color) text-(--navbar-text-color) shadow-md"
+                              : "bg-(--navbar-bg-parent) border-[2px] sm:border-[3px] border-gray-300 text-gray-400"
                           }
                   `}
                       >
@@ -126,16 +126,16 @@ export default function MultiStepForm() {
                           className={`
                       text-xs sm:text-sm md:text-base font-bold transition-colors mb-1 sm:mb-2
                       ${isCurrent
-                              ? "text-[#0ea5e9]"
+                              ? "text-(--navbar-text-color)"
                               : isCompleted
-                                ? "text-[#2dd4bf]"
+                                ? "text-(--job-post-button-bg-to)"
                                 : "text-gray-400"
                             }
                     `}
                         >
                           {step.title}
                         </h3>
-                        <p className={`text-[10px] sm:text-xs leading-relaxed transition-colors hidden sm:block ${index <= activeStep ? 'text-gray-600' : 'text-gray-400'}`}>
+                        <p className={`text-[10px] sm:text-xs leading-relaxed transition-colors hidden sm:block ${index <= activeStep ? 'text-(--job-post-button-disabled-text-color)' : 'text-(--job-post-bg-color)'}`}>
                           {step.description}
                         </p>
                       </div>
@@ -172,7 +172,7 @@ export default function MultiStepForm() {
                 <button
                   type="button"
                   onClick={() => handleComplete(values)}
-                  className="flex-1 sm:flex-none sm:w-auto px-4 cursor-pointer  sm:px-6 py-2.5 rounded-lg font-semibold text-xs sm:text-sm transition-all bg-linear-to-r from-[#38bdf8] to-[#2dd4bf] text-white hover:from-[#0ea5e9] hover:to-[#14b8a6] shadow-lg shadow-cyan-500/30"
+                  className="flex-1 sm:flex-none sm:w-auto px-4 cursor-pointer  sm:px-6 py-2.5 rounded-lg font-semibold text-xs sm:text-sm transition-all bg-linear-to-r from-(--job-post-button-bg-from) to-(--job-post-button-bg-to) text-(--navbar-bg-parent) hover:from-(--navbar-text-color) hover:to-(--job-post-button-hover) shadow-lg shadow-cyan-500/30"
                 >
                   Complete
                 </button>
@@ -184,7 +184,7 @@ export default function MultiStepForm() {
                     (activeStep === 0 && !validateStep1(values)) ||
                     (activeStep === 1 && !validateStep2(values))
                   }
-                  className="flex-1 sm:flex-none sm:w-auto cursor-pointer px-4 sm:px-6 py-2.5 rounded-lg font-semibold text-xs sm:text-sm transition-all bg-linear-to-r from-[#38bdf8] to-[#2dd4bf] text-white hover:from-[#0ea5e9] hover:to-[#14b8a6] shadow-lg shadow-cyan-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-[#38bdf8] disabled:hover:to-[#2dd4bf]"
+                  className="flex-1 sm:flex-none sm:w-auto cursor-pointer px-4 sm:px-6 py-2.5 rounded-lg font-semibold text-xs sm:text-sm transition-all bg-linear-to-r from-(--job-post-button-bg-from) to-(--job-post-button-bg-to) text-(--navbar-bg-parent) hover:from-(--navbar-text-color) hover:to-(--job-post-button-hover) shadow-lg shadow-cyan-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-(--job-post-button-bg-from) disabled:hover:to-(--job-post-button-bg-to)"
                 >
                   Next
                 </button>

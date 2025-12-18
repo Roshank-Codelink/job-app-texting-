@@ -182,8 +182,8 @@ const customStyles = {
       <div className="space-y-4 sm:space-y-5 md:space-y-6">
         {/* Job Title Multi-Select */}
         <div>
-          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
-            Job Titles <span className="text-red-500">*</span>
+          <label className="block text-xs sm:text-sm font-medium text-(--profile-menu-text-color) mb-1.5 sm:mb-2">
+            Job Titles <span className="text-(--profile-menu-sign-out-color)">*</span>
           </label>
           <div className="w-full">
             <Select
@@ -197,13 +197,13 @@ const customStyles = {
               classNamePrefix="react-select"
             />
           </div>
-          <p className="text-xs sm:text-sm text-gray-500 mt-1.5 sm:mt-2">You can select multiple job titles</p>
+          <p className="text-xs sm:text-sm text-(--profile-title-color) mt-1.5 sm:mt-2">You can select multiple job titles</p>
         </div>
 
 
         <div>
-          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
-            Skills <span className="text-red-500">*</span>
+          <label className="block text-xs sm:text-sm font-medium text-(--profile-menu-text-color) mb-1.5 sm:mb-2">
+            Skills <span className="text-(--profile-menu-sign-out-color)">*</span>
           </label>
           <div className="w-full">
             <Select
@@ -217,7 +217,7 @@ const customStyles = {
               classNamePrefix="react-select"
             />
           </div>
-          <p className="text-xs sm:text-sm text-gray-500 mt-1.5 sm:mt-2">You can select multiple skills</p>
+          <p className="text-xs sm:text-sm text-(--profile-title-color) mt-1.5 sm:mt-2">You can select multiple skills</p>
         </div>
       </div>
     </div>
