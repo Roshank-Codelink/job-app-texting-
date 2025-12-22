@@ -64,10 +64,10 @@ export default function MultiStepForm() {
       enableReinitialize
     >
       {({ values, setFieldValue }) => (
-        <Form>
-          <div className="w-full max-w-full mx-auto px-3 sm:px-5 md:px-6 lg:px-8 py-4 sm:py-6">
+        <Form className="w-full h-full flex flex-col items-center justify-center ">
+          <div className="w-full max-w-full mx-auto px-3 sm:px-4 md:px-5 lg:px-6 py-2 sm:py-3 md:py-4 flex flex-col items-center justify-center">
             {/* Custom Stepper */}
-            <div className="mb-6 sm:mb-8 md:mb-12">
+            <div className="mb-4 sm:mb-6 md:mb-8 w-full">
               <div className="flex items-start justify-between relative gap-1 sm:gap-2">
                 {/* Steps */}
                 {stepData.map((step, index) => {
@@ -146,7 +146,7 @@ export default function MultiStepForm() {
             </div>
 
             {/* Step Content Area */}
-            <div className="mt-6 sm:mt-8 md:mt-12 mb-8 sm:mb-10 md:mb-12">
+            <div className="mt-4 sm:mt-6 md:mt-8 mb-4 sm:mb-6 md:mb-8 w-full flex-1 flex items-center justify-center ">
               {activeStep === 0 && (
                 <Step1BasicProfileInfo values={values} setFieldValue={setFieldValue} />
               )}
@@ -159,7 +159,7 @@ export default function MultiStepForm() {
             </div>
 
             {/* Navigation Buttons */}
-            <div className="flex flex-row justify-between gap-2 sm:gap-3 md:gap-0 mt-8 sm:mt-12">
+            <div className="flex flex-row justify-between gap-2 sm:gap-3 md:gap-0 mt-4 sm:mt-6 md:mt-8 w-full">
               <button
                 type="button"
                 onClick={handlePrevious}
@@ -190,9 +190,10 @@ export default function MultiStepForm() {
                 </button>
               )}
             </div>
-          </div>
+          </div>  
+       
         </Form>
       )}
     </Formik>
-  );
+    )
 }

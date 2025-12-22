@@ -79,6 +79,7 @@ export default function Step3LocationInfo({ values, setFieldValue }: Step3Props)
 
 
     return (isLoaded && (
+        <div className="w-full">
         <Autocomplete
             onLoad={(autocompleteInstance) => {
                 setAutocomplete(autocompleteInstance);
@@ -113,7 +114,8 @@ export default function Step3LocationInfo({ values, setFieldValue }: Step3Props)
                         <label className="block text-xs sm:text-sm font-medium text-(--profile-menu-text-color) mb-1.5 sm:mb-2">
                             Job Location <span className="text-(--profile-menu-sign-out-color)">*</span>
                         </label>
-                        <div className="relative">
+                        <div className="w-full">
+                            <div className="relative">
                             <MapPin className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5 z-10" />
                             <Input
                                 type="text"
@@ -124,11 +126,12 @@ export default function Step3LocationInfo({ values, setFieldValue }: Step3Props)
                                 className="w-full pl-9 sm:pl-10 pr-9 sm:pr-10 text-sm sm:text-base h-10 sm:h-11 focus-visible:border-(--navbar-text-color) focus-visible:ring-(--navbar-text-color)"
                                 disabled={isDetecting}
                             />
-                            {isDetecting && (
-                                <div className="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2">
-                                    <div className="w-4 h-4 border-2 border-(--navbar-text-color) border-t-transparent rounded-full animate-spin" />
-                                </div>
-                            )}
+                                {isDetecting && (
+                                    <div className="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2">
+                                        <div className="w-4 h-4 border-2 border-(--navbar-text-color) border-t-transparent rounded-full animate-spin" />
+                                    </div>
+                                )}
+                            </div>
                         </div>
                         <p className="text-(--profile-title-color) text-xs sm:text-sm mt-1">
                             Type your preferred work location or use auto-detect
@@ -160,5 +163,6 @@ export default function Step3LocationInfo({ values, setFieldValue }: Step3Props)
                 </div>
             </div>
         </Autocomplete>
+        </div>
     ))
 }

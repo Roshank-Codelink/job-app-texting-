@@ -1,7 +1,10 @@
 "use client";
 
+import React from 'react';
 import Select from 'react-select';
+import { Input } from "@/Components/ui/input";
 import { Step2Props } from "../../types/types";
+import { Briefcase } from "lucide-react";
 
 export default function Step2JobTitleInfo({ values, setFieldValue }: Step2Props) {
   const jobTitleOptions = [
@@ -173,9 +176,16 @@ const customStyles = {
     setFieldValue('jobTitle', values);
   };
 
-  const selectedValues = values.jobTitle?.map((val: string) => 
-    jobTitleOptions.find(option => option.value === val)
-  ).filter(Boolean);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setFieldValue('jobTitle', value);
+  };
+
+  const selectedValues = Array.isArray(values.jobTitle) 
+    ? values.jobTitle.map((val: string) => 
+        jobTitleOptions.find(option => option.value === val)
+      ).filter(Boolean)
+    : [];
 
   return (
     <div className="w-full max-w-full mx-auto px-0 sm:px-2 md:px-4">
@@ -185,17 +195,17 @@ const customStyles = {
           <label className="block text-xs sm:text-sm font-medium text-(--profile-menu-text-color) mb-1.5 sm:mb-2">
             Job Titles <span className="text-(--profile-menu-sign-out-color)">*</span>
           </label>
-          <div className="w-full">
-            <Select
-              isMulti
-              options={jobTitleOptions}
-              value={selectedValues}
-              onChange={handleChange}
+          <div className="relative">
+            <Briefcase className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
+            <Input
+              type="text"
+              name="jobTitle"
+              value={typeof values.jobTitle === 'string' ? values.jobTitle : ""}
+              onChange={handleInputChange}
               placeholder="Select job titles..."
-              styles={customStyles}
-              className="text-sm sm:text-base cursor-pointer w-full"
-              classNamePrefix="react-select"
+              className="w-full pl-9 sm:pl-10 text-sm sm:text-base h-10 sm:h-11 focus-visible:border-(--navbar-text-color) focus-visible:ring-(--navbar-text-color)"
             />
+          
           </div>
           <p className="text-xs sm:text-sm text-(--profile-title-color) mt-1.5 sm:mt-2">You can select multiple job titles</p>
         </div>

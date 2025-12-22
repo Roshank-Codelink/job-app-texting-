@@ -69,11 +69,14 @@ export default function Otp({ email, onEdit }: OtpProps) {
                                 Enter OTP <span className="text-(--profile-menu-sign-in-color)">*</span>
                             </label>
 
-                            <InputOTP
+                               <InputOTP
+                                
                                 maxLength={6}
                                 value={values.otp}
                                 onChange={(newValue) => {
-                                    setFieldValue('otp', newValue);
+                                    // Filter out any non-numeric characters - only allow digits 0-9
+                                    const numericValue = newValue.replace(/\D/g, '');
+                                    setFieldValue('otp', numericValue);
                                     setFieldTouched('otp', true, false);
                                 }}
                             >
