@@ -1,2 +1,2 @@
-declare module 'next-pwa';
+declare module '@ducanh2912/next-pwa';
 
