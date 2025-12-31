@@ -1,20 +1,13 @@
 "use client";
-
 import { useEffect, useRef, useState, useCallback } from "react";
 import JobListingCards from "./Job-Management/JobListingCards";
 import JobPostForm from "./Job-Management/JobPostForm";
 import { GetAllJobsAPI } from "@/api_config/JobPostApi/JobPostApi";
 import { JobListingItem } from "@/api_config/JobPostApi/type";
-
-
-
-
-
-
+import { useSession } from "next-auth/react";
 interface JobPostProps {
   initialJobs: JobListingItem[];
 }
-
 export default function JobPost({ initialJobs }: JobPostProps) {
   // Ensure initialJobs is always an array to prevent crashes
   const safeInitialJobs = Array.isArray(initialJobs) ? initialJobs : [];
@@ -27,32 +20,29 @@ export default function JobPost({ initialJobs }: JobPostProps) {
   const isLoadingRef = useRef(false);
   const pageRef = useRef(1);
 
+
+  // const { data: session } = useSession();
+  // console.log("Session:", session);
   // Sync refs with state
   useEffect(() => {
     isLoadingRef.current = isLoading;
   }, [isLoading]);
-
   useEffect(() => {
     pageRef.current = page;
   }, [page]);
-
   // ⭐ Refresh Jobs After Posting
   const refreshJobs = async () => {
     setIsLoading(true);
     isLoadingRef.current = true;
-
     try {
       const response = await GetAllJobsAPI(1, limit);
-
       if (response.error || !response.data) {
         console.error("Error refreshing jobs:", response.error ? "API error" : "No data received");
         setIsLoading(false);
         isLoadingRef.current = false;
         return;
       }
-
       const { success, data } = response.data;
-
       if (success && Array.isArray(data)) {
         setJobs(data);
         setPage(1);
@@ -74,42 +64,28 @@ export default function JobPost({ initialJobs }: JobPostProps) {
       isLoadingRef.current = false;
     }
   };
-
-
- 
-
-
-
   // ⭐ Fetch More Jobs (Infinite Scroll) - Using refs to avoid dependency issues
   const fetchMoreJobs = useCallback(async () => {
     if (isLoadingRef.current) return;
-
     setIsLoading(true);
     isLoadingRef.current = true;
-
     const nextPage = pageRef.current + 1;
     const startTime = Date.now();
     const minLoadingTime = 600; // Minimum 600ms loader display time
-
     try {
       const response = await GetAllJobsAPI(nextPage, limit);
-
       // Check if response has error or data is null
       if (response.error || !response.data) {
         console.error("Error fetching more jobs:", response.error ? "API error" : "No data received");
         setHasMore(false);
         return;
       }
-
       const { success, data } = response.data;
-
       // Calculate remaining time to show loader
       const elapsedTime = Date.now() - startTime;
       const remainingTime = Math.max(0, minLoadingTime - elapsedTime);
-
       // Wait for minimum display time
       await new Promise((resolve) => setTimeout(resolve, remainingTime));
-
       if (success && Array.isArray(data)) {
         setJobs((prev) => {
           // Ensure prev is an array
@@ -119,10 +95,8 @@ export default function JobPost({ initialJobs }: JobPostProps) {
           const newJobs = data.filter((job) => job?._id && !existingIds.has(job._id));
           return [...prevArray, ...newJobs];
         });
-
         setPage(nextPage);
         pageRef.current = nextPage;
-
         if (data.length < limit) {
           setHasMore(false);
         }
@@ -138,14 +112,11 @@ export default function JobPost({ initialJobs }: JobPostProps) {
       isLoadingRef.current = false;
     }
   }, [limit]);
-
   // ⭐ Infinite Scroll Observer
   useEffect(() => {
     if (!hasMore) return;
-
     const target = loaderRef.current;
     if (!target) return;
-
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !isLoadingRef.current) {
@@ -154,32 +125,21 @@ export default function JobPost({ initialJobs }: JobPostProps) {
       },
       { threshold: 0.1 }
     );
-
     observer.observe(target);
-
     return () => {
       observer.disconnect();
     };
   }, [hasMore, fetchMoreJobs]);
-
   return (
     <div className="flex w-full h-full gap-0">
       {/* MAIN CONTENT */}
       <div className="flex-1 min-w-0 p-4 sm:p-6 md:p-8 lg:p-[32px]">
-
         {/* Job Post Form */}
-
-        
         <div className="mb-6">
-
-
-         
           <JobPostForm refreshJobs={refreshJobs} />
         </div>
-
         {/* Job Listing Cards */}
         <JobListingCards jobs={jobs} />
-
         {/* Infinite Loader */}
         {hasMore && jobs.length > 0 && (
           <div className="py-10 text-center" ref={loaderRef}>
@@ -190,7 +150,6 @@ export default function JobPost({ initialJobs }: JobPostProps) {
                 <span className="inline-block w-2 h-2 rounded-full bg-cyan-500 animate-[bounce_1.4s_0.4s_infinite]" />
               </div>
             )}
-
             <style
               dangerouslySetInnerHTML={{
                 __html: `
@@ -204,14 +163,12 @@ export default function JobPost({ initialJobs }: JobPostProps) {
           </div>
         )}
       </div>
-
       {/* RIGHT SIDEBAR */}
       <div className="hidden xl:flex w-[23%] shrink-0 border-l border-[#e5e7eb] bg-white sticky top-0 self-start h-[calc(100vh-60px)] overflow-y-auto">
         {/* <div className="w-full h-full p-4">
-          
           <div className="text-gray-500 text-sm">Right Sidebar Content</div>
         </div> */}
-      </div>  
+      </div>
     </div>
   );
 }

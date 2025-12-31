@@ -1,15 +1,12 @@
 "use client";
-
 import { useState } from 'react';
 import { Formik, Form } from 'formik';
 import Step1BasicProfileInfo from './Step1-Basic-Profile-info';
 import Step2JobTitleInfo from './Step2-Job-Title-info';
 import Step3LocationInfo from './Step3-Location-info';
 import { validateStep1, validateStep2 } from '@/Validation/ProfileOnboardingValidation';
-
 export default function MultiStepForm() {
   const [activeStep, setActiveStep] = useState(0);
-
   const initialValues = {
     fullName: "",
     email: "",
@@ -18,7 +15,6 @@ export default function MultiStepForm() {
     skill: [] as string[],
     location: "",
   };
-
   const stepData = [
     {
       title: 'Basic Profile',
@@ -33,30 +29,21 @@ export default function MultiStepForm() {
       description: 'Choose your preferred work location',
     }
   ];
-
   const handleNext = () => {
     if (activeStep < stepData.length - 1) {
       setActiveStep(activeStep + 1);
     }
   };
-
   const handlePrevious = () => {
     if (activeStep > 0) {
       setActiveStep(activeStep - 1);
     }
   };
-
   const handleComplete = (values: any) => {
     // Sirf Complete button par hi console hoga
     console.log('Complete Form Data:', values);
     // Yaha API call kar sakte ho
   }
-
-
-
-
-
-
   return (
     <Formik
       initialValues={initialValues}
@@ -74,7 +61,6 @@ export default function MultiStepForm() {
                   const isCompleted = activeStep > index;
                   const isCurrent = activeStep === index;
                   const isLast = index === stepData.length - 1;
-
                   return (
                     <div key={index} className="flex-1 relative flex flex-col items-center">
                       {/* Connecting Line - Hidden on mobile */}
@@ -87,7 +73,6 @@ export default function MultiStepForm() {
                           />
                         </div>
                       )}
-
                       {/* Circle with Icon */}
                       <div
                         className={`
@@ -119,7 +104,6 @@ export default function MultiStepForm() {
                           </svg>
                         )}
                       </div>
-
                       {/* Step Label */}
                       <div className="mt-2 sm:mt-4 text-center px-0.5 sm:px-1">
                         <h3
@@ -144,7 +128,6 @@ export default function MultiStepForm() {
                 })}
               </div>
             </div>
-
             {/* Step Content Area */}
             <div className="mt-4 sm:mt-6 md:mt-8 mb-4 sm:mb-6 md:mb-8 w-full flex-1 flex items-center justify-center ">
               {activeStep === 0 && (
@@ -157,7 +140,6 @@ export default function MultiStepForm() {
                 <Step3LocationInfo values={values} setFieldValue={setFieldValue} />
               )}
             </div>
-
             {/* Navigation Buttons */}
             <div className="flex flex-row justify-between gap-2 sm:gap-3 md:gap-0 mt-4 sm:mt-6 md:mt-8 w-full">
               <button
@@ -167,7 +149,6 @@ export default function MultiStepForm() {
               >
                 Previous
               </button>
-
               {activeStep === stepData.length - 1 ? (
                 <button
                   type="button"
@@ -190,10 +171,9 @@ export default function MultiStepForm() {
                 </button>
               )}
             </div>
-          </div>  
-       
+          </div>
         </Form>
       )}
     </Formik>
-    )
+  )
 }

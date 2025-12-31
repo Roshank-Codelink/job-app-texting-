@@ -1,11 +1,9 @@
 "use client";
-
 import React from 'react';
 import Select from 'react-select';
 import { Input } from "@/Components/ui/input";
 import { Step2Props } from "../../types/types";
 import { Briefcase } from "lucide-react";
-
 export default function Step2JobTitleInfo({ values, setFieldValue }: Step2Props) {
   const jobTitleOptions = [
     { value: 'frontend-developer', label: 'Frontend Developer' },
@@ -19,7 +17,6 @@ export default function Step2JobTitleInfo({ values, setFieldValue }: Step2Props)
     { value: 'qa-engineer', label: 'QA Engineer' },
     { value: 'business-analyst', label: 'Business Analyst' },
   ];
-
   const skillOptions = [
     { value: 'html', label: 'HTML' },
     { value: 'css', label: 'CSS' },
@@ -61,18 +58,14 @@ export default function Step2JobTitleInfo({ values, setFieldValue }: Step2Props)
     { value: 'symfony', label: 'Symfony' },
     { value: 'django', label: 'Django' },
   ];
-
-  const selectedSkillValues = values.skill?.map((val: string) => 
+  const selectedSkillValues = values.skill?.map((val: string) =>
     skillOptions.find(option => option.value === val)
   ).filter(Boolean);
-
   const handleSkillChange = (selectedOptions: any) => {
     const values = selectedOptions ? selectedOptions.map((option: any) => option.value) : [];
     setFieldValue('skill', values);
   };
-
-
-const customStyles = {
+  const customStyles = {
     control: (base: any, state: any) => ({
       ...base,
       minHeight: '40px',
@@ -153,13 +146,13 @@ const customStyles = {
       padding: '8px 12px',
       borderRadius: '4px',
       cursor: 'pointer',
-      backgroundColor: state.isSelected 
-        ? '#0ea5e9' 
-        : state.isFocused 
-        ? '#e0f2fe' 
-        : 'transparent',
-      color: state.isSelected 
-        ? '#ffffff' 
+      backgroundColor: state.isSelected
+        ? '#0ea5e9'
+        : state.isFocused
+          ? '#e0f2fe'
+          : 'transparent',
+      color: state.isSelected
+        ? '#ffffff'
         : '#1e293b',
       '&:active': {
         backgroundColor: state.isSelected ? '#0ea5e9' : '#bae6fd',
@@ -170,23 +163,19 @@ const customStyles = {
       },
     }),
   };
-
   const handleChange = (selectedOptions: any) => {
     const values = selectedOptions ? selectedOptions.map((option: any) => option.value) : [];
     setFieldValue('jobTitle', values);
   };
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setFieldValue('jobTitle', value);
   };
-
-  const selectedValues = Array.isArray(values.jobTitle) 
-    ? values.jobTitle.map((val: string) => 
-        jobTitleOptions.find(option => option.value === val)
-      ).filter(Boolean)
+  const selectedValues = Array.isArray(values.jobTitle)
+    ? values.jobTitle.map((val: string) =>
+      jobTitleOptions.find(option => option.value === val)
+    ).filter(Boolean)
     : [];
-
   return (
     <div className="w-full max-w-full mx-auto px-0 sm:px-2 md:px-4">
       <div className="space-y-4 sm:space-y-5 md:space-y-6">
@@ -205,12 +194,10 @@ const customStyles = {
               placeholder="Select job titles..."
               className="w-full pl-9 sm:pl-10 text-sm sm:text-base h-10 sm:h-11 focus-visible:border-(--navbar-text-color) focus-visible:ring-(--navbar-text-color)"
             />
-          
+
           </div>
           <p className="text-xs sm:text-sm text-(--profile-title-color) mt-1.5 sm:mt-2">You can select multiple job titles</p>
         </div>
-
-
         <div>
           <label className="block text-xs sm:text-sm font-medium text-(--profile-menu-text-color) mb-1.5 sm:mb-2">
             Skills <span className="text-(--profile-menu-sign-out-color)">*</span>

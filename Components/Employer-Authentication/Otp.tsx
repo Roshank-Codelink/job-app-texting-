@@ -1,4 +1,3 @@
-
 "use client";
 import {
     InputOTP,
@@ -8,23 +7,43 @@ import {
 import { OtpValidation } from "@/Validation/AuthValidation";
 import { Formik, Form, ErrorMessage } from 'formik';
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { signIn } from "next-auth/react";
 
 interface OtpProps {
     email?: string;
     onEdit?: () => void;
 }
-
-
 export default function Otp({ email, onEdit }: OtpProps) {
-
     const router = useRouter();
 
-    const handleSubmit = (values: { otp: string }) => {
-        console.log("OTP Submitted:", values.otp);
-        router.push("/profile-onboarding");
+    const handleSubmit = async (values: { otp: string }) => {
+        try {
+            if (!email) {
+                toast.error("Email is required");
+                return;
+            }
 
+            const result = await signIn("credentials", {
+                email,
+                otp: values.otp,
+                redirect: false,
+            });
+            console.log("Result:", result);
+            if (result?.error) {
+                toast.error("Invalid OTP");
+                return;
+            }
 
+            toast.success("Login successful!");
+            router.push("/employer/dashboard");
+
+        } catch (error) {
+            console.error("OTP Error:", error);
+            toast.error("Something went wrong");
+        }
     };
+
     return (
         <div>
             {/* Email Display with Edit Button */}
@@ -53,7 +72,6 @@ export default function Otp({ email, onEdit }: OtpProps) {
                     )}
                 </div>
             )}
-
             {/* OTP Input Section */}
             <Formik
                 initialValues={{ otp: '' }}
@@ -68,9 +86,7 @@ export default function Otp({ email, onEdit }: OtpProps) {
                             <label className="text-xs font-semibold text-(--profile-menu-text-color) block mb-1.5">
                                 Enter OTP <span className="text-(--profile-menu-sign-in-color)">*</span>
                             </label>
-
-                               <InputOTP
-                                
+                            <InputOTP
                                 maxLength={6}
                                 value={values.otp}
                                 onChange={(newValue) => {
@@ -89,17 +105,15 @@ export default function Otp({ email, onEdit }: OtpProps) {
                                     <InputOTPSlot index={5} className="w-11 h-11 border-2 border-(--job-post-button-border-color) rounded-lg shadow-none! ring-0 focus:border-(--navbar-text-color) data-[active=true]:border-(--navbar-text-color) data-[active=true]:ring-0" />
                                 </InputOTPGroup>
                             </InputOTP>
-
                             {/* Error Message Display */}
                             <ErrorMessage name="otp">
                                 {(msg) => (
-                                    <div className="mt-3 text-xs text-(--profile-title-color) font-medium">
+                                    <div className="mt-3 text-xs text-red-500 font-medium">
                                         {msg}
                                     </div>
                                 )}
                             </ErrorMessage>
                         </div>
-
                         {/* Verify Button */}
                         <button
                             type="submit"
@@ -111,8 +125,6 @@ export default function Otp({ email, onEdit }: OtpProps) {
                     </Form>
                 )}
             </Formik>
-
-
             {/* Resend Code */}
             <div className="text-center">
                 <button className="text-xs text-(--profile-title-color)  transition-colors">

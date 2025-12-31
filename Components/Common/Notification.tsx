@@ -2,11 +2,9 @@ import {
     Popover,
     PopoverContent,
     PopoverTrigger,
-  } from "@/Components/ui/popover"
-  import { FaRegBell } from "react-icons/fa";
-
-
-  export default function Notification() {
+} from "@/Components/ui/popover"
+import { FaRegBell } from "react-icons/fa";
+export default function Notification() {
     return (
         <Popover>
             <PopoverTrigger asChild>
@@ -21,4 +19,4 @@ import {
             </PopoverContent>
         </Popover>
     );
-  }
+}

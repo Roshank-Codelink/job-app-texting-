@@ -1,24 +1,20 @@
 "use client";
-
 import { useState } from "react";
 import { Input } from "@/Components/ui/input";
 import { User, Mail, Phone } from "lucide-react";
 import { Step1Validation } from "@/Validation/ProfileOnboardingValidation";
 import { Step1Props } from "../../types/types";
-
 export default function Step1BasicProfileInfo({ values, setFieldValue }: Step1Props) {
   const [errors, setErrors] = useState({
     fullName: "",
     email: "",
     phoneNumber: "",
   });
-
   const [touched, setTouched] = useState({
     fullName: false,
     email: false,
     phoneNumber: false,
   });
-
   const validateField = async (name: string, value: string) => {
     try {
       await Step1Validation.validateAt(name, { ...values, [name]: value });
@@ -30,22 +26,18 @@ export default function Step1BasicProfileInfo({ values, setFieldValue }: Step1Pr
       return errorMessage;
     }
   };
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFieldValue(name, value);
-    
     if (touched[name as keyof typeof touched]) {
       validateField(name, value);
     }
   };
-
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setTouched((prev) => ({ ...prev, [name]: true }));
     validateField(name, value);
   };
-
   return (
     <div className="w-full max-w-full mx-auto px-0 sm:px-2 md:px-4">
       <div className="space-y-4 sm:space-y-5 md:space-y-6">
@@ -70,7 +62,6 @@ export default function Step1BasicProfileInfo({ values, setFieldValue }: Step1Pr
             <p className="text-(--profile-title-color) text-xs sm:text-sm mt-1">{errors.fullName}</p>
           )}
         </div>
-
         {/* Email */}
         <div>
           <label className="block text-xs sm:text-sm font-medium text-(--profile-menu-text-color) mb-1.5 sm:mb-2">
@@ -92,7 +83,6 @@ export default function Step1BasicProfileInfo({ values, setFieldValue }: Step1Pr
             <p className="text-(--profile-title-color) text-xs sm:text-sm mt-1">{errors.email}</p>
           )}
         </div>
-
         {/* Phone Number */}
         <div>
           <label className="block text-xs sm:text-sm font-medium text-(--profile-menu-text-color) mb-1.5 sm:mb-2">

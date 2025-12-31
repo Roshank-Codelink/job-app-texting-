@@ -1,6 +1,4 @@
-
 "use client";
-
 import { useState } from "react";
 import Image from "next/image";
 import {
@@ -9,14 +7,12 @@ import {
     PopoverTrigger,
 } from "@/Components/ui/popover";
 import { cn } from "@/lib/utils";
-
 interface UserProfileProps {
     name?: string;
     title?: string;
     imageUrl?: string;
     variant?: "navbar" | "sidebar";
 }
-
 export default function UserProfiles({
     name = "Sarah Connor",
     title = "HR Manager",
@@ -24,7 +20,6 @@ export default function UserProfiles({
     variant = "navbar",
 }: UserProfileProps) {
     const [open, setOpen] = useState(false);
-
     // Get initials from name
     const getInitials = (fullName: string) => {
         return fullName
@@ -34,16 +29,14 @@ export default function UserProfiles({
             .toUpperCase()
             .slice(0, 2);
     };
-
     const isSidebar = variant === "sidebar";
-
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
                 <button className={cn(
                     "flex items-center cursor-pointer w-full",
-                    isSidebar 
-                        ? "px-3 py-2.5 rounded-lg hover:bg-(--Profile-hover-bg) transition-colors cursor-pointer" 
+                    isSidebar
+                        ? "px-3 py-2.5 rounded-lg hover:bg-(--Profile-hover-bg) transition-colors cursor-pointer"
                         : "gap-1.5 sm:gap-2 md:gap-3 border-l border-(--profile-border-color) pl-2 sm:pl-3 md:pl-[16px]"
                 )}>
                     {/* Profile Picture */}
@@ -56,16 +49,16 @@ export default function UserProfiles({
                                 height={40}
                                 className={cn(
                                     "object-cover",
-                                    isSidebar 
-                                        ? "w-10 h-10 rounded-lg" 
+                                    isSidebar
+                                        ? "w-10 h-10 rounded-lg"
                                         : "rounded-[8px]  w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10"
                                 )}
                             />
                         ) : (
                             <div className={cn(
                                 "bg-linear-to-br from-(--profile-liner-from-color) to-(--profile-liner-to-color) flex items-center justify-center",
-                                isSidebar 
-                                    ? "w-10 h-10 rounded-lg" 
+                                isSidebar
+                                    ? "w-10 h-10 rounded-lg"
                                     : "rounded-full  w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10"
                             )}>
                                 <span className={cn(
@@ -77,7 +70,6 @@ export default function UserProfiles({
                             </div>
                         )}
                     </div>
-
                     {/* Text Content */}
                     <div className="flex flex-col items-start text-left flex-1 min-w-0 ml-3">
                         <h3 className={cn(
@@ -128,7 +120,6 @@ export default function UserProfiles({
                             </div>
                         </div>
                     </div>
-
                     {/* Menu Items */}
                     <div className="py-2">
                         <button

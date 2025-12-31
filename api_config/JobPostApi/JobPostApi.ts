@@ -11,9 +11,6 @@ import { JobListingsResponseType, JobPost, JobPostPayload, JobPostResponseType }
         });
         return response;
     }
-
-
-
 export const PostJobAPI = async (data: JobPost) => {
     const response = await customFetch<JobPostResponseType>({
         url: "/post-job",
@@ -24,9 +21,6 @@ export const PostJobAPI = async (data: JobPost) => {
     });
     return response;
 }
-
-
-
 export const GetAllJobsAPI = async (page: number, limit: number) => {
     const response = await customFetch<JobListingsResponseType>({
         url: `/get-jobs?page=${page}&limit=${limit}`,

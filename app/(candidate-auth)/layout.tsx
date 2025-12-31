@@ -1,10 +1,12 @@
 import CandidateLoginLayout from "@/Components/layout/CandidateLoginLayout";
 
 
-export interface AuthLayoutProps {
+
+
+export interface CandidateAuthLayoutProps {
     children: React.ReactNode;
 }
 
-export default function AuthLayout({ children }: AuthLayoutProps) {
+export default function CandidateAuthLayout({ children }: CandidateAuthLayoutProps) {
     return <CandidateLoginLayout>{children}</CandidateLoginLayout>
-}   
+}
