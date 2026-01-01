@@ -1,3 +1,4 @@
+import { getAuthToken } from '@/lib/getAuthToken';
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 export const API_BASE_URL = process.env.NEXT_PUBLIC_SERVER_API_ENDPOINT;
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
@@ -17,15 +18,20 @@ export const customFetch = async <TResponse>({
   body?: any;
   headers?: Record<string, string>;
 }): Promise<ApiResponse<TResponse>> => {
+
+
+  const token = await getAuthToken();
+  console.log("Token:", token);
   try {
     // Default headers
     const defaultHeaders: Record<string, string> = {
       'Content-Type': 'application/json',
       accept: 'application/json',
+      'Authorization': `Bearer ${token}`,
       ...headers,
     };
 
-    
+
     // Build axios config
     const axiosConfig: AxiosRequestConfig = {
       method,
@@ -35,7 +41,7 @@ export const customFetch = async <TResponse>({
     };
 
 
-    
+
     // Make API call using axios
     const response = await axios(axiosConfig);
     // Return successful response

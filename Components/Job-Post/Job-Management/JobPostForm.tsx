@@ -14,6 +14,7 @@ import AILoader from "./AILoader";
 import PostingLoader from "./PostingLoader";
 import { CharacterCount } from '@tiptap/extensions'
 import { LimitPasteHTML } from "@/utils/extensions/LimitPasteHTML";
+import { useSession } from "next-auth/react";
 export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [markdownText, setMarkdownText] = useState("");
@@ -23,6 +24,9 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
     const DiableWordCount = 20;
     const lastValidContentRef = useRef<string>("");
     const MAX_CHARACTERS = 1500;
+
+    const { data: session } = useSession();
+    const token = session?.user?.token;
     // Configure TurndownService for all formatting types with proper line breaks
     const turndownService = new TurndownService({
         headingStyle: 'atx', // Use # for headings
@@ -48,17 +52,17 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
         }
     });
     const editor = useEditor({
-        immediatelyRender: false,   // 🔥 REQUIRED FIX FOR SSR ERROR
+        immediatelyRender: false,   
         extensions: [
             LimitPasteHTML.configure(),
             StarterKit.configure({
-                bold: {},  // ✅ Enable bold
-                italic: {},  // ✅ Enable italic
+                bold: {},  
+                italic: {},  
                 strike: false,
                 heading: false,
-                orderedList: {},  // ✅ Enable lists
-                bulletList: {},  // ✅ Enable bullet lists
-                hardBreak: {},  // ✅ Enable hard breaks for line breaks
+                orderedList: {}, 
+                bulletList: {}, 
+                hardBreak: {},  
             }),
             Link.configure({
                 openOnClick: false,
@@ -142,7 +146,7 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
         // editor.commands.setContent(html);
         const htmlContent = editor.getHTML();
         const cleanedHTML = cleanTipTapHTML(htmlContent);
-        console.log("htmlContent", htmlContent);
+      
         try {
             const response = await AIJobPostAPI({
                 description: cleanedHTML,
@@ -189,6 +193,7 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
             setError(`Job description must be at least ${DiableWordCount} words long.`);
             return;
         }
+         
         // ✅ Get FULL FORMATTED HTML (bold, italic, lists… preserved)
         const html = editor.getHTML();
         const cleanedHTML = cleanTipTapHTML(html);
@@ -367,4 +372,4 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
             </div>
         </div>
     );
-} 
+}   

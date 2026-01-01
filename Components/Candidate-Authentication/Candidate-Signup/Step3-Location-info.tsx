@@ -4,17 +4,19 @@ import { Input } from "@/Components/ui/input";
 import { MapPin, Navigation } from "lucide-react";
 import { useJsApiLoader, Autocomplete } from '@react-google-maps/api'
 import { Step3Props } from "@/types/types";
-import { MAP_API_CONFIG } from "@/api_config/MapApiConfig/mapconfig";
+import { MAP_API_CONFIG } from "@/api_config/shared/sharedapi";
 // Static libraries array - component ke bahar
 const libraries: ("places")[] = ["places"];
 export default function Step3LocationInfo({ values, setFieldValue }: Step3Props) {
     const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
     const [isDetecting, setIsDetecting] = useState(false);
     const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
+
     // MANUAL INPUT HANDLER
     const handleLocationInput = (value: string) => {
         setFieldValue("location", value);
     };
+
     // AUTO DETECT
     const detectLocation = () => {
         if (!navigator.geolocation) {
@@ -67,11 +69,13 @@ export default function Step3LocationInfo({ values, setFieldValue }: Step3Props)
             }
         );
     };
+
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
         googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY || '',
         libraries: libraries,
     })
+
     return (isLoaded && (
         <div className="w-full">
             <Autocomplete
@@ -95,8 +99,7 @@ export default function Step3LocationInfo({ values, setFieldValue }: Step3Props)
                 }}
                 options={{
                     types: ["(cities)"],
-                }}
-            >
+                }}>
                 <div className="w-full max-w-full mx-auto px-0 sm:px-2 md:px-4">
                     <div className="space-y-4 sm:space-y-5 md:space-y-6">
                         {/* Location Input */}

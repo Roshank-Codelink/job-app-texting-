@@ -12,16 +12,13 @@ export default function SignIn() {
     const [showOtp, setShowOtp] = useState(false);
     const [email, setEmail] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-
-    const Role="EMPLOYEE"
-
-
+    const Role = "EMPLOYEE"
 
     const handleSendOtp = async (values: { email: string, role: string }) => {
         setIsLoading(true);
         try {
             setEmail(values.email)
-            const response = await loginApi(values.email,Role as string);
+            const response = await loginApi(values.email, Role as string);
             if (response.statusCode === 200) {
                 console.log("Response:", response);
                 toast.success(response.data.message);
@@ -44,7 +41,6 @@ export default function SignIn() {
     };
     return (
         <div className="min-h-screen w-full relative overflow-hidden flex bg-gradient-to-br from-(--navbar-bg-button) via-white to-(--signin-bg-color-to) lg:bg-transparent lg:bg-none">
-
             {/* LEFT SECTION - Hidden on mobile */}
             <div className="hidden lg:flex w-1/2 bg-[#F0F9FF] relative overflow-hidden flex-col">
                 <div className="absolute w-[360px] h-[360px] rounded-full bg-[#DBEAFE] -left-[210px] top-1/2 -translate-y-1/2 opacity-30" />
@@ -78,10 +74,8 @@ export default function SignIn() {
                 </div>
 
             </div>
-
             {/* RIGHT SECTION */}
             <div className="w-full lg:w-[55%] bg-transparent lg:bg-white relative ml-0 lg:-ml-[6rem] rounded-none lg:rounded-l-[2.75rem] flex items-center justify-center py-8 lg:py-0">
-
                 <div className="flex items-center justify-center px-4 sm:px-6 w-full relative z-10">
                     <div className="w-full max-w-sm bg-white lg:bg-transparent backdrop-blur-sm rounded-xl lg:rounded-none shadow-xl lg:shadow-none p-6 lg:p-0">
                         <div className="text-left mb-5">
@@ -90,10 +84,9 @@ export default function SignIn() {
                             </h2>
 
                         </div>
-
                         {/* EMAIL SECTION - Show when OTP not sent */}
                         {!showOtp && (
-                            <Formik initialValues={{ email: '' ,role: Role as string}} validationSchema={AuthValidation} onSubmit={(values) => handleSendOtp(values)}>
+                            <Formik initialValues={{ email: '', role: Role as string }} validationSchema={AuthValidation} onSubmit={(values) => handleSendOtp(values)}>
                                 {({ values }) => (
                                     <Form>
                                         <div className="mb-4">
@@ -107,10 +100,8 @@ export default function SignIn() {
                                                 required
                                                 className="w-full px-3 py-2.5  border border-(--job-post-button-border-color) rounded-lg focus:outline-none focus:ring-2 focus:ring-(--navbar-text-color) text-(--profile-menu-text-color) text-sm transition-all"
                                             />
-
                                             <ErrorMessage name="email" component="div" className="text-red-500 text-xs mt-2 ml-1" />
                                         </div>
-
                                         <button
                                             type="submit"
                                             disabled={!values.email || isLoading}
@@ -132,10 +123,8 @@ export default function SignIn() {
                                 )}
                             </Formik>
                         )}
-
                         {/* OTP SECTION - Show when OTP sent (Using your Otp.tsx component) */}
                         {showOtp && <Otp email={email} onEdit={handleEditEmail} />}
-
                         {/* TERMS AND PRIVACY POLICY */}
                         {!showOtp && (
                             <div className="mt-4 text-center">
@@ -151,19 +140,17 @@ export default function SignIn() {
                                 </p>
                             </div>
                         )}
-
                         {/* SIGNUP/REGISTER LINKS */}
                         {!showOtp && (
                             <div className="mt-6 text-center">
                                 <p className="text-sm text-(--profile-title-color) mb-3">
                                     Don't have an account?{" "}
-                                    <Link href="/profile-onboarding" className="text-(--job-post-button-bg-to) hover:text-(--navbar-text-color) font-semibold underline transition-colors">
+                                    <Link href="/candidate-signup" className="text-(--job-post-button-bg-to) hover:text-(--navbar-text-color) font-semibold underline transition-colors">
                                         Sign Up
                                     </Link>
                                 </p>
                             </div>
                         )}
-
                     </div>
                 </div>
             </div>

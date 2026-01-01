@@ -13,5 +13,6 @@ export interface VerifyOTPResponse {
         email: string;
         role: string;
         id: string;
+        companyName: string;
     }
 }

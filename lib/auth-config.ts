@@ -1,5 +1,5 @@
 
-import {verifyOTP } from '@/api_config/SigninApi/loginapi';
+import { verifyOTP } from '@/api_config/SigninApi/loginapi';
 import type { NextAuthConfig } from 'next-auth';
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
@@ -40,6 +40,7 @@ const credentialsConfig = CredentialsProvider({
                 name: response.data.data.name,
                 role: response.data.data.role,
                 token: response.data.data.token,
+                companyName: response.data.data.companyName,
             }
 
         } catch (error) {
@@ -60,10 +61,12 @@ const config: NextAuthConfig = {
             if (trigger === "update" && session) {
                 console.log("Session updated", session);
                 token.user = session.user;
+                token.role = session.user?.role;
                 return token;
             }
             if (account?.provider === "credentials" && user) {
                 token.user = user;
+                token.role = user.role; // Store role at top level for middleware access
             }
             return token;
         },
@@ -78,9 +81,7 @@ const config: NextAuthConfig = {
             }
             return session;
         },
-        async signIn({ account, user, profile }: any) {
-            return true;
-        },
+
     },
     secret: process.env.NEXTAUTH_SECRET || 'your-secret-key-here',
     session: {

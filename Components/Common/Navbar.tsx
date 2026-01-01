@@ -6,14 +6,25 @@ import { useSidebar } from "@/Components/ui/sidebar";
 import UserProfiles from "./UserProfiles";
 import { Button } from "@/Components/ui/button";
 import { cn } from "@/lib/utils";
+import { useSession } from "next-auth/react";
+
 
 export default function Navbar() {
   const { openMobile, setOpenMobile } = useSidebar();
+
+  const { data: session } = useSession();
+  const user = session?.user;
+
   const handleToggle = () => {
     console.log('Toggle clicked - openMobile:', openMobile);
     setOpenMobile(!openMobile);
     console.log('Setting openMobile to:', !openMobile);
   };
+
+
+
+
+  
   return (
     <div className="w-full h-full flex items-center justify-between px-3 sm:px-4 md:px-5 lg:px-6 bg-(--navbar-bg-parent)">
       <div className="left-content w-auto md:w-[11%] h-full flex items-center gap-1 sm:gap-1.5 md:gap-2 min-w-0">
@@ -53,7 +64,7 @@ export default function Navbar() {
         </Button>
         {/* UserProfiles - Visible only on desktop (hidden on mobile) */}
         <div className="user-profile shrink-0 hidden md:block">
-          <UserProfiles />
+          <UserProfiles user={user} />
         </div>
       </div>
     </div>

@@ -14,14 +14,12 @@ export default function JobPost({ initialJobs }: JobPostProps) {
   const [jobs, setJobs] = useState(safeInitialJobs);
   const [page, setPage] = useState(1);
   const limit = 10;
-  const [hasMore, setHasMore] = useState(true);
+  // Set hasMore based on initial data - if initial data is less than limit, no more data
+  const [hasMore, setHasMore] = useState(safeInitialJobs.length >= limit);
   const [isLoading, setIsLoading] = useState(false);
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const isLoadingRef = useRef(false);
   const pageRef = useRef(1);
-
-
-  // const { data: session } = useSession();
   // console.log("Session:", session);
   // Sync refs with state
   useEffect(() => {
@@ -47,7 +45,8 @@ export default function JobPost({ initialJobs }: JobPostProps) {
         setJobs(data);
         setPage(1);
         pageRef.current = 1;
-        setHasMore(true);
+        // Only set hasMore to true if we got full limit of data
+        setHasMore(data.length >= limit);
       } else {
         // If success is false or data is not an array, set empty array
         setJobs([]);
@@ -67,6 +66,7 @@ export default function JobPost({ initialJobs }: JobPostProps) {
   // ⭐ Fetch More Jobs (Infinite Scroll) - Using refs to avoid dependency issues
   const fetchMoreJobs = useCallback(async () => {
     if (isLoadingRef.current) return;
+  
     setIsLoading(true);
     isLoadingRef.current = true;
     const nextPage = pageRef.current + 1;
@@ -107,7 +107,7 @@ export default function JobPost({ initialJobs }: JobPostProps) {
     } catch (error) {
       console.error("Fetch Error:", error);
       setHasMore(false);
-    } finally {
+    } finally { 
       setIsLoading(false);
       isLoadingRef.current = false;
     }
@@ -140,8 +140,8 @@ export default function JobPost({ initialJobs }: JobPostProps) {
         </div>
         {/* Job Listing Cards */}
         <JobListingCards jobs={jobs} />
-        {/* Infinite Loader */}
-        {hasMore && jobs.length > 0 && (
+        {/* Infinite Loader - Only show if we have at least limit number of jobs */}
+        {hasMore && jobs.length >= limit && (
           <div className="py-10 text-center" ref={loaderRef}>
             {isLoading && (
               <div className="flex items-center justify-center gap-2">

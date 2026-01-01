@@ -4,6 +4,7 @@ import {
     PopoverTrigger,
 } from "@/Components/ui/popover"
 import { FaRegBell } from "react-icons/fa";
+
 export default function Notification() {
     return (
         <Popover>

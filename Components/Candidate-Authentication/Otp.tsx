@@ -10,21 +10,13 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { signIn } from "next-auth/react";
 
-
-
 interface OtpProps {
     email?: string;
     onEdit?: () => void;
 }
 
-
-
 export default function Otp({ email, onEdit }: OtpProps) {
     const router = useRouter();
-
-   
-
-
 
     const handleSubmit = async (values: { otp: string }) => {
         try {
@@ -45,7 +37,7 @@ export default function Otp({ email, onEdit }: OtpProps) {
             }
 
             toast.success("Login successful!");
-            // router.push("/employer/dashboard");
+            router.push("http://localhost:3000/");
 
         } catch (error) {
             console.error("OTP Error:", error);

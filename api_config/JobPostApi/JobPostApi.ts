@@ -17,14 +17,14 @@ export const PostJobAPI = async (data: JobPost) => {
         method: 'POST',
         body: {
             description: data.description,
-        },
+        }
     });
     return response;
 }
 export const GetAllJobsAPI = async (page: number, limit: number) => {
     const response = await customFetch<JobListingsResponseType>({
         url: `/get-jobs?page=${page}&limit=${limit}`,
-        method: 'GET',
+        method: 'GET'
     });
     return response;
 }

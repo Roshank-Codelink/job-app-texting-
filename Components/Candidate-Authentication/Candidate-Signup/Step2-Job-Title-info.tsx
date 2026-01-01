@@ -2,69 +2,16 @@
 import React from 'react';
 import Select from 'react-select';
 import { Input } from "@/Components/ui/input";
-import { Step2Props } from "../../types/types";
 import { Briefcase } from "lucide-react";
-export default function Step2JobTitleInfo({ values, setFieldValue }: Step2Props) {
-  const jobTitleOptions = [
-    { value: 'frontend-developer', label: 'Frontend Developer' },
-    { value: 'backend-developer', label: 'Backend Developer' },
-    { value: 'fullstack-developer', label: 'Full Stack Developer' },
-    { value: 'ui-ux-designer', label: 'UI/UX Designer' },
-    { value: 'product-manager', label: 'Product Manager' },
-    { value: 'data-scientist', label: 'Data Scientist' },
-    { value: 'devops-engineer', label: 'DevOps Engineer' },
-    { value: 'mobile-developer', label: 'Mobile Developer' },
-    { value: 'qa-engineer', label: 'QA Engineer' },
-    { value: 'business-analyst', label: 'Business Analyst' },
-  ];
-  const skillOptions = [
-    { value: 'html', label: 'HTML' },
-    { value: 'css', label: 'CSS' },
-    { value: 'javascript', label: 'JavaScript' },
-    { value: 'typescript', label: 'TypeScript' },
-    { value: 'python', label: 'Python' },
-    { value: 'java', label: 'Java' },
-    { value: 'c++', label: 'C++' },
-    { value: 'c#', label: 'C#' },
-    { value: 'react', label: 'React' },
-    { value: 'angular', label: 'Angular' },
-    { value: 'vue', label: 'Vue' },
-    { value: 'nodejs', label: 'Node.js' },
-    { value: 'mongodb', label: 'MongoDB' },
-    { value: 'mysql', label: 'MySQL' },
-    { value: 'postgresql', label: 'PostgreSQL' },
-    { value: 'oracle', label: 'Oracle' },
-    { value: 'sql', label: 'SQL' },
-    { value: 'nosql', label: 'NoSQL' },
-    { value: 'docker', label: 'Docker' },
-    { value: 'kubernetes', label: 'Kubernetes' },
-    { value: 'aws', label: 'AWS' },
-    { value: 'azure', label: 'Azure' },
-    { value: 'gcp', label: 'GCP' },
-    { value: 'linux', label: 'Linux' },
-    { value: 'windows', label: 'Windows' },
-    { value: 'macos', label: 'macOS' },
-    { value: 'ios', label: 'iOS' },
-    { value: 'android', label: 'Android' },
-    { value: 'flutter', label: 'Flutter' },
-    { value: 'dart', label: 'Dart' },
-    { value: 'kotlin', label: 'Kotlin' },
-    { value: 'swift', label: 'Swift' },
-    { value: 'rust', label: 'Rust' },
-    { value: 'golang', label: 'Golang' },
-    { value: 'ruby', label: 'Ruby' },
-    { value: 'php', label: 'PHP' },
-    { value: 'laravel', label: 'Laravel' },
-    { value: 'symfony', label: 'Symfony' },
-    { value: 'django', label: 'Django' },
-  ];
-  const selectedSkillValues = values.skill?.map((val: string) =>
+import { CandidateSignUpSkillResponse } from '@/api_config/SignupApi/type';
+export default function Step2JobTitleInfo({ values, setFieldValue, skillsData }: { values: any, setFieldValue: any, skillsData: CandidateSignUpSkillResponse }) {
+
+  const skillOptions = skillsData.data.map((skill) => ({ value: skill._id, label: skill.name }));
+
+  const selectedSkillValues = values.skills?.map((val: string) =>
     skillOptions.find(option => option.value === val)
   ).filter(Boolean);
-  const handleSkillChange = (selectedOptions: any) => {
-    const values = selectedOptions ? selectedOptions.map((option: any) => option.value) : [];
-    setFieldValue('skill', values);
-  };
+
   const customStyles = {
     control: (base: any, state: any) => ({
       ...base,
@@ -163,19 +110,17 @@ export default function Step2JobTitleInfo({ values, setFieldValue }: Step2Props)
       },
     }),
   };
-  const handleChange = (selectedOptions: any) => {
-    const values = selectedOptions ? selectedOptions.map((option: any) => option.value) : [];
-    setFieldValue('jobTitle', values);
-  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setFieldValue('jobTitle', value);
   };
-  const selectedValues = Array.isArray(values.jobTitle)
-    ? values.jobTitle.map((val: string) =>
-      jobTitleOptions.find(option => option.value === val)
-    ).filter(Boolean)
-    : [];
+
+  const handleSkillChange = (selectedOptions: any) => {
+    const skillIds = selectedOptions ? selectedOptions.map((option: any) => option.value) : [];
+    console.log('Selected Skill IDs:', skillIds);
+    setFieldValue('skills', skillIds);
+  };
   return (
     <div className="w-full max-w-full mx-auto px-0 sm:px-2 md:px-4">
       <div className="space-y-4 sm:space-y-5 md:space-y-6">
@@ -194,7 +139,6 @@ export default function Step2JobTitleInfo({ values, setFieldValue }: Step2Props)
               placeholder="Select job titles..."
               className="w-full pl-9 sm:pl-10 text-sm sm:text-base h-10 sm:h-11 focus-visible:border-(--navbar-text-color) focus-visible:ring-(--navbar-text-color)"
             />
-
           </div>
           <p className="text-xs sm:text-sm text-(--profile-title-color) mt-1.5 sm:mt-2">You can select multiple job titles</p>
         </div>

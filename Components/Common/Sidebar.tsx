@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import {
   Sidebar,
   SidebarContent,
@@ -23,8 +24,26 @@ import { BiSolidZap } from "react-icons/bi";
 import { Button } from "@/Components/ui/button";
 import UserProfiles from "./UserProfiles";
 import Link from "next/link";
+
 export default function AppSidebar() {
-  const [activeItem, setActiveItem] = useState("dashboard");
+  const pathname = usePathname();
+  const [activeItem, setActiveItem] = useState("");
+
+  // Set active item based on current pathname
+  useEffect(() => {
+    if (pathname?.includes("/employer/dashboard")) {
+      setActiveItem("dashboard");
+    } else if (pathname?.includes("/employer/job-post")) {
+      setActiveItem("job-posts");
+    } else if (pathname?.includes("/employer/candidates")) {
+      setActiveItem("candidates");
+    } else if (pathname?.includes("/profile")) {
+      setActiveItem(""); // No item selected on profile page
+    } else {
+      setActiveItem(""); // Default to no selection
+    }
+  }, [pathname]);
+  
   return (
     <Sidebar className="bg-(--sidebar-bg-color)">
       {/* ✅ Only ONE wrapper inside Sidebar */}

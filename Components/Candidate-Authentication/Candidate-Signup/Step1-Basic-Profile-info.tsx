@@ -3,18 +3,21 @@ import { useState } from "react";
 import { Input } from "@/Components/ui/input";
 import { User, Mail, Phone } from "lucide-react";
 import { Step1Validation } from "@/Validation/ProfileOnboardingValidation";
-import { Step1Props } from "../../types/types";
+import { Step1Props } from "../../../types/types";
 export default function Step1BasicProfileInfo({ values, setFieldValue }: Step1Props) {
+
   const [errors, setErrors] = useState({
-    fullName: "",
+    name: "",
     email: "",
-    phoneNumber: "",
+    phone: "",
   });
+
   const [touched, setTouched] = useState({
-    fullName: false,
+    name: false,
     email: false,
-    phoneNumber: false,
+    phone: false,
   });
+
   const validateField = async (name: string, value: string) => {
     try {
       await Step1Validation.validateAt(name, { ...values, [name]: value });
@@ -26,6 +29,7 @@ export default function Step1BasicProfileInfo({ values, setFieldValue }: Step1Pr
       return errorMessage;
     }
   };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFieldValue(name, value);
@@ -33,11 +37,13 @@ export default function Step1BasicProfileInfo({ values, setFieldValue }: Step1Pr
       validateField(name, value);
     }
   };
+
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setTouched((prev) => ({ ...prev, [name]: true }));
     validateField(name, value);
   };
+
   return (
     <div className="w-full max-w-full mx-auto px-0 sm:px-2 md:px-4">
       <div className="space-y-4 sm:space-y-5 md:space-y-6">
@@ -50,16 +56,16 @@ export default function Step1BasicProfileInfo({ values, setFieldValue }: Step1Pr
             <User className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
             <Input
               type="text"
-              name="fullName"
-              value={values.fullName}
+              name="name"
+              value={values.name}
               onChange={handleChange}
               onBlur={handleBlur}
               placeholder="Enter your full name"
               className="w-full pl-9 sm:pl-10 text-sm sm:text-base h-10 sm:h-11 focus-visible:border-(--navbar-text-color) focus-visible:ring-(--navbar-text-color)"
             />
           </div>
-          {errors.fullName && touched.fullName && (
-            <p className="text-(--profile-title-color) text-xs sm:text-sm mt-1">{errors.fullName}</p>
+          {errors.name && touched.name && (
+            <p className="text-(--profile-menu-sign-out-color) text-xs sm:text-sm mt-1">{errors.name}</p>
           )}
         </div>
         {/* Email */}
@@ -80,7 +86,7 @@ export default function Step1BasicProfileInfo({ values, setFieldValue }: Step1Pr
             />
           </div>
           {errors.email && touched.email && (
-            <p className="text-(--profile-title-color) text-xs sm:text-sm mt-1">{errors.email}</p>
+            <p className="text-(--profile-menu-sign-out-color) text-xs sm:text-sm mt-1">{errors.email}</p>
           )}
         </div>
         {/* Phone Number */}
@@ -92,8 +98,8 @@ export default function Step1BasicProfileInfo({ values, setFieldValue }: Step1Pr
             <Phone className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
             <Input
               type="tel"
-              name="phoneNumber"
-              value={values.phoneNumber}
+              name="phone"
+              value={values.phone}
               onChange={handleChange}
               onBlur={handleBlur}
               placeholder="9876543210"
@@ -101,8 +107,8 @@ export default function Step1BasicProfileInfo({ values, setFieldValue }: Step1Pr
               className="w-full pl-9 sm:pl-10 text-sm sm:text-base h-10 sm:h-11 focus-visible:border-(--navbar-text-color) focus-visible:ring-(--navbar-text-color)"
             />
           </div>
-          {errors.phoneNumber && touched.phoneNumber && (
-            <p className="text-(--profile-title-color) text-xs sm:text-sm mt-1">{errors.phoneNumber}</p>
+          {errors.phone && touched.phone && (
+            <p className="text-(--profile-menu-sign-out-color) text-xs sm:text-sm mt-1">{errors.phone}</p>
           )}
         </div>
       </div>

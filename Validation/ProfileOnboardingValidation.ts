@@ -1,7 +1,7 @@
 import * as yup from 'yup';
 
 export const Step1Validation = yup.object().shape({
-    fullName: yup
+    name: yup
         .string()
         .min(2, 'Name must be at least 2 characters')
         .required('Full name is required'),
@@ -9,7 +9,7 @@ export const Step1Validation = yup.object().shape({
         .string()
         .email('Invalid email address')
         .required('Email is required'),
-    phoneNumber: yup
+    phone: yup
         .string()
         .matches(/^[0-9]{10}$/, 'Phone number must be 10 digits')
         .required('Phone number is required'),
