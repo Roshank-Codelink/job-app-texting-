@@ -1,7 +1,7 @@
 import { CandidateSignUpSkillResponse } from "../SignupApi/type";
 import { customFetch } from "../apiconfig";
 
-export const candidateSignUpSkillApi=async () : Promise<CandidateSignUpSkillResponse> => {
+export const candidateSignUpSkillApi = async (): Promise<CandidateSignUpSkillResponse> => {
     const response = await customFetch<CandidateSignUpSkillResponse>({
         url: "/get-skills",
         method: "GET",
@@ -9,9 +9,9 @@ export const candidateSignUpSkillApi=async () : Promise<CandidateSignUpSkillResp
     return response.data;
 }
 
-export const MAP_API_CONFIG = async (lat: number, lon: number)=>{
+export const MAP_API_CONFIG = async (lat: number, lon: number) => {
 
-       const response = await customFetch({
+    const response = await customFetch({
         url: `/employee-location?lat=${lat}&lon=${lon}`,
         method: "GET"
     });
@@ -26,4 +26,21 @@ export const LogoutAPI = async () => {
     });
     return response;
 }
+
+export const MarkJobHiredApi = async (jobId: string) => {
+    try {
+        const response = await customFetch({
+            url: `/mark-job-hired/${jobId}`,
+            method: "PATCH",
+        });
+        if (!response.data) {
+            throw new Error("no data found");
+        }
+        return response.data;
+    } catch (error) {
+        console.error("Error marking job as hired:", error);
+        throw error;
+    }
+}
+
 

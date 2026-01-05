@@ -1,7 +1,7 @@
 import { getAuthToken } from '@/lib/getAuthToken';
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 export const API_BASE_URL = process.env.NEXT_PUBLIC_SERVER_API_ENDPOINT;
-type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' ;
 export interface ApiResponse<T> {
   error: boolean;
   data: T;
@@ -12,11 +12,13 @@ export const customFetch = async <TResponse>({
   method = 'GET',
   body,
   headers = {},
+  params,
 }: {
   url: string;
   method?: HttpMethod;
   body?: any;
   headers?: Record<string, string>;
+  params?: Record<string, any>;
 }): Promise<ApiResponse<TResponse>> => {
 
 
@@ -38,6 +40,7 @@ export const customFetch = async <TResponse>({
       url: `${API_BASE_URL}${url}`,
       headers: defaultHeaders,
       data: body,
+      params: params,
     };
 
 

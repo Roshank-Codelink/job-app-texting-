@@ -1,45 +1,21 @@
 'use client';
 
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode} from 'react';
 import Navbar from '@/Components/Common/Navbar';
 import Sidebar from '@/Components/Common/Sidebar';
 import { SidebarProvider } from '@/Components/ui/sidebar';
-import { RotatingLines } from 'react-loader-spinner';
+
 
 interface CompanyLayoutClientProps {
   children: ReactNode;
 }
 
 export default function CompanyLayoutClient({ children }: CompanyLayoutClientProps) {
-  const [showLoader, setShowLoader] = useState(true);
 
-  useEffect(() => {
-    // hide loader AFTER first client render
-    setShowLoader(false);
-  }, []);
 
   return (
     <SidebarProvider>
-      {/* ✅ LOADER OVERLAY */}
-      {showLoader && (
-        <div className="fixed inset-0 z-[9999] bg-white/80 backdrop-blur-sm flex items-center justify-center">
-          <div className="flex flex-col items-center gap-4">
-          <RotatingLines
-            strokeColor="#2563eb"   // blue like image
-            strokeWidth="5"
-            animationDuration="0.9"
-            width="48"
-            visible={true}
-          />
-            <p
-              className="text-sm font-medium"
-              style={{ color: 'var(--profile-text-color)' }}
-            >
-              Loading...
-            </p>
-          </div>
-        </div>
-      )}
+   
 
       {/* ✅ MAIN LAYOUT (always rendered) */}
       <div className="flex flex-col h-screen w-full">

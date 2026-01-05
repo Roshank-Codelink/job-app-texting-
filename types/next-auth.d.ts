@@ -4,6 +4,7 @@ declare module "next-auth" {
   interface User {
     role?: string;
     token?: string;
+    companyName?: string;
   }
 
   interface Session extends DefaultSession {
@@ -14,6 +15,7 @@ declare module "next-auth" {
       image?: string | null;
       role?: string;
       token?: string;
+      companyName?: string;
     } & DefaultSession["user"];
   }
 }
@@ -27,6 +29,7 @@ declare module "next-auth/react" {
       image?: string | null;
       role?: string;
       token?: string;
+      companyName?: string;
     };
   }
 }

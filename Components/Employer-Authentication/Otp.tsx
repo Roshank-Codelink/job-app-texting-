@@ -34,6 +34,7 @@ export default function Otp({ email, onEdit }: OtpProps) {
                 toast.error("Invalid OTP");
                 return;
             }
+            
 
             toast.success("Login successful!");
             router.push("/employer/dashboard");

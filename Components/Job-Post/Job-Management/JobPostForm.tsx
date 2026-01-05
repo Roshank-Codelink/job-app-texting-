@@ -288,7 +288,7 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
                                         New Job Post
                                     </h2>
                                     <p className="text-[10px] sm:text-[12px] text-(--sidebar-menu-icone-color) font-semibold truncate">
-                                        Sarah Connor • HR Manager
+                                        {session?.user?.name} • {session?.user?.companyName}
                                     </p>
                                 </div>
                             </div>

@@ -3,22 +3,26 @@ import { useState } from "react";
 import Image from "next/image";
 import { Card, CardHeader, CardContent } from "@/Components/ui/card";
 import { JobListingItem } from "@/api_config/JobPostApi/type";
-import { Briefcase, Eye, Heart, Award, MoreVertical, Edit, Trash2, BarChart3, Copy, Archive } from "lucide-react";
+import { Briefcase, Eye, Heart, Award, MoreVertical, Edit, UserCheck, Trash2, BarChart3, Copy, Archive } from "lucide-react";
+import MarkAsHiredModal from "@/Components/Common/MarkAsHiredModal.tsx";
 // ✅ Three Dot Menu Component
 interface ThreeDotMenuProps {
   jobId: string;
+  jobStatus?: string;
   className?: string;
+  onStatusUpdate?: (jobId: string, newStatus: string) => void;
 }
-function ThreeDotMenu({ jobId, className = "" }: ThreeDotMenuProps) {
+function ThreeDotMenu({ jobId, jobStatus, className = "", onStatusUpdate }: ThreeDotMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const menuItems = [
     { icon: Edit, label: "Edit Job", color: "text-blue-600", action: () => console.log("Edit", jobId) },
-    { icon: BarChart3, label: "Analytics", color: "text-purple-600", action: () => console.log("Analytics", jobId) },
-    { icon: Copy, label: "Duplicate", color: "text-green-600", action: () => console.log("Duplicate", jobId) },
-    { icon: Archive, label: "Archive", color: "text-orange-600", action: () => console.log("Archive", jobId) },
+    ...(jobStatus?.toLowerCase() !== "hired" ? [{ icon: UserCheck, label: "Mark as Hired", color: "text-green-600", action: () => { setIsOpen(false); setTimeout(() => { setIsModalOpen(true); }, 0); } }] : []),
     { icon: Trash2, label: "Delete", color: "text-red-600", action: () => console.log("Delete", jobId) },
   ];
+
+
   return (
     <div className={`relative ${className}`}>
       <button
@@ -39,11 +43,14 @@ function ThreeDotMenu({ jobId, className = "" }: ThreeDotMenuProps) {
             {menuItems.map((item, index) => (
               <button
                 key={index}
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   item.action();
-                  setIsOpen(false);
+                  if (item.label !== "Mark as Hired") {
+                    setIsOpen(false);
+                  }
                 }}
-                className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-(--profile-border-color) transition-colors duration-150 text-left group"
+                className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-(--profile-border-color) transition-colors duration-150 text-left group cursor-pointer"
               >
                 <item.icon className={`w-4 h-4 ${item.color}`} strokeWidth={2} />
                 <span className="text-sm font-medium text-(--profile-name-color) group-hover:text-(--navbar-text-color)">
@@ -54,6 +61,13 @@ function ThreeDotMenu({ jobId, className = "" }: ThreeDotMenuProps) {
           </div>
         </>
       )}
+      {/* Modal outside dropdown - always rendered */}
+      <MarkAsHiredModal
+        jobId={jobId}
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        onStatusUpdate={onStatusUpdate}
+      />
     </div>
   );
 }
@@ -62,8 +76,10 @@ interface JobHeaderProps {
   companyName: string;
   postedTime: string;
   jobId: string;
+  jobStatus?: string;
+  onStatusUpdate?: (jobId: string, newStatus: string) => void;
 }
-function JobHeader({ companyName, postedTime, jobId }: JobHeaderProps) {
+function JobHeader({ companyName, postedTime, jobId, jobStatus, onStatusUpdate }: JobHeaderProps) {
   return (
     <CardHeader className="pb-3 pt-5 px-6">
       <div className="flex items-center justify-between gap-4">
@@ -132,7 +148,7 @@ function JobHeader({ companyName, postedTime, jobId }: JobHeaderProps) {
             </div>
           </div>
           {/* Three Dot Menu - Last Position */}
-          <ThreeDotMenu className="cursor-pointer" jobId={jobId} />
+          <ThreeDotMenu className="cursor-pointer" jobId={jobId} jobStatus={jobStatus} onStatusUpdate={onStatusUpdate} />
         </div>
       </div>
     </CardHeader>
@@ -161,12 +177,13 @@ function JobDescription({ description }: { description: string }) {
 // ✅ Main Component
 interface JobListingCardsProps {
   jobs: JobListingItem[];
+  onJobStatusUpdate?: (jobId: string, newStatus: string) => void;
 }
-export default function JobListingCards({ jobs }: JobListingCardsProps) {
+export default function JobListingCards({ jobs, onJobStatusUpdate }: JobListingCardsProps) {
   return (
     <div className="w-full p-4 space-y-6">
       <h1 className="text-xl font-bold text-(--profile-name-color) mb-4">Recent Job Posts</h1>
-      {jobs.length === 0 ? (
+      {jobs?.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-12">
           <Briefcase className="h-12 w-12 text-(--job-post-bg-color)  mb-3" />
           <p className="text-(--profile-title-color) text-center">No job post available</p>
@@ -178,18 +195,32 @@ export default function JobListingCards({ jobs }: JobListingCardsProps) {
               key={job._id}
               className="rounded-xl border border-(--profile-border-color) shadow-sm hover:shadow-md transition-shadow duration-300 relative"
             >
-              {/* Live Status Badge - Card ke andar top-right corner */}
+              {/* Status Badge - Card ke andar top-right corner */}
               <div className="absolute top-3 right-3 z-10">
-                <div className="flex items-center gap-1.5 bg-(--sidebar-bg-color) border-2 border-emerald-400 rounded-full px-3 py-1 shadow-lg">
-                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                  <span className="text-[10px] font-bold text-emerald-600">LIVE</span>
-                </div>
+                {job.status?.toLowerCase() === "hired" ? (
+                  <div className="flex items-center gap-1.5 bg-(--sidebar-bg-color) border-2 border-blue-500 rounded-full px-3 py-1 shadow-lg">
+                    <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                    <span className="text-[10px] font-bold text-blue-600 uppercase">{job.status}</span>
+                  </div>
+                ) : job.status?.toLowerCase() === "live" || job.status?.toLowerCase() === "active" ? (
+                  <div className="flex items-center gap-1.5 bg-(--sidebar-bg-color) border-2 border-emerald-400 rounded-full px-3 py-1 shadow-lg">
+                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                    <span className="text-[10px] font-bold text-emerald-600 uppercase">{job.status}</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1.5 bg-(--sidebar-bg-color) border-2 border-gray-400 rounded-full px-3 py-1 shadow-lg">
+                    <span className="w-1.5 h-1.5 bg-gray-500 rounded-full"></span>
+                    <span className="text-[10px] font-bold text-gray-600 uppercase">{job.status || "PENDING"}</span>
+                  </div>
+                )}
               </div>
               <div>
                 <JobHeader
                   companyName="CodeLink Infotech"
                   postedTime="Recently"
                   jobId={job._id}
+                  jobStatus={job.status}
+                  onStatusUpdate={onJobStatusUpdate}
                 />
                 <JobDescription description={job.rawDescription} />
                 {/* Stats Cards - Mobile aur iPad me bottom pe dikhenge */}
@@ -219,6 +250,8 @@ export default function JobListingCards({ jobs }: JobListingCardsProps) {
                         </div>
                       </div>
                     </div>
+
+
                     {/* Saved Box */}
                     <div className="relative group flex-1">
                       <div className="bg-(--sidebar-bg-color) border border-(--profile-border-color) rounded-lg px-2.5 py-2 hover:border-(--navbar-text-color) hover:shadow-md transition-all duration-200 cursor-pointer">

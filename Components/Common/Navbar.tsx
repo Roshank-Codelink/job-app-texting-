@@ -7,11 +7,10 @@ import UserProfiles from "./UserProfiles";
 import { Button } from "@/Components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
-
+import Link from "next/link";
 
 export default function Navbar() {
   const { openMobile, setOpenMobile } = useSidebar();
-
   const { data: session } = useSession();
   const user = session?.user;
 
@@ -21,10 +20,6 @@ export default function Navbar() {
     console.log('Setting openMobile to:', !openMobile);
   };
 
-
-
-
-  
   return (
     <div className="w-full h-full flex items-center justify-between px-3 sm:px-4 md:px-5 lg:px-6 bg-(--navbar-bg-parent)">
       <div className="left-content w-auto md:w-[11%] h-full flex items-center gap-1 sm:gap-1.5 md:gap-2 min-w-0">
@@ -32,7 +27,7 @@ export default function Navbar() {
           <Image src="/Gemini_Generated_Image_hjxynfhjxynfhjxy.png" alt="logo" width={100} height={100} className="w-full h-full" />
         </div>
         <div className="logo-text min-w-0">
-          <h1 className="font-bold text-base sm:text-lg md:text-xl text-(--navbar-logo-text-color) whitespace-nowrap">Jobito</h1>
+          <Link href="/employer/dashboard"><h1 className="font-bold text-base sm:text-lg md:text-xl text-(--navbar-logo-text-color) whitespace-nowrap">Jobito</h1></Link>
         </div>
       </div>
       <div className="right-content w-auto h-full flex items-center gap-2 sm:gap-3 md:gap-4 shrink-0">

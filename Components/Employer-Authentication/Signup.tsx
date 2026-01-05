@@ -7,10 +7,9 @@ import { useRouter } from "next/navigation";
 import { signupApi } from "@/api_config/SignupApi/signupapi";
 import { toast } from "react-toastify";
 
-
 export default function Signup() {
     const router = useRouter();
-    
+
     const handleSubmit = async (values: {
         email: string;
         name: string;
@@ -20,8 +19,9 @@ export default function Signup() {
         contactNumber: string;
     }) => {
         try {
+            // If URL is valid, proceed with signup
             const response = await signupApi(values);
-            if (response.statusCode === 201) {
+            if (!response.error) {
                 toast.success(response.data.message);
                 router.push("/employer-signin");
             } else {

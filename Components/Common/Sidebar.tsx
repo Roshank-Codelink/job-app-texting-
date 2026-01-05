@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import {
   Sidebar,
   SidebarContent,
@@ -9,16 +10,10 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarFooter,
-  SidebarProvider,
 } from "@/Components/ui/sidebar";
 import {
   AlertCircle,
-  FileText,
-  User,
-  Calendar,
-  PieChart,
-  Settings,
+  User
 } from "lucide-react";
 import { BiSolidZap } from "react-icons/bi";
 import { Button } from "@/Components/ui/button";
@@ -28,17 +23,15 @@ import Link from "next/link";
 export default function AppSidebar() {
   const pathname = usePathname();
   const [activeItem, setActiveItem] = useState("");
+  const { data: session } = useSession();
+  const user = session?.user;
 
   // Set active item based on current pathname
   useEffect(() => {
     if (pathname?.includes("/employer/dashboard")) {
       setActiveItem("dashboard");
-    } else if (pathname?.includes("/employer/job-post")) {
-      setActiveItem("job-posts");
-    } else if (pathname?.includes("/employer/candidates")) {
-      setActiveItem("candidates");
-    } else if (pathname?.includes("/profile")) {
-      setActiveItem(""); // No item selected on profile page
+    } else if (pathname?.includes("/employer/profile")) {
+      setActiveItem("profile"); // No item selected on profile page
     } else {
       setActiveItem(""); // Default to no selection
     }
@@ -75,7 +68,7 @@ export default function AppSidebar() {
                     </SidebarMenuButton></Link>
                   </SidebarMenuItem>
                   {/* Job Posts */}
-                  <SidebarMenuItem 
+                  {/* <SidebarMenuItem 
                     className={`rounded-lg transition-all ${
                       activeItem === "job-posts" 
                         ? "bg-(--navbar-bg-button) border-r-[3px] border-(--navbar-text-color)" 
@@ -93,9 +86,9 @@ export default function AppSidebar() {
                       <FileText className="w-5 h-5" />
                       <span>Job Posts</span>
                     </SidebarMenuButton></Link>
-                  </SidebarMenuItem>
+                  </SidebarMenuItem> */}
                   {/* Candidates */}
-                  <SidebarMenuItem 
+                  {/* <SidebarMenuItem 
                     className={`rounded-lg transition-all ${
                       activeItem === "candidates" 
                         ? "bg-(--navbar-bg-button) border-r-[3px] border-(--navbar-text-color)" 
@@ -113,9 +106,9 @@ export default function AppSidebar() {
                       <User className="w-5 h-5" />
                       <span>Candidates</span>
                     </SidebarMenuButton>
-                  </SidebarMenuItem>
+                  </SidebarMenuItem> */}
                   {/* Interviews */}
-                  <SidebarMenuItem 
+                  {/* <SidebarMenuItem 
                     className={`rounded-lg transition-all ${
                       activeItem === "interviews" 
                         ? "bg-(--navbar-bg-button) border-r-[3px] border-(--navbar-text-color)" 
@@ -133,9 +126,9 @@ export default function AppSidebar() {
                       <Calendar className="w-5 h-5" />
                       <span>Interviews</span>
                     </SidebarMenuButton>
-                  </SidebarMenuItem>
+                  </SidebarMenuItem> */}
                   {/* Analytics */}
-                  <SidebarMenuItem 
+                  {/* <SidebarMenuItem 
                     className={`rounded-lg transition-all ${
                       activeItem === "analytics" 
                         ? "bg-(--navbar-bg-button) border-r-[3px] border-(--navbar-text-color)" 
@@ -153,26 +146,28 @@ export default function AppSidebar() {
                       <PieChart className="w-5 h-5" />
                       <span>Analytics</span>
                     </SidebarMenuButton>
-                  </SidebarMenuItem>
+                  </SidebarMenuItem> */}
                   {/* Settings */}
                   <SidebarMenuItem 
                     className={`rounded-lg transition-all ${
-                      activeItem === "settings" 
+                      activeItem === "profile" 
                         ? "bg-(--navbar-bg-button) border-r-[3px] border-(--navbar-text-color)" 
                         : ""
                     }`}
                   >
-                    <SidebarMenuButton 
-                      onClick={() => setActiveItem("settings")}
-                      className={`flex items-center gap-3 px-4 py-5 rounded-lg w-full cursor-pointer border-none shadow-none outline-none [&_svg]:transition ${
-                        activeItem === "settings"
-                          ? "bg-transparent hover:bg-transparent text-(--navbar-text-color) font-medium [&_svg]:text-(--navbar-text-color)"
-                          : "bg-transparent hover:bg-(--navbar-bg-button) text-(--profile-title-color) hover:text-(--navbar-text-color) [&_svg]:text-(--sidebar-menu-icone-color) [&:hover_svg]:text-(--navbar-text-color) [&:hover_svg]:scale-110"
-                      }`}
-                    >
-                      <Settings className="w-5 h-5" />
-                      <span>Settings</span>
-                    </SidebarMenuButton>
+                    <Link href="/employer/profile">
+                      <SidebarMenuButton 
+                        onClick={() => setActiveItem("profile")}
+                        className={`flex items-center gap-3 px-4 py-5 rounded-lg w-full cursor-pointer border-none shadow-none outline-none [&_svg]:transition ${
+                          activeItem === "profile"
+                            ? "bg-transparent hover:bg-transparent text-(--navbar-text-color) font-medium [&_svg]:text-(--navbar-text-color)"
+                            : "bg-transparent hover:bg-(--navbar-bg-button) text-(--profile-title-color) hover:text-(--navbar-text-color) [&_svg]:text-(--sidebar-menu-icone-color) [&:hover_svg]:text-(--navbar-text-color) [&:hover_svg]:scale-110"
+                        }`}
+                      >
+                          <User className="w-5 h-5" />
+                          <span>Profile</span>
+                      </SidebarMenuButton>
+                    </Link>
                   </SidebarMenuItem>
                 </SidebarMenu>
               </SidebarGroupContent>
@@ -188,7 +183,7 @@ export default function AppSidebar() {
               <p className="text-xs text-(--profile-title-color) text-center">
                 Unlock AI features for unlimited job posts.
               </p>
-              <Button className="w-full py-2 bg-(--profile-text-color) text-(--sidebar-bg-color) text-xs rounded-lg hover:bg-(--profile-text-color) hover:text-(--sidebar-bg-color)">
+              <Button className="w-full py-2 cursor-pointer bg-(--profile-text-color) text-(--sidebar-bg-color) text-xs rounded-lg hover:bg-(--profile-text-color) hover:text-(--sidebar-bg-color)">
                 Upgrade Now
               </Button>
             </div>
@@ -196,7 +191,7 @@ export default function AppSidebar() {
         </div>
         {/* USER PROFILE - At Absolute Bottom - Visible only on mobile */}
         <div className="absolute bottom-0 left-0 right-0 p-2 pb-4 md:hidden">
-          <UserProfiles variant="sidebar" />
+          <UserProfiles variant="sidebar" user={user} />
         </div>
       </div>
       {/* END WRAPPER */}

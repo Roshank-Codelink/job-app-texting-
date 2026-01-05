@@ -4,7 +4,7 @@ import JobListingCards from "./Job-Management/JobListingCards";
 import JobPostForm from "./Job-Management/JobPostForm";
 import { GetAllJobsAPI } from "@/api_config/JobPostApi/JobPostApi";
 import { JobListingItem } from "@/api_config/JobPostApi/type";
-import { useSession } from "next-auth/react";
+
 interface JobPostProps {
   initialJobs: JobListingItem[];
 }
@@ -22,6 +22,11 @@ export default function JobPost({ initialJobs }: JobPostProps) {
   const pageRef = useRef(1);
   // console.log("Session:", session);
   // Sync refs with state
+
+
+    console.log("Jobs:", jobs);
+
+
   useEffect(() => {
     isLoadingRef.current = isLoading;
   }, [isLoading]);
@@ -131,7 +136,7 @@ export default function JobPost({ initialJobs }: JobPostProps) {
     };
   }, [hasMore, fetchMoreJobs]);
   return (
-    <div className="flex w-full h-full gap-0">
+    <div className="flex w-full min-h-full gap-0">
       {/* MAIN CONTENT */}
       <div className="flex-1 min-w-0 p-4 sm:p-6 md:p-8 lg:p-[32px]">
         {/* Job Post Form */}
@@ -139,7 +144,16 @@ export default function JobPost({ initialJobs }: JobPostProps) {
           <JobPostForm refreshJobs={refreshJobs} />
         </div>
         {/* Job Listing Cards */}
-        <JobListingCards jobs={jobs} />
+        <JobListingCards 
+          jobs={jobs || []} 
+          onJobStatusUpdate={(jobId: string, newStatus: string) => {
+            setJobs((prevJobs) =>
+              prevJobs.map((job) =>
+                job._id === jobId ? { ...job, status: newStatus } : job
+              )
+            );
+          }}
+        />
         {/* Infinite Loader - Only show if we have at least limit number of jobs */}
         {hasMore && jobs.length >= limit && (
           <div className="py-10 text-center" ref={loaderRef}>
@@ -164,10 +178,12 @@ export default function JobPost({ initialJobs }: JobPostProps) {
         )}
       </div>
       {/* RIGHT SIDEBAR */}
-      <div className="hidden xl:flex w-[23%] shrink-0 border-l border-[#e5e7eb] bg-white sticky top-0 self-start h-[calc(100vh-60px)] overflow-y-auto">
-        {/* <div className="w-full h-full p-4">
-          <div className="text-gray-500 text-sm">Right Sidebar Content</div>
-        </div> */}
+      <div className="hidden xl:block w-[23%] shrink-0">
+        <div className="sticky top-0 h-screen border-l border-[#e5e7eb] bg-white overflow-y-auto">
+          {/* <div className="w-full h-full p-4">
+            <div className="text-gray-500 text-sm">Right Sidebar Content</div>
+          </div> */}
+        </div>
       </div>
     </div>
   );

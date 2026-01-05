@@ -33,7 +33,7 @@ export default function SignIn() {
     } catch (emailError: any) {
       console.error("Email Error:", emailError);
       toast.error(emailError.message);
-    } finally {``
+    } finally {
       setIsLoading(false);
     }
   };
@@ -43,7 +43,7 @@ export default function SignIn() {
   };
 
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 relative overflow-hidden">
+    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 relative  overflow-hidden ">
       {/* Background Image/Pattern Layer */}
       <div className="absolute inset-0 bg-gradient-to-br from-(--navbar-bg-button) via-white to-(--signin-bg-color-to)">
         {/* Subtle Background Pattern */}

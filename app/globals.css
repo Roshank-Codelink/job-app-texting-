@@ -137,6 +137,7 @@
     --job-post-text-color:  #3b82f6;  /* blue-500 */
     --job-post-icone-color: #eff6ff;  /* blue-50*/
 
+
     --job-post-button-bg-from:#38bdf8;
     --job-post-button-bg-to:#2dd4bf;
     --job-post-button-hover:#14b8a6;
@@ -162,7 +163,8 @@
   --otp-hover-color: #0284c7;
 
     
-
+  --profile-header-bg-color: oklch(0.967 0.003 264.542); /* gray-100 */
+  --profile-header-border-color: oklch(0.872 0.01 258.338); /* gray-300 */
   }
   
 

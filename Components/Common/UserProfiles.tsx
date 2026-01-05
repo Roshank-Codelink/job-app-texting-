@@ -26,7 +26,6 @@ export default function UserProfiles({
     user,
 }: UserProfileProps) {
     const [open, setOpen] = useState(false);
-    
     // Get initials from name
     const getInitials = (fullName?: string) => {
         if (!fullName) return "";
@@ -37,25 +36,19 @@ export default function UserProfiles({
             .toUpperCase()
             .slice(0, 2);
     };
-    
 
- const handleLogout = async () => {
-    const response = await LogoutAPI();
-    signOut(
-        {
-            redirect: true,
-            callbackUrl: "/employer-signin",
-        }
-    );
- }
+    const handleLogout = async () => {
+        const response = await LogoutAPI();
+        signOut(
+            {
+                redirect: true,
+                callbackUrl: "/employer-signin",
+            }
+        );
+    }
 
-
-
-
-
-   
     const isSidebar = variant === "sidebar";
-    
+
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
@@ -148,14 +141,7 @@ export default function UserProfiles({
                     </div>
                     {/* Menu Items */}
                     <div className="py-1">
-                        <Link
-                            href="/profile"
-                            className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-(--profile-menu-text-color) hover:bg-(--Profile-hover-bg) cursor-pointer transition-colors rounded-none"
-                            onClick={() => setOpen(false)}
-                        >
-                            <User className="w-4 h-4" />
-                            <span>View Profile</span>
-                        </Link>
+
                         <Link
                             href="/settings"
                             className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-(--profile-menu-text-color) hover:bg-(--Profile-hover-bg) cursor-pointer transition-colors rounded-none"
