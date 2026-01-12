@@ -13,6 +13,7 @@ export default async function Home() {
 {!session && <Link href="/candidate-signin">Candidate Login</Link>}
 {!session && <Link href="/employer-signin">Employer Login</Link>}
 {session?.user?.role==="EMPLOYER" && <Link href="/employer/dashboard">Company Dashboard</Link>}
-{session?.user?.role==="EMPLOYEE" && <Link href="/candidate/dashboard">Candidate Dashboard</Link>}
+{session?.user?.role==="EMPLOYEE" && <Link href="/candidate/jobs">Candidate Dashboard</Link>}
+
 </div>
 </>);}

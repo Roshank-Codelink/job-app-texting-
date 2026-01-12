@@ -1,17 +1,30 @@
 "use client";
 
-import { useState } from "react";
-import { Camera } from "lucide-react";
+import { useState, useRef } from "react";
+import { Camera, X } from "lucide-react";
 import Image from "next/image";
 import { EmployerInfoData } from "@/api_config/EmployerInfoApi/type";
 
 export default function CompanyProfileHeader({ employerInfo }: { employerInfo: EmployerInfoData }) {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setImagePreview(URL.createObjectURL(file));
+  };
+
+  const handleDeleteImage = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+      setImagePreview(null);
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   // Profile Strength Badge Config
@@ -54,6 +67,7 @@ export default function CompanyProfileHeader({ employerInfo }: { employerInfo: E
         className="w-[60px] h-[60px] sm:w-[70px] sm:h-[70px] md:w-[80px] md:h-[80px] rounded-full relative cursor-pointer border-2 border-dashed flex items-center justify-center overflow-hidden bg-(--profile-header-bg-color) group border-(--profile-header-border-color) hover:bg-(--profile-image-border-color) transition-all shrink-0"
       >
         <input
+          ref={fileInputRef}
           id="profileUpload"
           type="file"
           accept="image/*"
@@ -68,9 +82,14 @@ export default function CompanyProfileHeader({ employerInfo }: { employerInfo: E
               alt="Profile"
               className="absolute inset-0 w-full h-full object-cover rounded-full z-10"
             />
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition z-20 rounded-full">
-              <Camera className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-            </div>
+            <button
+              onClick={handleDeleteImage}
+              className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition z-20 rounded-full cursor-pointer"
+              aria-label="Delete image"
+              type="button"
+            >
+              <X className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
+            </button>
           </>
         ) : (
           <div className="flex flex-col items-center gap-1 text-(--profile-title-color)">

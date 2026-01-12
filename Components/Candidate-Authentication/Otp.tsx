@@ -37,7 +37,7 @@ export default function Otp({ email, onEdit }: OtpProps) {
             }
 
             toast.success("Login successful!");
-            router.push("http://localhost:3000/");
+            router.push("http://localhost:3000/candidate/jobs");
 
         } catch (error) {
             console.error("OTP Error:", error);

@@ -7,7 +7,7 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV !== "development",
   },
   images: {
-    domains: ["localhost", "images.unsplash.com"],
+    domains: ["localhost", "images.unsplash.com","icon2.cleanpng.com"],
   },
   turbopack: {},
   fallbacks:{

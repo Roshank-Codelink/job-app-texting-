@@ -193,7 +193,7 @@ export default function ProfileTabsContent({ type, employerInfo, isEditMode, for
 
           <div>
             <p className="text-xs uppercase tracking-wide text-(--profile-title-color) mb-1.5">
-              Email Address
+              Email Address (Not Editable)
             </p>
             <Input
               type="email"

@@ -13,7 +13,7 @@ export default async function Profile() {
 
     return (
         <div className="w-full h-full ">
-            <EmployerProfile employerInfo={employerInfo} />
+            <EmployerProfile employerInfo={employerInfo } />
         </div>
     )
 }
