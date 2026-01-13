@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ChevronDown, ChevronUp, X, Filter, Search } from "lucide-react"
+import { ChevronDown, ChevronUp, X, Search, Filter, Check } from "lucide-react"
 
 interface FiltersSidebarProps {
   activeFilters: string[]
@@ -76,7 +76,7 @@ export default function FiltersSidebar({
                 <span>{filter}</span>
                 <button
                   onClick={() => onRemoveFilter(filter)}
-                  className="hover:bg-[#e0f2fe] rounded-full p-0.5 transition-colors"
+                  className="hover:bg-[#e0f2fe] rounded-full p-0.5 transition-colors cursor-pointer"
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -94,9 +94,9 @@ export default function FiltersSidebar({
         >
           <h3 className="text-sm font-semibold text-gray-900">Date posted</h3>
           {isDateOpen ? (
-            <ChevronUp className="h-4 w-4 text-gray-500" />
+            <ChevronUp className="h-4 w-4 text-gray-500 cursor-pointer" />
           ) : (
-            <ChevronDown className="h-4 w-4 text-gray-500" />
+            <ChevronDown className="h-4 w-4 text-gray-500 cursor-pointer" />
           )}
         </button>
         {isDateOpen && (
@@ -117,7 +117,7 @@ export default function FiltersSidebar({
                   value={option.value}
                   checked={datePosted === option.value}
                   onChange={(e) => onDatePostedChange(e.target.value)}
-                  className="w-4 h-4 text-[#0ea5e9] border-gray-300 focus:ring-[#0ea5e9] focus:ring-2"
+                  className="w-4 h-4 text-[#0ea5e9] border-gray-300 focus:outline-none focus:ring-0"
                 />
                 <span className="text-sm text-gray-700 group-hover:text-gray-900">
                   {option.label}
@@ -136,36 +136,40 @@ export default function FiltersSidebar({
         >
           <h3 className="text-sm font-semibold text-gray-900">Salary</h3>
           {isSalaryOpen ? (
-            <ChevronUp className="h-4 w-4 text-gray-500" />
+            <ChevronUp className="h-4 w-4 text-gray-500 cursor-pointer" />
           ) : (
-            <ChevronDown className="h-4 w-4 text-gray-500" />
+            <ChevronDown className="h-4 w-4 text-gray-500 cursor-pointer" />
           )}
         </button>
         {isSalaryOpen && (
-          <div className="space-y-4">
-            <div>
-              <p className="text-xs text-gray-600 mb-2">Minimum monthly salary</p>
-              <div className="relative">
+          <div className="space-y-2">
+            {[
+              { label: "₹0 - ₹25,000", value: 0 },
+              { label: "₹25,000 - ₹50,000", value: 25000 },
+              { label: "₹50,000 - ₹75,000", value: 50000 },
+              { label: "₹75,000 - ₹1 Lakh", value: 75000 },
+              { label: "₹1 Lakh - ₹1.5 Lakhs", value: 100000 },
+              { label: "₹1.5 Lakhs+", value: 150000 },
+            ].map((option) => (
+              <label
+                key={option.value}
+                className="flex items-center gap-2 cursor-pointer group"
+              >
                 <input
-                  type="range"
-                  min="0"
-                  max="150000"
-                  step="5000"
-                  value={salaryRange}
-                  onChange={(e) => onSalaryRangeChange(Number(e.target.value))}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-                  style={{
-                    background: `linear-gradient(to right, #2dd4bf 0%, #2dd4bf ${(salaryRange / 150000) * 100}%, #e5e7eb ${(salaryRange / 150000) * 100}%, #e5e7eb 100%)`,
+                  type="checkbox"
+                  checked={salaryRange === option.value}
+                  onChange={() => {
+                    if (salaryRange === option.value) {
+                      onSalaryRangeChange(0)
+                    } else {
+                      onSalaryRangeChange(option.value)
+                    }
                   }}
+                  className="w-4 h-4 text-[#0ea5e9] border-gray-300 rounded focus:outline-none focus:ring-0"
                 />
-              </div>
-              <div className="flex items-center justify-between mt-2">
-                <span className="text-sm font-semibold text-[#14b8a6]">
-                  {formatSalary(salaryRange)}
-                </span>
-                <span className="text-xs text-gray-600">1.5 Lakhs</span>
-              </div>
-            </div>
+                <span className="text-sm text-gray-700">{option.label}</span>
+              </label>
+            ))}
           </div>
         )}
       </div>
@@ -180,17 +184,16 @@ export default function FiltersSidebar({
             Work Mode ({workMode.length})
           </h3>
           {isWorkModeOpen ? (
-            <ChevronUp className="h-4 w-4 text-gray-500" />
+            <ChevronUp className="h-4 w-4 text-gray-500 cursor-pointer" />
           ) : (
-            <ChevronDown className="h-4 w-4 text-gray-500" />
+            <ChevronDown className="h-4 w-4 text-gray-500 cursor-pointer" />
           )}
         </button>
         {isWorkModeOpen && (
           <div className="space-y-2">
             {[
               { label: "Work from home", value: "work_from_home" },
-              { label: "Work from office", value: "work_from_office" },
-              { label: "Work from field", value: "work_from_field" },
+              { label: "Work from office", value: "work_from_office" }
             ].map((option) => (
               <label
                 key={option.value}
@@ -200,7 +203,7 @@ export default function FiltersSidebar({
                   type="checkbox"
                   checked={workMode.includes(option.value)}
                   onChange={() => onWorkModeChange(option.value)}
-                  className="w-4 h-4 text-[#0ea5e9] border-gray-300 rounded focus:ring-[#0ea5e9] focus:ring-2"
+                  className="w-4 h-4 text-[#0ea5e9] border-gray-300 rounded focus:outline-none focus:ring-0"
                 />
                 <span className="text-sm text-gray-700 group-hover:text-gray-900">
                   {option.label}
@@ -219,9 +222,9 @@ export default function FiltersSidebar({
         >
           <h3 className="text-sm font-semibold text-gray-900">Work Type</h3>
           {isWorkTypeOpen ? (
-            <ChevronUp className="h-4 w-4 text-gray-500" />
+            <ChevronUp className="h-4 w-4 text-gray-500 cursor-pointer" />
           ) : (
-            <ChevronDown className="h-4 w-4 text-gray-500" />
+            <ChevronDown className="h-4 w-4 text-gray-500 cursor-pointer" />
           )}
         </button>
         {isWorkTypeOpen && (
@@ -239,7 +242,7 @@ export default function FiltersSidebar({
                   type="checkbox"
                   checked={workType.includes(option.value)}
                   onChange={() => onWorkTypeChange(option.value)}
-                  className="w-4 h-4 text-[#0ea5e9] border-gray-300 rounded focus:ring-[#0ea5e9] focus:ring-2"
+                  className="w-4 h-4 text-[#0ea5e9] border-gray-300 rounded focus:outline-none focus:ring-0"
                 />
                 <span className="text-sm text-gray-700 group-hover:text-gray-900">
                   {option.label}
@@ -257,12 +260,12 @@ export default function FiltersSidebar({
           className="w-full flex items-center justify-between mb-3"
         >
           <h3 className="text-sm font-semibold text-gray-900">
-            Category ({categories.length})
+            Department ({categories.length})
           </h3>
           {isCategoryOpen ? (
-            <ChevronUp className="h-4 w-4 text-gray-500" />
+            <ChevronUp className="h-4 w-4 text-gray-500 cursor-pointer" />
           ) : (
-            <ChevronDown className="h-4 w-4 text-gray-500" />
+            <ChevronDown className="h-4 w-4 text-gray-500 cursor-pointer" />
           )}
         </button>
         {isCategoryOpen && (
@@ -302,7 +305,7 @@ export default function FiltersSidebar({
                       type="checkbox"
                       checked={categories.includes(option.value)}
                       onChange={() => onCategoryChange(option.value)}
-                      className="w-4 h-4 text-[#0ea5e9] border-gray-300 rounded focus:ring-[#0ea5e9] focus:ring-2"
+                      className="w-4 h-4 text-[#0ea5e9] border-gray-300 rounded focus:outline-none focus:ring-0"
                     />
                     <span className="text-sm text-gray-700 group-hover:text-gray-900">
                       {option.label}
@@ -311,9 +314,9 @@ export default function FiltersSidebar({
                 ))}
             </div>
             {/* Show More Link */}
-            <button className="text-sm text-[#14b8a6] hover:text-[#0d9488] font-medium">
+            {/* <button className="text-sm text-[#14b8a6] hover:text-[#0d9488] font-medium">
               Show 12 more &gt;
-            </button>
+            </button> */}
           </div>
         )}
       </div>

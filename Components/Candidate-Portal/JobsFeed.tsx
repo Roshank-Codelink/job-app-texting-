@@ -10,6 +10,7 @@ interface EmployerProfile {
     name: string
     logo: string
     verified: boolean
+    badge?: "growing" | "trusted"
 }
 
 interface JobData {
@@ -25,7 +26,8 @@ export const jobs: JobData[] = [
         employerProfile: {
             name: "NorthByte Technologies",
             logo: "https://cdn-icons-png.flaticon.com/512/5968/5968264.png",
-            verified: true
+            verified: true,
+            badge: "growing"
         },
         status: "Live",
         rawDescription: `<p>NorthByte Technologies is expanding team and inviting skilled professionals and motivated IT students to apply.<br><br>Open positions:<br>– Frontend Developer Intern (Freshers)<br>– Full Stack Developer (1–2 years)<br>– UI/UX Designer (0–1 years)<br>– Internship opportunities in React, Node.js & Web Design<br>(Only IT students can apply for internships)<br><br>Remote work available. Candidates from Canada will be prioritized.<br>📩 careers@northbyte.com | 📍 Canada (Remote)<br><br><a href="#"><strong>#WeAreHiring</strong></a> <a href="#"><strong>#NorthByteTechnologies</strong></a> <a href="#"><strong>#ITCareers</strong></a> <a href="#"><strong>#CanadaJobs</strong></a> <a href="#"><strong>#HiringNow</strong></a> <a href="#"><strong>#Internships</strong></a></p>`
@@ -35,7 +37,8 @@ export const jobs: JobData[] = [
         employerProfile: {
             name: "MapleSoft Labs",
             logo: "https://cdn-icons-png.flaticon.com/512/5968/5968705.png",
-            verified: true
+            verified: true,
+            badge: "trusted"
         },
         status: "Live",
         rawDescription: `<p>🚀💻 MapleSoft Labs is Hiring! 💻🚀<br><br>💼 Position: Full Stack Web Developer (React.js & Node.js)<br>📍 Location: Toronto, Canada (Remote)<br>🕒 Experience: 1 – 2 Years<br><br>About the Role<br><br>We're looking for a passionate and detail-oriented Full Stack Developer with strong fundamentals in React.js and Node.js to join our team. If you have solid skills in frontend and backend technologies and a good grasp of REST APIs, we'd love to hear from you!<br><br>📍 Candidates must be based in Canada<br><br>📩 Interested?<br>share your resume via WhatsApp at: +1-234-567-8900<br><br><a href="#"><strong>#MapleSoftLabs</strong></a> <a href="#"><strong>#Canada</strong></a> <a href="#"><strong>#Hiring</strong></a> <a href="#"><strong>#JobOpening</strong></a> <a href="#"><strong>#FullStackDeveloper</strong></a> <a href="#"><strong>#ReactJS</strong></a> <a href="#"><strong>#NodeJS</strong></a> <a href="#"><strong>#SoftwareEngineer</strong></a> <a href="#"><strong>#CareerOpportunity</strong></a> <a href="#"><strong>#Jobs</strong></a> <a href="#"><strong>#JobSearch</strong></a></p>`
@@ -45,7 +48,8 @@ export const jobs: JobData[] = [
         employerProfile: {
             name: "PolarStack Solutions",
             logo: "https://cdn-icons-png.flaticon.com/512/5968/5968520.png",
-            verified: true
+            verified: true,
+            badge: "growing"
         },
         status: "Live",
         rawDescription: `<p>🚨 URGENT HIRING – PolarStack Solutions 🚨<br><br>🎉 Multiple Open Positions – Join Our Growing Team! 🎉<br>Are you looking to kick-start or grow your career in the IT industry?<br>PolarStack Solutions is hiring <a href="#"><strong>#Passionate</strong></a>, <a href="#"><strong>#skilled</strong></a>, and <a href="#"><strong>#motivated</strong></a> professionals to join our expanding team.<br><br>📍 Location Requirement:<br><br>👉 Only Canada-based candidates are eligible to apply.<br><br>🔎 Current Openings<br><br>📌 UI/UX Designer<br>🔴 Experience: 1 to 2 Years<br><br>📌 Frontend Developer<br>🔴 Experience: Fresher to 2 Years<br><br>📌 React Developer<br>🔴 Experience: Fresher to 2 Years<br><br>📌 Design Team Leader<br>🔴 Experience: 2+ Years<br><br>🏢 Office Location:<br>📍 Vancouver, Canada<br><br>⏩ Interested candidates can share their CV at:<br>✉️ jobs@polarstack.com<br>📞 +1-345-678-9012<br><br>🌟 Don't miss this opportunity—grow your career with us! 🌟<br><br><a href="#"><strong>#PolarStackSolutions</strong></a> <a href="#"><strong>#HiringNow</strong></a> <a href="#"><strong>#WeAreHiring</strong></a> <a href="#"><strong>#CareerOpportunity</strong></a> <a href="#"><strong>#ITJobsCanada</strong></a> <a href="#"><strong>#CanadaJobs</strong></a> <a href="#"><strong>#FreshersJobs</strong></a> <a href="#"><strong>#Hiring</strong></a> <a href="#"><strong>#UIDesignerJobs</strong></a> <a href="#"><strong>#UXDesignerJobs</strong></a> <a href="#"><strong>#ReactDeveloperJobs</strong></a> <a href="#"><strong>#FrontendDeveloper</strong></a> <a href="#"><strong>#SoftwareDeveloper</strong></a></p>`
@@ -55,7 +59,8 @@ export const jobs: JobData[] = [
         employerProfile: {
             name: "NovaWave Digital",
             logo: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-            verified: true
+            verified: true,
+            badge: "trusted"
         },
         status: "Live",
         rawDescription: `<p>NovaWave Digital is expanding team and inviting skilled professionals and motivated IT students to apply.<br><br>Open positions:<br>– UI Developer (Freshers to 1 year)<br>– Frontend Developer (1–2 years)<br>– UX Designer (0–1 years)<br>– Internship opportunities in React, HTML/CSS & Web Design<br>(Only IT students can apply for internships)<br><br>Remote work available. Local candidates from Montreal will be prioritized.<br>📩 jobs@novawave.com | 📍 Montreal, Canada<br><br><a href="#"><strong>#WeAreHiring</strong></a> <a href="#"><strong>#NovaWaveDigital</strong></a> <a href="#"><strong>#ITCareers</strong></a> <a href="#"><strong>#MontrealJobs</strong></a> <a href="#"><strong>#HiringNow</strong></a> <a href="#"><strong>#Internships</strong></a></p>`
@@ -65,7 +70,8 @@ export const jobs: JobData[] = [
         employerProfile: {
             name: "CloudNest Technologies",
             logo: "https://cdn-icons-png.flaticon.com/512/919/919851.png",
-            verified: true
+            verified: true,
+            badge: "growing"
         },
         status: "Live",
         rawDescription: `<p>🚀💻 CloudNest Technologies is Hiring! 💻🚀<br><br>💼 Position: Frontend Developer Intern (React.js)<br>📍 Location: Canada (Remote)<br>🕒 Experience: Freshers – 1 Year<br><br>About the Role<br><br>We're looking for a passionate and detail-oriented Frontend Developer Intern with strong fundamentals in React.js to join our team. If you have solid skills in frontend technologies and a good grasp of HTML, CSS, and JavaScript, we'd love to hear from you!<br><br>📍 Candidates must be based in Canada<br><br>📩 Interested?<br>share your resume via WhatsApp at: +1-456-789-0123<br><br><a href="#"><strong>#CloudNestTechnologies</strong></a> <a href="#"><strong>#Canada</strong></a> <a href="#"><strong>#Hiring</strong></a> <a href="#"><strong>#JobOpening</strong></a> <a href="#"><strong>#FrontendDeveloper</strong></a> <a href="#"><strong>#ReactJS</strong></a> <a href="#"><strong>#Internship</strong></a> <a href="#"><strong>#SoftwareEngineer</strong></a> <a href="#"><strong>#CareerOpportunity</strong></a> <a href="#"><strong>#Jobs</strong></a> <a href="#"><strong>#JobSearch</strong></a></p>`
@@ -147,7 +153,7 @@ export default function JobsFeed() {
                 setSalaryRange(value)
                 const filtered = activeFilters.filter(f => !f.startsWith("Salary: "))
                 if (value > 0) {
-                    const salaryLabel = `Salary: ${formatSalary(value)}`
+                    const salaryLabel = formatSalary(value)
                     setActiveFilters([...filtered, salaryLabel])
                 } else {
                     setActiveFilters(filtered)
@@ -266,23 +272,21 @@ export default function JobsFeed() {
                                             companyName={job.employerProfile.name}
                                             companyLogo={job.employerProfile.logo}
                                             isVerified={job.employerProfile.verified}
+                                            badge={job.employerProfile.badge}
                                         />
                                     ))}
                                 </div>
                             )}
 
                             {/* Pagination UI - Center */}
-                            <div className="flex items-center justify-center mt-8">
+                            {/* <div className="flex items-center justify-center mt-8">
                                 <div className="flex items-center gap-2">
-                                    {/* Previous Button */}
                                     <button
                                         className="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
                                         disabled
                                     >
                                         <ChevronLeft className="h-4 w-4" />
                                     </button>
-
-                                    {/* Page Numbers */}
                                     <button className="w-9 h-9 flex items-center justify-center rounded-lg border border-transparent bg-gradient-to-r from-[#38bdf8] to-[#2dd4bf] text-white font-medium cursor-pointer">
                                         1
                                     </button>
@@ -296,13 +300,11 @@ export default function JobsFeed() {
                                     <button className="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-400 font-medium cursor-pointer transition-colors">
                                         10
                                     </button>
-
-                                    {/* Next Button */}
                                     <button className="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-400 cursor-pointer transition-colors">
                                         <ChevronRight className="h-4 w-4" />
                                     </button>
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>

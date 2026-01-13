@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Filter, ChevronDown, X, Search, Check } from "lucide-react"
+import { Filter, ChevronDown, X, Search, Check, Calendar, DollarSign, Home, Briefcase, Clock, Building2, ArrowUpDown } from "lucide-react"
 import {
   Sheet,
   SheetContent,
@@ -18,13 +18,13 @@ import {
 } from "@/Components/ui/select"
 
 const filterOptions = [
-  { label: "Date posted", value: "date" },
-  { label: "Salary", value: "salary" },
-  { label: "Work mode", value: "workMode" },
-  { label: "Work type", value: "workType" },
-  { label: "Work shift", value: "workShift" },
-  { label: "Department", value: "department" },
-  { label: "Sort by", value: "sortBy" },
+  { label: "Date posted", value: "date", icon: Calendar },
+  { label: "Salary", value: "salary", icon: DollarSign },
+  { label: "Work mode", value: "workMode", icon: Home },
+  { label: "Work type", value: "workType", icon: Briefcase },
+  { label: "Work shift", value: "workShift", icon: Clock },
+  { label: "Department", value: "department", icon: Building2 },
+  { label: "Sort by", value: "sortBy", icon: ArrowUpDown },
 ]
 
 export default function JobFilters() {
@@ -217,7 +217,7 @@ export default function JobFilters() {
     setSalaryRange(value)
     const filtered = activeFilters.filter(f => !f.startsWith("Salary: "))
     if (value > 0) {
-      const salaryLabel = `Salary: ${formatSalary(value)}`
+      const salaryLabel = formatSalary(value)
       setActiveFilters([...filtered, salaryLabel])
     } else {
       setActiveFilters(filtered)
@@ -311,30 +311,33 @@ export default function JobFilters() {
 
           {/* Filter Buttons - Scrollable */}
           <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide flex-1">
-            {filterOptions.map((option) => (
-              <button
-                key={option.value}
-                onClick={() => handleFilterClick(option.value)}
-                className={`flex items-center gap-1.5 px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium shrink-0 transition-colors h-10 sm:h-11 ${
-                  activeFilters.includes(option.value)
-                    ? "bg-[#f0f9ff] text-[#0ea5e9] border border-[#0ea5e9]"
-                    : "bg-white text-gray-700 border border-gray-200"
-                }`}
-              >
-                <span className="whitespace-nowrap">{option.label}</span>
-                {option.value === "workMode" && workMode.length > 0 && (
-                  <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#0ea5e9] text-white flex items-center justify-center text-[10px] sm:text-xs font-semibold">
-                    {workMode.length}
-                  </span>
-                )}
-                {option.value === "category" && categories.length > 0 && (
-                  <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#0ea5e9] text-white flex items-center justify-center text-[10px] sm:text-xs font-semibold">
-                    {categories.length}
-                  </span>
-                )}
-                <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4" />
-              </button>
-            ))}
+            {filterOptions.map((option) => {
+              const IconComponent = option.icon
+              return (
+                <button
+                  key={option.value}
+                  onClick={() => handleFilterClick(option.value)}
+                  className={`flex items-center gap-1.5 px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium shrink-0 transition-colors h-10 sm:h-11 ${
+                    activeFilters.includes(option.value)
+                      ? "bg-[#f0f9ff] text-[#0ea5e9] border border-[#0ea5e9]"
+                      : "bg-white text-gray-700 border border-gray-200"
+                  }`}
+                >
+                  <IconComponent className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+                  <span className="whitespace-nowrap">{option.label}</span>
+                  {option.value === "workMode" && workMode.length > 0 && (
+                    <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#0ea5e9] text-white flex items-center justify-center text-[10px] sm:text-xs font-semibold">
+                      {workMode.length}
+                    </span>
+                  )}
+                  {option.value === "category" && categories.length > 0 && (
+                    <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#0ea5e9] text-white flex items-center justify-center text-[10px] sm:text-xs font-semibold">
+                      {categories.length}
+                    </span>
+                  )}
+                </button>
+              )
+            })}
           </div>
         </div>
       </div>
@@ -358,24 +361,30 @@ export default function JobFilters() {
               {/* Left Pane - Filter Categories */}
               <div className="w-2/5 border-r border-gray-200 overflow-y-auto custom-scrollbar bg-gray-50">
                 <div className="flex flex-col">
-                  {filterOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() => handleFilterClick(option.value)}
-                      className={`flex items-center justify-between px-3 py-3 text-left transition-colors border-l-[3px] ${
-                        selectedFilter === option.value
-                          ? "bg-white text-[#2dd4bf] border-l-[#2dd4bf] font-medium"
-                          : "text-gray-700 hover:bg-gray-100 border-l-transparent"
-                      }`}
-                    >
-                      <span className="text-sm">{option.label}</span>
-                      {option.value === "workMode" && workMode.length > 0 && (
-                        <span className="w-5 h-5 rounded-full bg-[#2dd4bf] text-white flex items-center justify-center text-xs font-semibold">
-                          {workMode.length}
-                        </span>
-                      )}
-                    </button>
-                  ))}
+                  {filterOptions.map((option) => {
+                    const IconComponent = option.icon
+                    return (
+                      <button
+                        key={option.value}
+                        onClick={() => handleFilterClick(option.value)}
+                        className={`flex items-center justify-between px-3 py-3 text-left transition-colors border-l-[3px] ${
+                          selectedFilter === option.value
+                            ? "bg-white text-[#2dd4bf] border-l-[#2dd4bf] font-medium"
+                            : "text-gray-700 hover:bg-gray-100 border-l-transparent"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <IconComponent className="h-4 w-4 shrink-0" />
+                          <span className="text-sm">{option.label}</span>
+                        </div>
+                        {option.value === "workMode" && workMode.length > 0 && (
+                          <span className="w-5 h-5 rounded-full bg-[#2dd4bf] text-white flex items-center justify-center text-xs font-semibold">
+                            {workMode.length}
+                          </span>
+                        )}
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
 
@@ -423,27 +432,36 @@ export default function JobFilters() {
               )}
 
               {selectedFilter === "salary" && (
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-xs text-gray-600 mb-2">Minimum monthly salary</p>
-                    <div className="mb-3">
-                      <span className="inline-block px-3 py-1 bg-[#2dd4bf] text-white rounded-lg text-sm font-semibold">
-                        {formatSalary(salaryRange)}
+                <div className="space-y-2">
+                  {[
+                    { label: "₹0 - ₹25,000", value: 0 },
+                    { label: "₹25,000 - ₹50,000", value: 25000 },
+                    { label: "₹50,000 - ₹75,000", value: 50000 },
+                    { label: "₹75,000 - ₹1 Lakh", value: 75000 },
+                    { label: "₹1 Lakh - ₹1.5 Lakhs", value: 100000 },
+                    { label: "₹1.5 Lakhs+", value: 150000 },
+                  ].map((option) => (
+                    <label
+                      key={option.value}
+                      className="flex items-center gap-2 cursor-pointer group"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={salaryRange === option.value}
+                        onChange={() => {
+                          if (salaryRange === option.value) {
+                            handleSalaryRangeChange(0)
+                          } else {
+                            handleSalaryRangeChange(option.value)
+                          }
+                        }}
+                        className="w-4 h-4 text-[#0ea5e9] border-gray-300 rounded focus:outline-none focus:ring-0"
+                      />
+                      <span className="text-sm text-gray-700 group-hover:text-gray-900">
+                        {option.label}
                       </span>
-                    </div>
-                    <input
-                      type="range"
-                      min="0"
-                      max="150000"
-                      step="5000"
-                      value={salaryRange}
-                      onChange={(e) => handleSalaryRangeChange(Number(e.target.value))}
-                      className="w-full h-2 bg-[#2dd4bf]/30 rounded-lg appearance-none cursor-pointer slider"
-                      style={{
-                        background: `linear-gradient(to right, #2dd4bf 0%, #2dd4bf ${(salaryRange / 150000) * 100}%, #2dd4bf30 ${(salaryRange / 150000) * 100}%, #2dd4bf30 100%)`
-                      }}
-                    />
-                  </div>
+                    </label>
+                  ))}
                 </div>
               )}
 

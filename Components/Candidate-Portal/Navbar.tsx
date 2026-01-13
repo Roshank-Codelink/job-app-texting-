@@ -19,6 +19,8 @@ import {
   SheetClose,
   SheetOverlay,
 } from "@/Components/ui/sheet"
+import { LogoutAPI } from "@/api_config/shared/sharedapi"
+import { signOut } from "next-auth/react"
 
 const products: { title: string; href: string; description: string }[] = [
   {
@@ -37,6 +39,17 @@ const products: { title: string; href: string; description: string }[] = [
     description: "Read reviews and insights about companies before applying.",
   },
 ]
+const handleLogout = async () => {
+  const response = await LogoutAPI();
+  signOut(
+      {
+          redirect: true,
+          callbackUrl: "/candidate-signin",
+      }
+  );
+}
+
+
 
 function UserProfile() {
   return (
@@ -55,7 +68,7 @@ function UserProfile() {
           <ChevronDown className="h-4 w-4 text-black" />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-40 md:w-44 p-2" align="end">
+      <PopoverContent className="w-32 md:w-36 p-2" align="end">
         <div className="flex flex-col gap-1">
           <Link
             href="/candidate/profile"
@@ -65,13 +78,13 @@ function UserProfile() {
             <span>View Profile</span>
           </Link>
           <div className="border-t border-gray-200 my-1"></div>
-          <Link
-            href="/candidate-signin"
+         <button
+            onClick={handleLogout}
             className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 transition-colors"
           >
             <LogOut className="h-4 w-4 text-gray-600" />
             <span>Logout</span>
-          </Link>
+          </button>
         </div>
       </PopoverContent>
     </Popover>
@@ -127,6 +140,10 @@ export default function CandidateNavbar() {
     }
   }, [isSidebarOpen])
 
+
+
+
+
   return (
     <>
       {/* Invisible trigger element */}
@@ -142,7 +159,7 @@ export default function CandidateNavbar() {
       }}
     >
       <div 
-        className={`w-full ${stuck ? 'max-w-full' : 'max-w-[95%]'} ${stuck ? 'mx-0 px-0' : 'mx-auto px-4'} relative overflow-visible ${stuck ? 'space-y-0' : 'space-y-3'}`}
+        className={`w-full ${stuck ? 'max-w-full' : 'max-w-full md:max-w-[95%] lg:max-w-[85%]'} ${stuck ? 'mx-0 px-0' : 'mx-auto px-4'} relative overflow-visible ${stuck ? 'space-y-0' : 'space-y-3'}`}
         style={{
           transition: 'max-width 150ms cubic-bezier(0.4, 0, 0.2, 1), margin 150ms cubic-bezier(0.4, 0, 0.2, 1), padding 150ms cubic-bezier(0.4, 0, 0.2, 1)',
           transform: 'translateZ(0)',
