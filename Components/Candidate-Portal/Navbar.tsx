@@ -364,15 +364,14 @@ export default function CandidateNavbar() {
                   <Download className="h-4 w-4 text-gray-600" />
                   <span>Download Apna app</span>
                 </Link>
-
-                <Link
-                  href="/candidate-signin"
-                  onClick={() => setIsSidebarOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-red-600 rounded-md hover:bg-red-50 transition-colors"
+                
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-900 rounded-md hover:bg-gray-100 transition-colors"
                 >
-                  <LogOut className="h-4 w-4 text-red-600" />
+                  <LogOut className="h-4 w-4 text-gray-600" />
                   <span>Logout</span>
-                </Link>
+                </button>
               </nav>
             </div>
           </div>

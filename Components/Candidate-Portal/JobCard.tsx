@@ -68,7 +68,7 @@ export default function JobCard({ rawDescription, companyLogo, companyName, isVe
         <div className="flex items-center gap-2">
           <button 
             onClick={() => setIsLiked(!isLiked)}
-            className={`p-2 rounded-full transition-all duration-200 ${
+            className={`p-2 rounded-full transition-all duration-200 cursor-pointer ${
               isLiked 
                 ? 'bg-[#f0f9ff] text-[#0ea5e9] hover:bg-[#e0f2fe]' 
                 : 'text-gray-500 hover:text-[#0ea5e9] hover:bg-[#f0f9ff]'
@@ -78,7 +78,7 @@ export default function JobCard({ rawDescription, companyLogo, companyName, isVe
           </button>
           <button 
             onClick={() => setIsSaved(!isSaved)}
-            className={`p-2 rounded-full transition-all duration-200 ${
+            className={`p-2 rounded-full transition-all duration-200 cursor-pointer ${
               isSaved 
                 ? 'bg-[#f0fdf4] text-[#2dd4bf] hover:bg-[#ecfdf5]' 
                 : 'text-gray-500 hover:text-[#2dd4bf] hover:bg-[#f0fdf4]'
