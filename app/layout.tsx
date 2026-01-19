@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ToastProvider from "@/Components/Common/ToastProvider";
@@ -17,11 +17,17 @@ export const metadata: Metadata = {
   description: "Job Platform",
   generator: "Next.js",
   manifest: "/manifest.json",
-  viewport: "minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover",
   icons: [
     { rel: "icon", url: "/icons/icon-192x192.png" },
     { rel: "apple-touch-icon", url: "/icons/icon-192x192.png" },
   ]
+};
+
+export const viewport: Viewport = {
+  minimumScale: 1,
+  initialScale: 1,
+  width: "device-width",
+  viewportFit: "cover",
 };
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

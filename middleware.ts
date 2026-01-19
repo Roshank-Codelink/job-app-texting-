@@ -83,6 +83,25 @@ export async function middleware(request: NextRequest) {
     if (!token || role !== "EMPLOYEE") {
       return NextResponse.redirect(new URL("/candidate-signin", request.url));
     }
+
+    // 🔥 URL GUARD for candidate routes that need text parameter
+    const routesNeedingText = ["/candidate/jobs"];
+    
+    if (routesNeedingText.includes(pathname)) {
+      const { searchParams } = request.nextUrl;
+      const currentText = searchParams.get("text");
+      
+      // Get jobTitle from token
+      const jobTitle = (token as any)?.user?.jobTitle ?? "";
+      
+      // If no text parameter, add it automatically
+      if (!currentText && jobTitle) {
+        const url = new URL(pathname, request.url);
+        // Add text parameter without URL encoding
+        url.searchParams.set("text", encodeURIComponent(jobTitle));
+        return NextResponse.redirect(url);
+      }
+    }
   }
 
   return NextResponse.next();

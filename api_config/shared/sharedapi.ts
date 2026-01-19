@@ -1,5 +1,7 @@
+import { getSession } from "next-auth/react";
 import { CandidateSignUpSkillResponse } from "../SignupApi/type";
 import { customFetch } from "../apiconfig";
+import { auth } from "@/lib/auth-config";
 
 export const candidateSignUpSkillApi = async (): Promise<CandidateSignUpSkillResponse> => {
     const response = await customFetch<CandidateSignUpSkillResponse>({
@@ -43,4 +45,29 @@ export const MarkJobHiredApi = async (jobId: string) => {
     }
 }
 
+interface JobsPageProps {
+    searchParams: Promise<{
+        text?: string;
+    }>;
+}
 
+export const getJobsApi = async ({ searchParams }: JobsPageProps) => {
+    const session = await auth();
+    const resolvedSearchParams = await searchParams;
+    const text = resolvedSearchParams?.text ?? "";
+    console.log("Session:", session);
+
+    if (!session?.user) {
+        throw new Error("No authenticated user found");
+    }
+
+    const response = await customFetch({
+        url: `/jobs?text=${text}`,
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${session.user.token}`
+        }
+    });
+
+    return response;
+};

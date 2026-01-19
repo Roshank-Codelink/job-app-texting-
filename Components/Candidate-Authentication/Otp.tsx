@@ -8,7 +8,8 @@ import { OtpValidation } from "@/Validation/AuthValidation";
 import { Formik, Form, ErrorMessage } from 'formik';
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { signIn } from "next-auth/react";
+import { getSession, signIn,useSession } from "next-auth/react";
+import {useEffect} from "react";
 
 interface OtpProps {
     email?: string;
@@ -17,34 +18,41 @@ interface OtpProps {
 
 export default function Otp({ email, onEdit }: OtpProps) {
     const router = useRouter();
-
-    const handleSubmit = async (values: { otp: string }) => {
-        try {
-            if (!email) {
-                toast.error("Email is required");
-                return;
-            }
-
-            const result = await signIn("credentials", {
-                email,
-                otp: values.otp,
-                redirect: false,
-            });
-            console.log("Result:", result);
-            if (result?.error) {
-                toast.error("Invalid OTP");
-                return;
-            }
-
-            toast.success("Login successful!");
-            // router.push("https://a5e73cf7b1f8.ngrok-free.app/candidate/jobs");
-            router.push("/candidate/jobs");
-
-        } catch (error) {
-            console.error("OTP Error:", error);
-            toast.error("Something went wrong");
+        // const { data: session } = useSession();
+        // console.log("Session ss:", session);
+   // ✅ Hook at top level
+ const handleSubmit = async (values: { otp: string }) => {
+    try {
+        if (!email) {
+            toast.error("Email is required");
+            return;
         }
-    };
+
+        const result = await signIn("credentials", {
+            email,
+            otp: values.otp,
+            redirect: false,
+        });
+
+        if (result?.error) {
+            toast.error("Invalid OTP");
+            return;
+        }
+
+        const updatedSession = await getSession();
+        console.log("Updated session:", updatedSession);
+
+        const jobTitle = updatedSession?.user?.jobTitle ?? "";
+
+        router.push(
+            `/candidate/jobs?text=${encodeURIComponent(jobTitle)}`
+        );
+
+    } catch (error) {
+        console.error("OTP Error:", error);
+        toast.error("Something went wrong");
+    }
+};
 
     return (
         <div>

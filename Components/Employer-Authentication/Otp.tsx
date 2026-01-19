@@ -34,11 +34,11 @@ export default function Otp({ email, onEdit }: OtpProps) {
                 toast.error("Invalid OTP");
                 return;
             }
-            
+
 
             toast.success("Login successful!");
-            router.push("https://a5e73cf7b1f8.ngrok-free.app/employer/dashboard");
-            // router.push("http://192.168.1.7:3000/employer/dashboard");
+            // router.push("https://a5e73cf7b1f8.ngrok-free.app/employer/dashboard");
+            router.push("http://localhost:3000/employer/dashboard");
 
         } catch (error) {
             console.error("OTP Error:", error);

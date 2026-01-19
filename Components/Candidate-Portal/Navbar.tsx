@@ -241,29 +241,7 @@ export default function CandidateNavbar() {
           </div>
         </div>
 
-        {/* Mobile/iPad Search Bar - Separate Container (Normal Search, No Expand) */}
-        <div 
-          className={`lg:hidden ${stuck ? 'px-0 -mt-px' : 'px-0'}`}
-          style={{
-            transition: 'margin 150ms cubic-bezier(0.4, 0, 0.2, 1)',
-            transform: 'translateZ(0)',
-            backfaceVisibility: 'hidden',
-          }}
-        >
-          <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 z-10 pointer-events-none" />
-            <Input
-              type="text"
-              placeholder="Search jobs by title, company or skill"
-              className={`pl-10 pr-4 h-12 bg-white border border-gray-200 ${stuck ? 'rounded-none' : 'rounded-lg'} text-gray-600 placeholder:text-gray-400 text-sm md:text-base ${stuck ? 'shadow-none' : 'shadow-[0_1px_2px_rgba(0,0,0,0.08)]'} focus:outline-none focus:ring-2 focus:ring-[#0ea5e9] focus:border-transparent`}
-              style={{
-                transition: 'border-radius 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1), border 150ms cubic-bezier(0.4, 0, 0.2, 1)',
-                transform: 'translateZ(0)',
-                backfaceVisibility: 'hidden',
-              }}
-            />
-          </div>
-        </div>
+        {/*  */}
       </div>
 
       {/* Sidebar - Using Shadcn Sheet */}

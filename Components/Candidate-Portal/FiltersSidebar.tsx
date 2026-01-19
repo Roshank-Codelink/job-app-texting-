@@ -129,7 +129,7 @@ export default function FiltersSidebar({
       </div>
 
       {/* Salary Section */}
-      <div className="mb-6">
+      {/* <div className="mb-6">
         <button
           onClick={() => setIsSalaryOpen(!isSalaryOpen)}
           className="w-full flex items-center justify-between mb-3"
@@ -172,7 +172,7 @@ export default function FiltersSidebar({
             ))}
           </div>
         )}
-      </div>
+      </div> */}
 
       {/* Work Mode Section */}
       <div className="mb-6">

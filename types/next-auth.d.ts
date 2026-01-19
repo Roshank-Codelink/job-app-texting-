@@ -5,6 +5,7 @@ declare module "next-auth" {
     role?: string;
     token?: string;
     companyName?: string;
+    jobTitle?: string;
   }
 
   interface Session extends DefaultSession {
@@ -16,6 +17,7 @@ declare module "next-auth" {
       role?: string;
       token?: string;
       companyName?: string;
+      jobTitle?: string;
     } & DefaultSession["user"];
   }
 }
@@ -30,6 +32,7 @@ declare module "next-auth/react" {
       role?: string;
       token?: string;
       companyName?: string;
+      jobTitle?: string;
     };
   }
 }

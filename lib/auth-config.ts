@@ -37,6 +37,7 @@ const credentialsConfig = CredentialsProvider({
             return {
                 id: response.data.data.id,
                 email: response.data.data.email,
+                jobTitle: response.data.data.jobTitle,
                 name: response.data.data.name,
                 role: response.data.data.role,
                 token: response.data.data.token,

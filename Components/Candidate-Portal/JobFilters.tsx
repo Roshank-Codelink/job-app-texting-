@@ -32,7 +32,7 @@ export default function JobFilters() {
   const [selectedFilter, setSelectedFilter] = React.useState<string | null>(null)
   const [activeFilters, setActiveFilters] = React.useState<string[]>(["Work from home"])
   const [isScrolled, setIsScrolled] = React.useState(false)
-  
+
   // Filter states
   const [datePosted, setDatePosted] = React.useState("all")
   const [salaryRange, setSalaryRange] = React.useState(0)
@@ -56,9 +56,9 @@ export default function JobFilters() {
     let ticking = false
     let lastScrollY = 0
     let lastIsScrolled = false
-    
+
     const checkIsMobile = () => window.innerWidth < 768 // md breakpoint
-    
+
     const handleScroll = () => {
       // Only process scroll on mobile devices
       if (!checkIsMobile()) {
@@ -68,18 +68,18 @@ export default function JobFilters() {
         }
         return
       }
-      
+
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const scrollY = window.scrollY
           const shouldBeScrolled = scrollY > 30
-          
+
           // Only update state if it actually changed to prevent unnecessary re-renders
           if (shouldBeScrolled !== lastIsScrolled) {
             setIsScrolled(shouldBeScrolled)
             lastIsScrolled = shouldBeScrolled
           }
-          
+
           lastScrollY = scrollY
           ticking = false
         })
@@ -108,10 +108,10 @@ export default function JobFilters() {
       setIsScrolled(false)
       lastIsScrolled = false
     }
-    
+
     window.addEventListener('scroll', handleScroll, { passive: true })
     window.addEventListener('resize', handleResize, { passive: true })
-    
+
     return () => {
       window.removeEventListener('scroll', handleScroll)
       window.removeEventListener('resize', handleResize)
@@ -228,14 +228,14 @@ export default function JobFilters() {
     if (workMode.includes(value)) {
       setWorkMode(workMode.filter((m) => m !== value))
       const filterLabel = value === "work_from_home" ? "Work from home" :
-                          value === "work_from_office" ? "Work from office" :
-                          "Work from field"
+        value === "work_from_office" ? "Work from office" :
+          "Work from field"
       setActiveFilters(activeFilters.filter((f) => f !== filterLabel))
     } else {
       setWorkMode([...workMode, value])
       const filterLabel = value === "work_from_home" ? "Work from home" :
-                          value === "work_from_office" ? "Work from office" :
-                          "Work from field"
+        value === "work_from_office" ? "Work from office" :
+          "Work from field"
       if (!activeFilters.includes(filterLabel)) {
         setActiveFilters([...activeFilters, filterLabel])
       }
@@ -246,14 +246,14 @@ export default function JobFilters() {
     if (workType.includes(value)) {
       setWorkType(workType.filter((t) => t !== value))
       const filterLabel = value === "full_time" ? "Full time" :
-                          value === "part_time" ? "Part time" :
-                          "Contract"
+        value === "part_time" ? "Part time" :
+          "Contract"
       setActiveFilters(activeFilters.filter((f) => f !== filterLabel))
     } else {
       setWorkType([...workType, value])
       const filterLabel = value === "full_time" ? "Full time" :
-                          value === "part_time" ? "Part time" :
-                          "Contract"
+        value === "part_time" ? "Part time" :
+          "Contract"
       if (!activeFilters.includes(filterLabel)) {
         setActiveFilters([...activeFilters, filterLabel])
       }
@@ -272,7 +272,7 @@ export default function JobFilters() {
       "education_training": "Education / Training",
     }
     const categoryLabel = categoryLabels[value] || value
-    
+
     if (categories.includes(value)) {
       setCategories(categories.filter((c) => c !== value))
       setActiveFilters(activeFilters.filter((f) => f !== categoryLabel))
@@ -287,10 +287,10 @@ export default function JobFilters() {
   return (
     <>
       {/* Filter Buttons - Mobile Only */}
-      <div 
-        className={`md:hidden ${isScrolled ? 'fixed left-0 right-0 z-40 bg-[#fbfbfb] px-3 py-2 sm:px-4 sm:py-2.5' : 'px-3 py-2 sm:px-4 sm:py-2.5'}`} 
+      <div
+        className={`md:hidden ${isScrolled ? 'fixed left-0 right-0 z-40 bg-[#fbfbfb] px-3 py-2 sm:px-4 sm:py-2.5' : 'px-3 py-2 sm:px-4 sm:py-2.5'}`}
         style={{
-          ...(isScrolled ? { top: '102px', marginTop: '0', paddingTop: '8px' } : { marginTop: '-1px' }),
+          ...(isScrolled ? { top: '170px', marginTop: '0', paddingTop: '8px' } : { marginTop: '-1px' }),
           transition: 'background-color 200ms ease-out, padding 200ms ease-out',
           willChange: isScrolled ? 'transform' : 'auto'
         }}
@@ -317,11 +317,10 @@ export default function JobFilters() {
                 <button
                   key={option.value}
                   onClick={() => handleFilterClick(option.value)}
-                  className={`flex items-center gap-1.5 px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium shrink-0 transition-colors h-10 sm:h-11 ${
-                    activeFilters.includes(option.value)
+                  className={`flex items-center gap-1.5 px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium shrink-0 transition-colors h-10 sm:h-11 ${activeFilters.includes(option.value)
                       ? "bg-[#f0f9ff] text-[#0ea5e9] border border-[#0ea5e9]"
                       : "bg-white text-gray-700 border border-gray-200"
-                  }`}
+                    }`}
                 >
                   <IconComponent className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
                   <span className="whitespace-nowrap">{option.label}</span>
@@ -367,11 +366,10 @@ export default function JobFilters() {
                       <button
                         key={option.value}
                         onClick={() => handleFilterClick(option.value)}
-                        className={`flex items-center justify-between px-3 py-3 text-left transition-colors border-l-[3px] ${
-                          selectedFilter === option.value
+                        className={`flex items-center justify-between px-3 py-3 text-left transition-colors border-l-[3px] ${selectedFilter === option.value
                             ? "bg-white text-[#2dd4bf] border-l-[#2dd4bf] font-medium"
                             : "text-gray-700 hover:bg-gray-100 border-l-transparent"
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center gap-2">
                           <IconComponent className="h-4 w-4 shrink-0" />
@@ -390,48 +388,44 @@ export default function JobFilters() {
 
               {/* Right Pane - Filter Options */}
               <div className="flex-1 overflow-y-auto custom-scrollbar bg-white p-4">
-              {selectedFilter === "date" && (
-                <div className="space-y-2">
-                  <button
-                    onClick={() => handleDatePostedChange("all")}
-                    className={`w-full flex items-center justify-between p-3 rounded-lg text-left transition-colors ${
-                      datePosted === "all" ? "bg-[#f0f9ff]" : "hover:bg-gray-50"
-                    }`}
-                  >
-                    <span className="text-sm text-gray-700">All</span>
-                    {datePosted === "all" && <Check className="h-5 w-5 text-[#2dd4bf]" />}
-                  </button>
-                  <button
-                    onClick={() => handleDatePostedChange("24h")}
-                    className={`w-full flex items-center justify-between p-3 rounded-lg text-left transition-colors ${
-                      datePosted === "24h" ? "bg-[#f0f9ff]" : "hover:bg-gray-50"
-                    }`}
-                  >
-                    <span className="text-sm text-gray-700">Last 24 hours</span>
-                    {datePosted === "24h" && <Check className="h-5 w-5 text-[#2dd4bf]" />}
-                  </button>
-                  <button
-                    onClick={() => handleDatePostedChange("3d")}
-                    className={`w-full flex items-center justify-between p-3 rounded-lg text-left transition-colors ${
-                      datePosted === "3d" ? "bg-[#f0f9ff]" : "hover:bg-gray-50"
-                    }`}
-                  >
-                    <span className="text-sm text-gray-700">Last 3 days</span>
-                    {datePosted === "3d" && <Check className="h-5 w-5 text-[#2dd4bf]" />}
-                  </button>
-                  <button
-                    onClick={() => handleDatePostedChange("7d")}
-                    className={`w-full flex items-center justify-between p-3 rounded-lg text-left transition-colors ${
-                      datePosted === "7d" ? "bg-[#f0f9ff]" : "hover:bg-gray-50"
-                    }`}
-                  >
-                    <span className="text-sm text-gray-700">Last 7 days</span>
-                    {datePosted === "7d" && <Check className="h-5 w-5 text-[#2dd4bf]" />}
-                  </button>
-                </div>
-              )}
+                {selectedFilter === "date" && (
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => handleDatePostedChange("all")}
+                      className={`w-full flex items-center justify-between p-3 rounded-lg text-left transition-colors ${datePosted === "all" ? "bg-[#f0f9ff]" : "hover:bg-gray-50"
+                        }`}
+                    >
+                      <span className="text-sm text-gray-700">All</span>
+                      {datePosted === "all" && <Check className="h-5 w-5 text-[#2dd4bf]" />}
+                    </button>
+                    <button
+                      onClick={() => handleDatePostedChange("24h")}
+                      className={`w-full flex items-center justify-between p-3 rounded-lg text-left transition-colors ${datePosted === "24h" ? "bg-[#f0f9ff]" : "hover:bg-gray-50"
+                        }`}
+                    >
+                      <span className="text-sm text-gray-700">Last 24 hours</span>
+                      {datePosted === "24h" && <Check className="h-5 w-5 text-[#2dd4bf]" />}
+                    </button>
+                    <button
+                      onClick={() => handleDatePostedChange("3d")}
+                      className={`w-full flex items-center justify-between p-3 rounded-lg text-left transition-colors ${datePosted === "3d" ? "bg-[#f0f9ff]" : "hover:bg-gray-50"
+                        }`}
+                    >
+                      <span className="text-sm text-gray-700">Last 3 days</span>
+                      {datePosted === "3d" && <Check className="h-5 w-5 text-[#2dd4bf]" />}
+                    </button>
+                    <button
+                      onClick={() => handleDatePostedChange("7d")}
+                      className={`w-full flex items-center justify-between p-3 rounded-lg text-left transition-colors ${datePosted === "7d" ? "bg-[#f0f9ff]" : "hover:bg-gray-50"
+                        }`}
+                    >
+                      <span className="text-sm text-gray-700">Last 7 days</span>
+                      {datePosted === "7d" && <Check className="h-5 w-5 text-[#2dd4bf]" />}
+                    </button>
+                  </div>
+                )}
 
-              {selectedFilter === "salary" && (
+                {/* {selectedFilter === "salary" && (
                 <div className="space-y-2">
                   {[
                     { label: "₹0 - ₹25,000", value: 0 },
@@ -463,175 +457,169 @@ export default function JobFilters() {
                     </label>
                   ))}
                 </div>
-              )}
+              )} */}
 
-              {selectedFilter === "workMode" && (
-                <div className="space-y-2">
-                  {[
-                    { value: "work_from_home", label: "Work from home" },
-                    { value: "work_from_office", label: "Work from office" },
-                    { value: "work_from_field", label: "Work from field" },
-                  ].map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() => handleWorkModeChange(option.value)}
-                      className={`w-full flex items-center justify-between p-3 rounded-lg text-left transition-colors ${
-                        workMode.includes(option.value) ? "bg-[#f0f9ff]" : "hover:bg-gray-50"
-                      }`}
-                    >
-                      <span className="text-sm text-gray-700">{option.label}</span>
-                      {workMode.includes(option.value) && <Check className="h-5 w-5 text-[#2dd4bf]" />}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {selectedFilter === "workType" && (
-                <div className="space-y-2">
-                  {[
-                    { value: "full_time", label: "Full time" },
-                    { value: "part_time", label: "Part time" },
-                    { value: "contract", label: "Contract" },
-                  ].map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() => handleWorkTypeChange(option.value)}
-                      className={`w-full flex items-center justify-between p-3 rounded-lg text-left transition-colors ${
-                        workType.includes(option.value) ? "bg-[#f0f9ff]" : "hover:bg-gray-50"
-                      }`}
-                    >
-                      <span className="text-sm text-gray-700">{option.label}</span>
-                      {workType.includes(option.value) && <Check className="h-5 w-5 text-[#2dd4bf]" />}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {selectedFilter === "workShift" && (
-                <div className="space-y-2">
-                  {[
-                    { value: "day", label: "Day shift" },
-                    { value: "night", label: "Night shift" },
-                    { value: "flexible", label: "Flexible" },
-                  ].map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() => {
-                        if (workShift.includes(option.value)) {
-                          setWorkShift(workShift.filter((s) => s !== option.value))
-                        } else {
-                          setWorkShift([...workShift, option.value])
-                        }
-                      }}
-                      className={`w-full flex items-center justify-between p-3 rounded-lg text-left transition-colors ${
-                        workShift.includes(option.value) ? "bg-[#f0f9ff]" : "hover:bg-gray-50"
-                      }`}
-                    >
-                      <span className="text-sm text-gray-700">{option.label}</span>
-                      {workShift.includes(option.value) && <Check className="h-5 w-5 text-[#2dd4bf]" />}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {selectedFilter === "department" && (
-                <div className="space-y-2">
-                  {[
-                    { value: "engineering", label: "Engineering" },
-                    { value: "sales", label: "Sales" },
-                    { value: "marketing", label: "Marketing" },
-                    { value: "hr", label: "HR" },
-                    { value: "finance", label: "Finance" },
-                  ].map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() => {
-                        if (department.includes(option.value)) {
-                          setDepartment(department.filter((d) => d !== option.value))
-                        } else {
-                          setDepartment([...department, option.value])
-                        }
-                      }}
-                      className={`w-full flex items-center justify-between p-3 rounded-lg text-left transition-colors ${
-                        department.includes(option.value) ? "bg-[#f0f9ff]" : "hover:bg-gray-50"
-                      }`}
-                    >
-                      <span className="text-sm text-gray-700">{option.label}</span>
-                      {department.includes(option.value) && <Check className="h-5 w-5 text-[#2dd4bf]" />}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {selectedFilter === "sortBy" && (
-                <div className="space-y-2">
-                  {[
-                    { value: "relevant", label: "Relevant" },
-                    { value: "date_new", label: "Date posted - New to Old" },
-                    { value: "salary_high", label: "Salary - High to low" },
-                    { value: "distance_near", label: "Distance - Near to far" },
-                  ].map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() => handleSortByChange(option.value)}
-                      className={`w-full flex items-center justify-between p-3 rounded-lg text-left transition-colors ${
-                        sortBy === option.value ? "bg-[#f0f9ff]" : "hover:bg-gray-50"
-                      }`}
-                    >
-                      <span className="text-sm text-gray-700">{option.label}</span>
-                      {sortBy === option.value && <Check className="h-5 w-5 text-[#2dd4bf]" />}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {selectedFilter === "category" && (
-                <div className="space-y-3">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder="Search"
-                      value={categorySearch}
-                      onChange={(e) => setCategorySearch(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0ea5e9] focus:border-transparent"
-                    />
-                  </div>
+                {selectedFilter === "workMode" && (
                   <div className="space-y-2">
                     {[
-                      { label: "IT / Software", value: "it_software" },
-                      { label: "Marketing / Sales", value: "marketing_sales" },
-                      { label: "Design / Creative", value: "design_creative" },
-                      { label: "Finance / Accounting", value: "finance_accounting" },
-                      { label: "HR / Recruitment", value: "hr_recruitment" },
-                      { label: "Operations / Management", value: "operations_management" },
-                      { label: "Customer Service", value: "customer_service" },
-                      { label: "Education / Training", value: "education_training" },
-                    ]
-                      .filter((cat) =>
-                        cat.label.toLowerCase().includes(categorySearch.toLowerCase())
-                      )
-                      .map((cat) => (
-                        <button
-                          key={cat.value}
-                          onClick={() => handleCategoryChange(cat.value)}
-                          className={`w-full flex items-center justify-between p-3 rounded-lg text-left transition-colors ${
-                            categories.includes(cat.value) ? "bg-[#f0f9ff]" : "hover:bg-gray-50"
+                      { value: "work_from_home", label: "Work from home" },
+                      { value: "work_from_office", label: "Work from office" },
+                      { value: "work_from_field", label: "Work from field" },
+                    ].map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => handleWorkModeChange(option.value)}
+                        className={`w-full flex items-center justify-between p-3 rounded-lg text-left transition-colors ${workMode.includes(option.value) ? "bg-[#f0f9ff]" : "hover:bg-gray-50"
                           }`}
-                        >
-                          <span className="text-sm text-gray-700">{cat.label}</span>
-                          {categories.includes(cat.value) && <Check className="h-5 w-5 text-[#2dd4bf]" />}
-                        </button>
-                      ))}
+                      >
+                        <span className="text-sm text-gray-700">{option.label}</span>
+                        {workMode.includes(option.value) && <Check className="h-5 w-5 text-[#2dd4bf]" />}
+                      </button>
+                    ))}
                   </div>
-                </div>
-              )}
+                )}
 
-              {!selectedFilter && (
-                <div className="flex items-center justify-center h-full text-gray-500 text-sm">
-                  Select a filter category
-                </div>
-              )}
+                {selectedFilter === "workType" && (
+                  <div className="space-y-2">
+                    {[
+                      { value: "full_time", label: "Full time" },
+                      { value: "part_time", label: "Part time" },
+                      { value: "contract", label: "Contract" },
+                    ].map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => handleWorkTypeChange(option.value)}
+                        className={`w-full flex items-center justify-between p-3 rounded-lg text-left transition-colors ${workType.includes(option.value) ? "bg-[#f0f9ff]" : "hover:bg-gray-50"
+                          }`}
+                      >
+                        <span className="text-sm text-gray-700">{option.label}</span>
+                        {workType.includes(option.value) && <Check className="h-5 w-5 text-[#2dd4bf]" />}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {selectedFilter === "workShift" && (
+                  <div className="space-y-2">
+                    {[
+                      { value: "day", label: "Day shift" },
+                      { value: "night", label: "Night shift" },
+                      { value: "flexible", label: "Flexible" },
+                    ].map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => {
+                          if (workShift.includes(option.value)) {
+                            setWorkShift(workShift.filter((s) => s !== option.value))
+                          } else {
+                            setWorkShift([...workShift, option.value])
+                          }
+                        }}
+                        className={`w-full flex items-center justify-between p-3 rounded-lg text-left transition-colors ${workShift.includes(option.value) ? "bg-[#f0f9ff]" : "hover:bg-gray-50"
+                          }`}
+                      >
+                        <span className="text-sm text-gray-700">{option.label}</span>
+                        {workShift.includes(option.value) && <Check className="h-5 w-5 text-[#2dd4bf]" />}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {selectedFilter === "department" && (
+                  <div className="space-y-2">
+                    {[
+                      { value: "engineering", label: "Engineering" },
+                      { value: "sales", label: "Sales" },
+                      { value: "marketing", label: "Marketing" },
+                      { value: "hr", label: "HR" },
+                      { value: "finance", label: "Finance" },
+                    ].map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => {
+                          if (department.includes(option.value)) {
+                            setDepartment(department.filter((d) => d !== option.value))
+                          } else {
+                            setDepartment([...department, option.value])
+                          }
+                        }}
+                        className={`w-full flex items-center justify-between p-3 rounded-lg text-left transition-colors ${department.includes(option.value) ? "bg-[#f0f9ff]" : "hover:bg-gray-50"
+                          }`}
+                      >
+                        <span className="text-sm text-gray-700">{option.label}</span>
+                        {department.includes(option.value) && <Check className="h-5 w-5 text-[#2dd4bf]" />}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {selectedFilter === "sortBy" && (
+                  <div className="space-y-2">
+                    {[
+                      { value: "relevant", label: "Relevant" },
+                      { value: "date_new", label: "Date posted - New to Old" },
+                      { value: "salary_high", label: "Salary - High to low" },
+                      { value: "distance_near", label: "Distance - Near to far" },
+                    ].map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => handleSortByChange(option.value)}
+                        className={`w-full flex items-center justify-between p-3 rounded-lg text-left transition-colors ${sortBy === option.value ? "bg-[#f0f9ff]" : "hover:bg-gray-50"
+                          }`}
+                      >
+                        <span className="text-sm text-gray-700">{option.label}</span>
+                        {sortBy === option.value && <Check className="h-5 w-5 text-[#2dd4bf]" />}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {selectedFilter === "category" && (
+                  <div className="space-y-3">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <input
+                        type="text"
+                        placeholder="Search"
+                        value={categorySearch}
+                        onChange={(e) => setCategorySearch(e.target.value)}
+                        className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0ea5e9] focus:border-transparent"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      {[
+                        { label: "IT / Software", value: "it_software" },
+                        { label: "Marketing / Sales", value: "marketing_sales" },
+                        { label: "Design / Creative", value: "design_creative" },
+                        { label: "Finance / Accounting", value: "finance_accounting" },
+                        { label: "HR / Recruitment", value: "hr_recruitment" },
+                        { label: "Operations / Management", value: "operations_management" },
+                        { label: "Customer Service", value: "customer_service" },
+                        { label: "Education / Training", value: "education_training" },
+                      ]
+                        .filter((cat) =>
+                          cat.label.toLowerCase().includes(categorySearch.toLowerCase())
+                        )
+                        .map((cat) => (
+                          <button
+                            key={cat.value}
+                            onClick={() => handleCategoryChange(cat.value)}
+                            className={`w-full flex items-center justify-between p-3 rounded-lg text-left transition-colors ${categories.includes(cat.value) ? "bg-[#f0f9ff]" : "hover:bg-gray-50"
+                              }`}
+                          >
+                            <span className="text-sm text-gray-700">{cat.label}</span>
+                            {categories.includes(cat.value) && <Check className="h-5 w-5 text-[#2dd4bf]" />}
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+                )}
+
+                {!selectedFilter && (
+                  <div className="flex items-center justify-center h-full text-gray-500 text-sm">
+                    Select a filter category
+                  </div>
+                )}
               </div>
             </div>
 
