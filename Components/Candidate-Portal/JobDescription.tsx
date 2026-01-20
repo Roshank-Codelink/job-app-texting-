@@ -17,12 +17,20 @@ interface JobDescriptionProps {
     onClose: () => void
     companyName?: string
     companyLogo?: string
-    isVerified?: boolean
+    isVerified?: string | undefined
     rawDescription?: string
-    badge?: "growing" | "trusted"
+    isprofileStrength?: string
+    companyAddress?: string
+    companyWebsite?: string
+    extractedData: {
+        jobTitle: string,
+        workMode: string | null
+    }
+    // badge?: "growing" | "trusted"
 }
 
-export default function JobDescription({ isOpen, onClose, companyName, companyLogo, isVerified, rawDescription, badge }: JobDescriptionProps) {
+export default function JobDescription({ isOpen, onClose, companyName, companyLogo, companyAddress, companyWebsite, rawDescription, extractedData, isprofileStrength }: JobDescriptionProps) {
+
     return (
         <Sheet open={isOpen} onOpenChange={onClose}>
             <SheetOverlay
@@ -40,24 +48,24 @@ export default function JobDescription({ isOpen, onClose, companyName, companyLo
                     <div className="flex items-center justify-between w-full">
                         <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                             {/* Close Icon - Top Left */}
-                            <SheetClose className="p-1.5 sm:p-2 hover:bg-[#f0f9ff] rounded-full transition-colors cursor-pointer shrink-0">
+                            <SheetClose className="p-1.5 sm:p-2 hover:bg-[#f0f9ff] rounded-[10px] transition-colors cursor-pointer shrink-0">
                                 <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-[#0ea5e9]" />
                             </SheetClose>
                             <div className="relative shrink-0">
                                 <img
-                                    src={companyLogo || "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg"}
-                                    className="w-10 h-10 rounded-full bg-gray-100 p-1 object-contain border border-gray-200"
+                                    src={companyLogo || "/Company_icon_webp.webp"}
+                                    className="w-10 h-10 rounded-[10px] bg-gray-100 p-1 object-contain border border-gray-200"
                                     alt={companyName || "Company"}
-                                    onError={(e) => {
-                                        (e.target as HTMLImageElement).src = "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg"
-                                    }}
+                                // onError={(e) => {
+                                //     (e.target as HTMLImageElement).src = "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg"
+                                // }}
                                 />
-                                {badge === "growing" && (
+                                {isprofileStrength === "Growing" && (
                                     <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm border border-green-500">
                                         <TrendingUp className="w-3 h-3 text-green-600" />
                                     </div>
                                 )}
-                                {badge === "trusted" && (
+                                {isprofileStrength === "Trusted" && (
                                     <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm border border-blue-500">
                                         <ShieldCheck className="w-3 h-3 text-blue-600" />
                                     </div>
@@ -66,19 +74,11 @@ export default function JobDescription({ isOpen, onClose, companyName, companyLo
                             <div className="min-w-0 flex-1">
                                 <div className="flex items-center gap-1.5">
                                     <SheetTitle className="font-semibold text-gray-900 text-base m-0 truncate">
-                                        {companyName || "Company Name"}
+                                        {extractedData.jobTitle}
                                     </SheetTitle>
-                                    {isVerified && (
-                                        <Image
-                                            src="/verify.svg"
-                                            alt="Verified"
-                                            width={16}
-                                            height={16}
-                                            className="w-4 h-4 shrink-0"
-                                        />
-                                    )}
+                                   
                                 </div>
-                                <p className="text-xs text-gray-500 mt-0.5">Canada (Remote)</p>
+                                <p className="text-xs text-gray-500 mt-0.5 text-left">{extractedData.workMode || ""}</p>
                             </div>
                         </div>
                     </div>
@@ -87,63 +87,55 @@ export default function JobDescription({ isOpen, onClose, companyName, companyLo
                 {/* Content - Two Column Layout */}
                 <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
                     {/* First Box - Company Profile */}
-                    <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-6 lg:border-r lg:border-gray-200 custom-scrollbar">
+                    <div className="flex-1 overflow-y-auto px-4 sm:px-6  sm:py-6 lg:border-r lg:border-gray-200 custom-scrollbar">
                         <div className="mb-4 sm:mb-6">
                             <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">Company Profile</h3>
                             <div className="space-y-3 sm:space-y-4">
                                 <div className="flex items-center gap-2 sm:gap-3">
                                     <div className="relative shrink-0">
                                         <img
-                                            src={companyLogo || "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg"}
-                                            className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gray-100 p-1 object-contain border border-gray-200"
+                                            src={companyLogo || "/Company_icon_webp.webp"}
+                                            className="w-12 h-12 sm:w-16 sm:h-16 rounded-[10px] bg-gray-100 p-1 object-contain border border-gray-200"
                                             alt={companyName || "Company"}
-                                            onError={(e) => {
-                                                (e.target as HTMLImageElement).src = "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg"
-                                            }}
                                         />
-                                        {badge === "growing" && (
-                                            <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm border border-green-500">
-                                                <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
-                                            </div>
-                                        )}
-                                        {badge === "trusted" && (
-                                            <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm border border-blue-500">
-                                                <ShieldCheck className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
-                                            </div>
-                                        )}
                                     </div>
                                     <div className="min-w-0 flex-1">
                                         <div className="flex items-center gap-1 sm:gap-1.5">
                                             <h4 className="font-semibold text-gray-900 text-base sm:text-lg truncate">
                                                 {companyName || "Company Name"}
                                             </h4>
-                                            {isVerified && (
-                                                <Image
-                                                    src="/verify.svg"
-                                                    alt="Verified"
-                                                    width={16}
-                                                    height={16}
-                                                    className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0"
-                                                />
-                                            )}
+                                            <Image
+                                                src="/verify.svg"
+                                                alt="Verified"
+                                                width={16}
+                                                height={16}
+                                                className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0"
+                                            />
                                         </div>
-                                        <p className="text-xs sm:text-sm text-gray-500 mt-1">Technology Company</p>
+                                        {/* <p className="text-xs sm:text-sm text-gray-500 mt-1">Technology Company</p> */}
                                     </div>
                                 </div>
                                 {/* Company Details */}
                                 <div className="space-y-2 sm:space-y-3 mt-4 sm:mt-6">
-                                    <div>
+                                    {/* <div>
                                         <p className="text-xs font-medium text-gray-500 mb-1">Email</p>
                                         <p className="text-xs sm:text-sm text-gray-900 break-all">careers@northbyte.com</p>
-                                    </div>
+                                    </div> */}
                                     <div>
                                         <p className="text-xs font-medium text-gray-500 mb-1">Location</p>
-                                        <p className="text-xs sm:text-sm text-gray-900">Canada (Remote)</p>
+                                        <p className="text-xs sm:text-sm text-gray-900">{companyAddress}</p>
                                     </div>
                                     <div>
                                         <p className="text-xs font-medium text-gray-500 mb-1">Website</p>
-                                        <a href="#" className="text-xs sm:text-sm text-[#0ea5e9] hover:underline cursor-pointer break-all">www.northbyte.com</a>
+
+                                        <a href={companyWebsite?.startsWith("http")? companyWebsite: `https://${companyWebsite}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-xs sm:text-sm text-[#0ea5e9] hover:underline cursor-pointer break-all">
+                                            {companyWebsite}
+                                        </a>
                                     </div>
+
                                     {/* <div>
                                         <p className="text-xs font-medium text-gray-500 mb-1">Industry</p>
                                         <p className="text-sm text-gray-900">Technology</p>
@@ -200,14 +192,8 @@ export default function JobDescription({ isOpen, onClose, companyName, companyLo
 
                 {/* Apply Button - Bottom */}
                 <div className="sticky bottom-0 bg-white border-t border-gray-200 px-4 sm:px-6 py-2.5 z-10 flex justify-start">
-                    <button
-                        onClick={() => {
-                            // Handle apply logic here
-                            console.log("Apply clicked")
-                        }}
-                        className="bg-gradient-to-r from-[#38bdf8] to-[#2dd4bf] text-white h-9 px-4 sm:px-6 rounded-md font-medium hover:from-[#0ea5e9] hover:to-[#14b8a6] transition-all shadow-sm text-xs sm:text-sm cursor-pointer w-full sm:w-auto"
-                    >
-                        Apply Now
+                    <button className="bg-gradient-to-r from-[#38bdf8] to-[#2dd4bf] text-white h-9 px-4 sm:px-6 rounded-md font-medium hover:from-[#0ea5e9] hover:to-[#14b8a6] transition-all shadow-sm text-xs sm:text-sm cursor-pointer w-full sm:w-auto">
+                     Apply Now
                     </button>
                 </div>
             </SheetContent>

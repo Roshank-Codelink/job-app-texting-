@@ -6,39 +6,45 @@ import Image from "next/image"
 import JobDescription from "./JobDescription"
 
 interface JobCardProps {
+  extractedData: {
+    jobTitle: string,
+    workMode: string | null
+  }
   rawDescription?: string
   companyLogo?: string
   companyName?: string
-  isVerified?: boolean
+  isVerified?: string | undefined
   jobId?: string
   index?: number
-  badge?: "growing" | "trusted"
+  isprofileStrength?: string
+  companyAddress?: string,
+  companyWebsite?: string
 }
 
-export default function JobCard({ rawDescription, companyLogo, companyName, isVerified, badge }: JobCardProps) {
+export default function JobCard({ rawDescription, companyLogo, companyName, isVerified, isprofileStrength, extractedData, companyAddress, companyWebsite }: JobCardProps) {
   const [isSliderOpen, setIsSliderOpen] = useState(false)
   const [isLiked, setIsLiked] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-[10px] border border-gray-200 shadow-sm overflow-hidden">
       {/* Company Header */}
       <div className="p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="relative">
             <img
-              src={companyLogo || "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg"}
-              className="w-12 h-12 rounded-full bg-gray-100 p-1 object-contain border border-gray-200"
+              src={companyLogo || "/Company_icon_webp.webp"}
+              className="w-12 h-12 rounded-[10px] bg-gray-100 p-1 object-contain border border-gray-200"
               alt={companyName || "Company"}
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg"
-              }}
+            // onError={(e) => {
+            //   (e.target as HTMLImageElement).src = "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg"
+            // }}
             />
-            {badge === "growing" && (
+            {isprofileStrength === "Growing" && (
               <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm border border-green-500">
                 <TrendingUp className="w-3.5 h-3.5 text-green-600" />
               </div>
             )}
-            {badge === "trusted" && (
+            {isprofileStrength === "Trusted" && (
               <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm border border-blue-500">
                 <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
               </div>
@@ -46,43 +52,42 @@ export default function JobCard({ rawDescription, companyLogo, companyName, isVe
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <p 
+              <p
                 className="font-semibold text-gray-900 cursor-pointer hover:text-[#0ea5e9] transition-colors"
                 onClick={() => setIsSliderOpen(true)}
               >
-                {companyName || "Company Name"}
+                {extractedData.jobTitle}
               </p>
-              {isVerified && (
-                <Image 
-                  src="/verify.svg" 
-                  alt="Verified" 
-                  width={16} 
-                  height={16} 
-                  className="w-4 h-4"
-                />
-              )}
+            </div>
+            <div className="relative flex">
+              <p className="text-xs text-gray-500 mt-0.5">{companyName}</p>
+              <Image
+                src="/verify.svg"
+                alt="Verified"
+                width={16}
+                height={16}
+                className="w-4 h-4 "
+              />
             </div>
             <p className="text-xs text-gray-500 mt-0.5">Hiring • Now</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button 
+          <button
             onClick={() => setIsLiked(!isLiked)}
-            className={`p-2 rounded-full transition-all duration-200 cursor-pointer ${
-              isLiked 
-                ? 'bg-[#f0f9ff] text-[#0ea5e9] hover:bg-[#e0f2fe]' 
+            className={`p-2 rounded-full transition-all duration-200 cursor-pointer ${isLiked
+                ? 'bg-[#f0f9ff] text-[#0ea5e9] hover:bg-[#e0f2fe]'
                 : 'text-gray-500 hover:text-[#0ea5e9] hover:bg-[#f0f9ff]'
-            }`}
+              }`}
           >
             <ThumbsUp className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
           </button>
-          <button 
+          <button
             onClick={() => setIsSaved(!isSaved)}
-            className={`p-2 rounded-full transition-all duration-200 cursor-pointer ${
-              isSaved 
-                ? 'bg-[#f0fdf4] text-[#2dd4bf] hover:bg-[#ecfdf5]' 
+            className={`p-2 rounded-full transition-all duration-200 cursor-pointer ${isSaved
+                ? 'bg-[#f0fdf4] text-[#2dd4bf] hover:bg-[#ecfdf5]'
                 : 'text-gray-500 hover:text-[#2dd4bf] hover:bg-[#f0fdf4]'
-            }`}
+              }`}
           >
             <Bookmark className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`} />
           </button>
@@ -102,10 +107,13 @@ export default function JobCard({ rawDescription, companyLogo, companyName, isVe
         isOpen={isSliderOpen}
         onClose={() => setIsSliderOpen(false)}
         companyName={companyName}
+        isprofileStrength={isprofileStrength}
         companyLogo={companyLogo}
         isVerified={isVerified}
         rawDescription={rawDescription}
-        badge={badge}
+        extractedData={extractedData}
+        companyWebsite={companyWebsite}
+        companyAddress={companyAddress}
       />
     </div>
   )

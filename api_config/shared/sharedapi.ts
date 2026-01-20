@@ -48,26 +48,43 @@ export const MarkJobHiredApi = async (jobId: string) => {
 interface JobsPageProps {
     searchParams: Promise<{
         text?: string;
+        date?: string;
+        mode?: string;
+        type?: string
+        department?: string
     }>;
 }
 
 export const getJobsApi = async ({ searchParams }: JobsPageProps) => {
     const session = await auth();
     const resolvedSearchParams = await searchParams;
-    const text = resolvedSearchParams?.text ?? "";
-    console.log("Session:", session);
 
     if (!session?.user) {
         throw new Error("No authenticated user found");
     }
 
+    const params = new URLSearchParams();
+
+    if (resolvedSearchParams?.text)
+        params.append("text", resolvedSearchParams.text);
+
+    if (resolvedSearchParams?.mode)
+        params.append("mode", resolvedSearchParams.mode);
+
+    if (resolvedSearchParams?.date)
+        params.append("date", resolvedSearchParams.date);
+
+    if (resolvedSearchParams?.type)
+        params.append("type", resolvedSearchParams.type);
+
+    if (resolvedSearchParams?.department)
+        params.append("department", resolvedSearchParams.department);
+
     const response = await customFetch({
-        url: `/jobs?text=${text}`,
+        url: `/jobs?${params.toString()}`,
         method: "GET",
-        headers: {
-            "Authorization": `Bearer ${session.user.token}`
-        }
     });
 
-    return response;
+    return response.data;
 };
+

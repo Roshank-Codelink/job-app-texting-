@@ -1,5 +1,6 @@
 import JobsFeed from "@/Components/Candidate-Portal/JobsFeed";
 import { getJobsApi } from "@/api_config/shared/sharedapi";
+import {JobsApiResponse } from "@/types/types";
 
 
 
@@ -9,14 +10,18 @@ interface JobsPageProps {
   }>;
 }
 
+
 export default async function Jobs({ searchParams }: JobsPageProps) {
-  // ✅ UNWRAP THE PROMISE
+  
 
   const jobs = await getJobsApi({ searchParams });
 
+
+  const jobsData = (jobs as JobsApiResponse) || [];
+  console.log(jobsData)
   return (
     <div className="w-full">
-      <JobsFeed />
+      <JobsFeed  jobs={jobsData}/>
     </div>
   );
 }

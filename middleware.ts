@@ -98,7 +98,7 @@ export async function middleware(request: NextRequest) {
       if (!currentText && jobTitle) {
         const url = new URL(pathname, request.url);
         // Add text parameter without URL encoding
-        url.searchParams.set("text", encodeURIComponent(jobTitle));
+        url.searchParams.set("text", jobTitle);
         return NextResponse.redirect(url);
       }
     }

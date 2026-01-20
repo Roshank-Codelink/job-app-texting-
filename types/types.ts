@@ -23,3 +23,37 @@ export interface Step1Props {
     [key: string]: any;
   }
   
+
+// AllJobsFeed
+
+export interface Job {
+  _id: string;
+  employerProfileId: string;
+  rawDescription: string;
+  extractedData: {
+    jobTitle: string;
+    experience: string;
+    skills: string[];
+    location: string | null;
+    jobType: string | null;
+    workMode: string | null;
+    department: string;
+  };
+  employer:{
+    companyAddress:string,
+    companyName:string,
+    companyWebsite:string,
+    contactNumber:string,
+    name:string
+    profileStrength:string
+    userId:string,
+    _id:string  
+  }
+  status: string;
+}
+
+export interface JobsApiResponse {
+  success: boolean;
+  count: number;
+  data: Job[];
+}
