@@ -28,71 +28,80 @@ export default function JobCard({ rawDescription, companyLogo, companyName, isVe
   return (
     <div className="bg-white rounded-[10px] border border-gray-200 shadow-sm overflow-hidden">
       {/* Company Header */}
-      <div className="p-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="relative">
+      <div className="relative p-3 sm:p-4">
+
+        {/* RIGHT TOP ACTIONS */}
+        <div className="absolute top-2 right-2 sm:top-4 sm:right-4 flex items-center gap-1.5 sm:gap-2 z-10">
+          <button
+            onClick={() => setIsLiked(!isLiked)}
+            className={`p-1.5 sm:p-2 rounded-full transition-all duration-200 cursor-pointer ${isLiked
+                ? "bg-[#f0f9ff] text-[#0ea5e9]"
+                : "text-gray-500 hover:text-[#0ea5e9] hover:bg-[#f0f9ff]"
+              }`}
+          >
+            <ThumbsUp className={`w-4 h-4 sm:w-5 sm:h-5 ${isLiked ? "fill-current" : ""}`} />
+          </button>
+
+          <button
+            onClick={() => setIsSaved(!isSaved)}
+            className={`p-1.5 sm:p-2 rounded-full transition-all duration-200 cursor-pointer ${isSaved
+                ? "bg-[#f0fdf4] text-[#2dd4bf]"
+                : "text-gray-500 hover:text-[#2dd4bf] hover:bg-[#f0fdf4]"
+              }`}
+          >
+            <Bookmark className={`w-4 h-4 sm:w-5 sm:h-5 ${isSaved ? "fill-current" : ""}`} />
+          </button>
+        </div>
+
+        {/* LEFT SIDE */}
+        <div className="flex items-start sm:items-center gap-3 pr-14 sm:pr-20">
+
+          {/* LOGO */}
+          <div className="relative shrink-0">
             <img
               src={companyLogo || "/Company_icon_webp.webp"}
-              className="w-12 h-12 rounded-[10px] bg-gray-100 p-1 object-contain border border-gray-200"
+              className="w-10 h-10 sm:w-12 sm:h-12 rounded-[10px] bg-gray-100 p-1 object-contain border border-gray-200"
               alt={companyName || "Company"}
-            // onError={(e) => {
-            //   (e.target as HTMLImageElement).src = "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg"
-            // }}
             />
+
             {isprofileStrength === "Growing" && (
               <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm border border-green-500">
-                <TrendingUp className="w-3.5 h-3.5 text-green-600" />
+                <TrendingUp className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-green-600" />
               </div>
             )}
+
             {isprofileStrength === "Trusted" && (
               <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm border border-blue-500">
-                <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
+                <ShieldCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-600" />
               </div>
             )}
           </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <p
-                className="font-semibold text-gray-900 cursor-pointer hover:text-[#0ea5e9] transition-colors"
-                onClick={() => setIsSliderOpen(true)}
-              >
-                {extractedData.jobTitle}
-              </p>
-            </div>
-            <div className="relative flex">
-              <p className="text-xs text-gray-500 mt-0.5">{companyName}</p>
+
+          {/* TEXT */}
+          <div className="min-w-0">
+            <p
+              className="font-semibold text-gray-900 cursor-pointer hover:text-[#0ea5e9] transition-colors text-sm sm:text-base line-clamp-2"
+              onClick={() => setIsSliderOpen(true)}
+            >
+              {extractedData.jobTitle}
+            </p>
+
+            <div className="flex items-center gap-1 mt-0.5">
+              <p className="text-xs text-gray-500 truncate">{companyName}</p>
               <Image
                 src="/verify.svg"
                 alt="Verified"
-                width={16}
-                height={16}
-                className="w-4 h-4 "
+                width={14}
+                height={14}
+                className="w-3.5 h-3.5"
               />
             </div>
+
             <p className="text-xs text-gray-500 mt-0.5">Hiring • Now</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setIsLiked(!isLiked)}
-            className={`p-2 rounded-full transition-all duration-200 cursor-pointer ${isLiked
-                ? 'bg-[#f0f9ff] text-[#0ea5e9] hover:bg-[#e0f2fe]'
-                : 'text-gray-500 hover:text-[#0ea5e9] hover:bg-[#f0f9ff]'
-              }`}
-          >
-            <ThumbsUp className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
-          </button>
-          <button
-            onClick={() => setIsSaved(!isSaved)}
-            className={`p-2 rounded-full transition-all duration-200 cursor-pointer ${isSaved
-                ? 'bg-[#f0fdf4] text-[#2dd4bf] hover:bg-[#ecfdf5]'
-                : 'text-gray-500 hover:text-[#2dd4bf] hover:bg-[#f0fdf4]'
-              }`}
-          >
-            <Bookmark className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`} />
-          </button>
-        </div>
       </div>
+
 
       {/* Job Content */}
       <div className="px-4 pb-4">

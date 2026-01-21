@@ -1,6 +1,6 @@
 import JobsFeed from "@/Components/Candidate-Portal/JobsFeed";
-import { getJobsApi } from "@/api_config/shared/sharedapi";
-import {JobsApiResponse } from "@/types/types";
+import { getDepartment, getJobsApi } from "@/api_config/shared/sharedapi";
+import {JobsApiResponse, departmentApiResponse } from "@/types/types";
 
 
 
@@ -11,17 +11,24 @@ interface JobsPageProps {
 }
 
 
+
+
 export default async function Jobs({ searchParams }: JobsPageProps) {
   
 
   const jobs = await getJobsApi({ searchParams });
 
+  const department = await getDepartment();
 
+   
   const jobsData = (jobs as JobsApiResponse) || [];
-  console.log(jobsData)
+
+  const allDepartment =(department as departmentApiResponse) || []
+  // console.log(allDepartment)
+  // console.log(jobsData)
   return (
     <div className="w-full">
-      <JobsFeed  jobs={jobsData}/>
+      <JobsFeed  jobs={jobsData} departments={allDepartment}/>
     </div>
   );
 }

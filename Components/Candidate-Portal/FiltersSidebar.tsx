@@ -1,5 +1,3 @@
-
-
 import { Search, Filter, X } from "lucide-react"
 import { useState, useEffect } from "react"
 import {
@@ -9,15 +7,19 @@ import {
   AccordionTrigger,
 } from "@/Components/ui/accordion"
 import { useSearchParams, useRouter } from "next/navigation"
+import { departmentApiResponse } from "@/types/types"
 
-export default function FiltersSidebar() {
+export default function FiltersSidebar({ departmentres }: { departmentres: departmentApiResponse }) {
   const [date, setDatePosted] = useState<string | null>(null)
-  const [workMode, setWorkMode] = useState<string[]>([])
+  const [workMode, setWorkMode] = useState<string | null>(null)
   const [workType, setWorkType] = useState<string[]>([])
   const [department, setDepartment] = useState<string[]>([])
 
   const router = useRouter()
   const searchParams = useSearchParams()
+
+  console.log(departmentres?.data);
+
 
   const toggleMultiValue = (
     value: string,
@@ -32,19 +34,19 @@ export default function FiltersSidebar() {
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString())
-  
+
     if (date) params.set("date", date)
     else params.delete("date")
-  
-    if (workMode.length) params.set("mode", workMode.join(","))
+
+    if (workMode) params.set("mode", workMode)
     else params.delete("mode")
-  
+
     if (workType.length) params.set("type", workType.join(","))
     else params.delete("type")
-  
+
     if (department.length) params.set("department", department.join(","))
     else params.delete("department")
-  
+
     router.replace(
       params.toString()
         ? `/candidate/jobs?${params.toString()}`
@@ -54,13 +56,13 @@ export default function FiltersSidebar() {
   }, [date, workMode, workType, department])
   const clearAll = () => {
     setDatePosted(null)
-    setWorkMode([])
+    setWorkMode(null)
     setWorkType([])
     setDepartment([])
 
   }
 
-  const hasFilters = date || workMode.length || workType.length || department.length
+  const hasFilters = date || workMode || workType.length || department.length
 
   const SelectedChip = ({
     label,
@@ -84,6 +86,7 @@ export default function FiltersSidebar() {
   ]
 
   const WORK_MODE_OPTIONS = [
+    { label: "All jobs", value: "all_jobs" },
     { label: "Work from home", value: "work_from_home" },
     { label: "Work from office", value: "work_from_office" },
     { label: "Work from field", value: "work_from_field" },
@@ -95,16 +98,13 @@ export default function FiltersSidebar() {
     { label: "Contract", value: "contract" },
   ]
 
-  const DEPARTMENT_OPTIONS = [
-    { label: "IT / Software", value: "it_software" },
-    { label: "Marketing / Sales", value: "marketing_sales" },
-    { label: "Design / Creative", value: "design_creative" },
-    { label: "Finance / Accounting", value: "finance_accounting" },
-    { label: "HR / Recruitment", value: "hr_recruitment" },
-    { label: "Operations / Management", value: "operations_management" },
-    { label: "Customer Service", value: "customer_service" },
-    { label: "Education / Training", value: "education_training" },
-  ]
+  const DEPARTMENT_OPTIONS =
+    departmentres?.data?.map(dep => ({
+      label: dep.department,
+      value: dep._id
+    })) || []
+
+
 
   return (
     <div className="w-full md:w-72 lg:w-80 bg-white rounded-lg border border-gray-200 p-4 md:p-6 h-fit">
@@ -137,16 +137,15 @@ export default function FiltersSidebar() {
             />
           ))}
 
-        {workMode.map(v => {
-          const item = WORK_MODE_OPTIONS.find(o => o.value === v)
+        {workMode && (() => {
+          const item = WORK_MODE_OPTIONS.find(o => o.value === workMode)
           return (
             <SelectedChip
-              key={v}
-              label={item?.label || v}
-              onRemove={() => toggleMultiValue(v, setWorkMode)}
+              label={item?.label || workMode}
+              onRemove={() => setWorkMode(null)}
             />
           )
-        })}
+        })()}
 
         {workType.map(v => {
           const item = WORK_TYPE_OPTIONS.find(o => o.value === v)
@@ -158,14 +157,13 @@ export default function FiltersSidebar() {
             />
           )
         })}
-
-        {department.map(v => {
-          const item = DEPARTMENT_OPTIONS.find(o => o.value === v)
+        {department.map(id => {
+          const item = DEPARTMENT_OPTIONS.find(o => o.value === id)
           return (
             <SelectedChip
-              key={v}
-              label={item?.label || v}
-              onRemove={() => toggleMultiValue(v, setDepartment)}
+              key={id}
+              label={item?.label || "Department"}
+              onRemove={() => toggleMultiValue(id, setDepartment)}
             />
           )
         })}
@@ -205,9 +203,11 @@ export default function FiltersSidebar() {
             {WORK_MODE_OPTIONS.map(opt => (
               <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
                 <input
-                  type="checkbox"
-                  checked={workMode.includes(opt.value)}
-                  onChange={() => toggleMultiValue(opt.value, setWorkMode)}
+                  type="radio"
+                  name="workMode"
+                  value={opt.value}
+                  checked={workMode === opt.value}
+                  onChange={(e) => setWorkMode(e.target.value)}
                 />
                 <span className="text-sm text-gray-700">{opt.label}</span>
               </label>
@@ -249,15 +249,16 @@ export default function FiltersSidebar() {
                 className="block w-[95%] mx-auto pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg outline-none  focus:outline-none focus:ring-2 focus:ring-[#0ea5e9] focus:border-transparent"
               />
             </div>
-
             {DEPARTMENT_OPTIONS.map(opt => (
-              <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
+              <label key={opt.value} className="flex gap-2 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={department.includes(opt.value)}
-                  onChange={() => toggleMultiValue(opt.value, setDepartment)}
+                  checked={department.includes(opt.value)} // opt.value = _id
+                  onChange={() =>
+                    toggleMultiValue(opt.value, setDepartment)
+                  }
                 />
-                <span className="text-sm text-gray-700">{opt.label}</span>
+                <span>{opt.label}</span>
               </label>
             ))}
           </AccordionContent>

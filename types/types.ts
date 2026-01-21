@@ -57,3 +57,14 @@ export interface JobsApiResponse {
   count: number;
   data: Job[];
 }
+
+
+export interface department {
+  _id:string,
+  department:string
+}
+
+export interface departmentApiResponse {
+  success:boolean,
+  data : department[]
+}
