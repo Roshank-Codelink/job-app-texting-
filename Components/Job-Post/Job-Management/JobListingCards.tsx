@@ -3,7 +3,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { Card, CardHeader, CardContent } from "@/Components/ui/card";
 import { JobListingItem } from "@/api_config/JobPostApi/type";
-import { Briefcase, Eye, Heart, Award, MoreVertical, Edit, UserCheck, Trash2, BarChart3, Copy, Archive } from "lucide-react";
+import { Briefcase, Eye, Heart, Award, MoreVertical, Bookmark, Edit, UserCheck, Trash2, BarChart3, Copy, Archive } from "lucide-react";
 import MarkAsHiredModal from "@/Components/Common/MarkAsHiredModal.tsx";
 // ✅ Three Dot Menu Component
 interface ThreeDotMenuProps {
@@ -17,7 +17,6 @@ function ThreeDotMenu({ jobId, jobStatus, className = "", onStatusUpdate }: Thre
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const menuItems = [
-    { icon: Edit, label: "Edit Job", color: "text-blue-600", action: () => console.log("Edit", jobId) },
     ...(jobStatus?.toLowerCase() !== "hired" ? [{ icon: UserCheck, label: "Mark as Hired", color: "text-green-600", action: () => { setIsOpen(false); setTimeout(() => { setIsModalOpen(true); }, 0); } }] : []),
     { icon: Trash2, label: "Delete", color: "text-red-600", action: () => console.log("Delete", jobId) },
   ];
@@ -78,8 +77,10 @@ interface JobHeaderProps {
   jobId: string;
   jobStatus?: string;
   onStatusUpdate?: (jobId: string, newStatus: string) => void;
+  likeCount?: number;
 }
-function JobHeader({ companyName, postedTime, jobId, jobStatus, onStatusUpdate }: JobHeaderProps) {
+function JobHeader({ companyName, postedTime, jobId, jobStatus, onStatusUpdate, likeCount }: JobHeaderProps) {
+
   return (
     <CardHeader className="pb-3 pt-5 px-6">
       <div className="flex items-center justify-between gap-4">
@@ -105,10 +106,10 @@ function JobHeader({ companyName, postedTime, jobId, jobStatus, onStatusUpdate }
             <div className="relative group">
               <div className="bg-(--sidebar-bg-color) border border-(--profile-border-color) rounded-lg px-3 py-2 hover:border-(--navbar-text-color) hover:shadow-md transition-all duration-200 cursor-pointer">
                 <div className="flex items-center gap-2.5">
-                  <Award className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-(--navbar-text-color) transition-all" strokeWidth={2.5} />
+                  <Heart className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-(--navbar-text-color) transition-all" strokeWidth={2.5} />
                   <div className="flex flex-col leading-none">
-                    <span className="text-xs font-bold text-(--profile-name-color)">85</span>
-                    <span className="text-[9px] text-(--profile-title-color)">Score</span>
+                    <span className="text-xs font-bold text-(--profile-name-color)">{likeCount}</span>
+                    <span className="text-[9px] text-(--profile-title-color) ">like</span>
                   </div>
                 </div>
               </div>
@@ -135,7 +136,7 @@ function JobHeader({ companyName, postedTime, jobId, jobStatus, onStatusUpdate }
             <div className="relative group">
               <div className="bg-(--sidebar-bg-color) border border-(--profile-border-color) rounded-lg px-3 py-2 hover:border-(--navbar-text-color) hover:shadow-md transition-all duration-200 cursor-pointer">
                 <div className="flex items-center gap-2.5">
-                  <Heart className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-(--navbar-text-color) transition-all" strokeWidth={2.5} />
+                  <Bookmark className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-(--navbar-text-color) transition-all" strokeWidth={2.5} />
                   <div className="flex flex-col leading-none">
                     <span className="text-xs font-bold text-(--profile-name-color)">42</span>
                     <span className="text-[9px] text-(--profile-title-color)">Saved</span>
@@ -180,6 +181,7 @@ interface JobListingCardsProps {
   onJobStatusUpdate?: (jobId: string, newStatus: string) => void;
 }
 export default function JobListingCards({ jobs, onJobStatusUpdate }: JobListingCardsProps) {
+
   return (
     <div className="w-full p-4 space-y-6">
       <h1 className="text-xl font-bold text-(--profile-name-color) mb-4">Recent Job Posts</h1>
@@ -221,6 +223,7 @@ export default function JobListingCards({ jobs, onJobStatusUpdate }: JobListingC
                   jobId={job._id}
                   jobStatus={job.status}
                   onStatusUpdate={onJobStatusUpdate}
+                  likeCount={job.likeCount}
                 />
                 <JobDescription description={job.rawDescription} />
                 {/* Stats Cards - Mobile aur iPad me bottom pe dikhenge */}
@@ -230,10 +233,10 @@ export default function JobListingCards({ jobs, onJobStatusUpdate }: JobListingC
                     <div className="relative group flex-1">
                       <div className="bg-(--sidebar-bg-color) border border-(--profile-border-color) rounded-lg px-2.5 py-2 hover:border-(--navbar-text-color) hover:shadow-md transition-all duration-200 cursor-pointer">
                         <div className="flex items-center justify-center gap-2">
-                          <Award className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-(--navbar-text-color) transition-all" strokeWidth={2.5} />
+                          <Heart className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-(--navbar-text-color) transition-all" strokeWidth={2.5} />
                           <div className="flex flex-col leading-none">
-                            <span className="text-xs font-bold text-(--profile-name-color)">85</span>
-                            <span className="text-[9px] text-(--profile-title-color)">Score</span>
+                            <span className="text-xs font-bold text-(--profile-name-color)">{job.likeCount}</span>
+                            <span className="text-[9px] text-(--profile-title-color)">like</span>
                           </div>
                         </div>
                       </div>
@@ -256,7 +259,7 @@ export default function JobListingCards({ jobs, onJobStatusUpdate }: JobListingC
                     <div className="relative group flex-1">
                       <div className="bg-(--sidebar-bg-color) border border-(--profile-border-color) rounded-lg px-2.5 py-2 hover:border-(--navbar-text-color) hover:shadow-md transition-all duration-200 cursor-pointer">
                         <div className="flex items-center justify-center gap-2">
-                          <Heart className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-(--navbar-text-color) transition-all" strokeWidth={2.5} />
+                          <Bookmark className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-(--navbar-text-color) transition-all" strokeWidth={2.5} />
                           <div className="flex flex-col leading-none">
                             <span className="text-xs font-bold text-(--profile-name-color)">42</span>
                             <span className="text-[9px] text-(--profile-title-color)">Saved</span>

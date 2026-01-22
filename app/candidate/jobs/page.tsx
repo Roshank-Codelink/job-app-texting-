@@ -1,34 +1,21 @@
 import JobsFeed from "@/Components/Candidate-Portal/JobsFeed";
-import { getDepartment, getJobsApi } from "@/api_config/shared/sharedapi";
-import {JobsApiResponse, departmentApiResponse } from "@/types/types";
-
-
-
-interface JobsPageProps {
-  searchParams: Promise<{
-    text?: string;
-  }>;
-}
-
-
-
+import { getDepartment, getJobsApi, JobsPageProps } from "@/api_config/shared/sharedapi";
+import { JobsApiResponse, departmentApiResponse } from "@/types/types";
 
 export default async function Jobs({ searchParams }: JobsPageProps) {
-  
-
-  const jobs = await getJobsApi({ searchParams });
-
-  const department = await getDepartment();
-
-   
+  const [jobs, department] = await Promise.all([
+    getJobsApi({ searchParams }),
+    getDepartment()
+  ]);
   const jobsData = (jobs as JobsApiResponse) || [];
+  const allDepartment = (department as departmentApiResponse) || [];
 
-  const allDepartment =(department as departmentApiResponse) || []
-  // console.log(allDepartment)
-  // console.log(jobsData)
   return (
     <div className="w-full">
-      <JobsFeed  jobs={jobsData} departments={allDepartment}/>
+      <JobsFeed 
+        jobs={jobsData} 
+        departments={allDepartment} 
+      />
     </div>
   );
 }

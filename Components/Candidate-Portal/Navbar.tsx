@@ -1,6 +1,4 @@
 "use client"
-
-import * as React from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Search, Briefcase, MapPin, X, Menu, User, LogOut, Phone, Download, DollarSign, Info, ChevronDown } from "lucide-react"
@@ -21,24 +19,8 @@ import {
 } from "@/Components/ui/sheet"
 import { LogoutAPI } from "@/api_config/shared/sharedapi"
 import { signOut } from "next-auth/react"
+import { useEffect, useRef, useState } from "react"
 
-const products: { title: string; href: string; description: string }[] = [
-  {
-    title: "Job Search",
-    href: "/candidate/jobs",
-    description: "Find your dream job with our advanced search filters.",
-  },
-  {
-    title: "Job Alerts",
-    href: "/candidate/job-alerts",
-    description: "Get notified about new job opportunities matching your profile.",
-  },
-  {
-    title: "Company Reviews",
-    href: "/candidate/company-reviews",
-    description: "Read reviews and insights about companies before applying.",
-  },
-]
 const handleLogout = async () => {
   const response = await LogoutAPI();
   signOut(
@@ -49,13 +31,11 @@ const handleLogout = async () => {
   );
 }
 
-
-
 function UserProfile() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-full border border-gray-200 bg-[#FFFFFF] cursor-pointer">
+        <button className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-full border border-(--profile-image-border-color) bg-[#FFFFFF] cursor-pointer">
           <div className="w-8 h-8 rounded-full overflow-hidden shrink-0">
             <Image
               src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face"
@@ -70,18 +50,12 @@ function UserProfile() {
       </PopoverTrigger>
       <PopoverContent className="w-32 md:w-36 p-2" align="end">
         <div className="flex flex-col gap-1">
-          <Link
-            href="/candidate/profile"
-            className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 transition-colors"
-          >
+          <Link href="/candidate/profile" className="flex items-center gap-2 px-3 py-2 text-sm text-(--profile-menu-text-color) rounded-md hover:bg-gray-100 transition-colors" >
             <User className="h-4 w-4 text-gray-600" />
             <span>View Profile</span>
           </Link>
           <div className="border-t border-gray-200 my-1"></div>
-         <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 transition-colors"
-          >
+         <button onClick={handleLogout} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 transition-colors">
             <LogOut className="h-4 w-4 text-gray-600" />
             <span>Logout</span>
           </button>
@@ -93,14 +67,14 @@ function UserProfile() {
 
 export default function CandidateNavbar() {
   const isMobile = useIsMobile()
-  const [isSearchExpanded, setIsSearchExpanded] = React.useState(false)
-  const [isSidebarOpen, setIsSidebarOpen] = React.useState(false)
-  const [showCloseButton, setShowCloseButton] = React.useState(false)
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [showCloseButton, setShowCloseButton] = useState(false)
 
-  const triggerRef = React.useRef<HTMLDivElement | null>(null)
-  const [stuck, setStuck] = React.useState(false)
+  const triggerRef = useRef<HTMLDivElement | null>(null)
+  const [stuck, setStuck] = useState(false)
 
-  React.useEffect(() => {
+  useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         setStuck(!entry.isIntersecting)
@@ -112,10 +86,8 @@ export default function CandidateNavbar() {
     return () => observer.disconnect()
   }, [])
 
-  
-
   // Close sidebar when switching from mobile to desktop or vice versa
-  React.useEffect(() => {
+  useEffect(() => {
     const handleResize = () => {
       if (!isMobile && isSidebarOpen) {
         setIsSidebarOpen(false)
@@ -127,7 +99,7 @@ export default function CandidateNavbar() {
   }, [isMobile, isSidebarOpen])
 
   // Show close button after sidebar animation completes
-  React.useEffect(() => {
+  useEffect(() => {
     if (isSidebarOpen) {
       // Delay to match sidebar animation duration (500ms)
       const timer = setTimeout(() => {
@@ -139,18 +111,11 @@ export default function CandidateNavbar() {
       setShowCloseButton(false)
     }
   }, [isSidebarOpen])
-
-
-
-
-
   return (
     <>
       {/* Invisible trigger element */}
       <div ref={triggerRef} className="h-4" />
-
-      <div 
-        className={`w-full ${stuck ? 'fixed top-0 z-50 pt-0 pb-0' : 'sticky top-4 z-50 pt-4 pb-4'}`}
+      <div className={`w-full ${stuck ? 'fixed top-0 z-50 pt-0 pb-0' : 'sticky top-4 z-50 pt-4 pb-4'}`}
       style={{
         transition: 'padding 150ms cubic-bezier(0.4, 0, 0.2, 1)',
         transform: 'translateZ(0)',
@@ -164,8 +129,7 @@ export default function CandidateNavbar() {
           transition: 'max-width 150ms cubic-bezier(0.4, 0, 0.2, 1), margin 150ms cubic-bezier(0.4, 0, 0.2, 1), padding 150ms cubic-bezier(0.4, 0, 0.2, 1)',
           transform: 'translateZ(0)',
           backfaceVisibility: 'hidden',
-        }}
-      >
+        }}>
         {/* Navbar Container */}
         <div 
           className={`bg-white ${stuck ? 'rounded-none shadow-lg' : 'rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.1),0_-2px_8px_rgba(0,0,0,0.05),2px_0_8px_rgba(0,0,0,0.05),-2px_0_8px_rgba(0,0,0,0.05)]'}`}
@@ -187,38 +151,15 @@ export default function CandidateNavbar() {
                   height={120}
                   className="w-10 h-10 md:w-12 md:h-12 object-contain"
                 />
-                <h1 className="text-lg md:text-xl font-semibold text-gray-900">Jobito</h1>
+                <h1 className="text-lg md:text-xl font-semibold text-(--filter-header-text-color)">Jobito</h1>
               </div>
 
               {/* Navigation Links - Left (after logo) */}
               <div className="hidden md:flex items-center gap-6 ml-4 md:ml-6">
-                <Link
-                  href="/candidate/jobs"
-                  className="text-base font-medium text-gray-700 cursor-pointer"
-                >
-                  Jobs
-                </Link>
-
-                <Link
-                  href="/candidate/pricing"
-                  className="text-base font-medium text-gray-700 cursor-pointer"
-                >
-                  Pricing
-                </Link>
-
-                <Link
-                  href="/candidate/about"
-                  className="text-base font-medium text-gray-700 cursor-pointer"
-                >
-                  About
-                </Link>
-
-                <Link
-                  href="/candidate/contact"
-                  className="text-base font-medium text-gray-700 cursor-pointer"
-                >
-                  Contact
-                </Link>
+                <Link href="/candidate/jobs" className="text-base font-medium text-(--profile-menu-text-color) cursor-pointer">Jobs</Link>
+                <Link href="/candidate/pricing" className="text-base font-medium text-(--profile-menu-text-color) cursor-pointer">Pricing</Link>
+                <Link href="/candidate/about" className="text-base font-medium text-(--profile-menu-text-color) cursor-pointer">About</Link>
+                <Link href="/candidate/contact" className="text-base font-medium text-(--profile-menu-text-color) cursor-pointer">Contact</Link>
               </div>
             </div>
 
@@ -230,12 +171,8 @@ export default function CandidateNavbar() {
               </div>
 
               {/* Mobile Toggle Button - Right (Only Mobile, not iPad) */}
-              <button
-                onClick={() => setIsSidebarOpen(true)}
-                className="md:hidden w-9 h-9 flex items-center justify-center rounded-md hover:bg-gray-100 transition-colors shrink-0"
-                aria-label="Toggle Sidebar"
-              >
-                <Menu className="h-5 w-5 text-gray-700" />
+              <button onClick={() => setIsSidebarOpen(true)} className="md:hidden w-9 h-9 flex items-center justify-center rounded-md hover:bg-gray-100 transition-colors shrink-0" aria-label="Toggle Sidebar">
+                <Menu className="h-5 w-5 text-(--profile-menu-text-color)" />
               </button>
             </div>
           </div>
@@ -259,11 +196,11 @@ export default function CandidateNavbar() {
                 ? 'opacity-100 translate-x-0' 
                 : 'opacity-0 translate-x-2 pointer-events-none'
             }`}>
-              <X className="h-5 w-5 text-gray-700" />
+              <X className="h-5 w-5 text-(--profile-menu-text-color)" />
             </SheetClose>
 
             {/* Sidebar Header */}
-            <SheetHeader className="p-4 border-b border-gray-200">
+            <SheetHeader className="p-4 border-b border-(--profile-image-border-color)">
               <div className="flex items-center gap-2">
                 <Image
                   src="/Gemini_Generated_Image_hjxynfhjxynfhjxy.png"
@@ -272,7 +209,7 @@ export default function CandidateNavbar() {
                   height={120}
                   className="w-8 h-8 object-contain"
                 />
-                <SheetTitle className="text-lg font-semibold text-gray-900">Jobito</SheetTitle>
+                <SheetTitle className="text-lg font-semibold text-(--filter-header-text-color)">Jobito</SheetTitle>
               </div>
             </SheetHeader>
 
@@ -283,7 +220,7 @@ export default function CandidateNavbar() {
                 <Link
                   href="/candidate/jobs"
                   onClick={() => setIsSidebarOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-900 rounded-md hover:bg-gray-100 transition-colors"
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-(--filter-header-text-color) rounded-md hover:bg-gray-100 transition-colors"
                 >
                   <Briefcase className="h-4 w-4 text-gray-600" />
                   <span>Jobs</span>
@@ -293,7 +230,7 @@ export default function CandidateNavbar() {
                 <Link
                   href="/candidate/pricing"
                   onClick={() => setIsSidebarOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-900 rounded-md hover:bg-gray-100 transition-colors"
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-(--filter-header-text-color) rounded-md hover:bg-gray-100 transition-colors"
                 >
                   <DollarSign className="h-4 w-4 text-gray-600" />
                   <span>Pricing</span>
@@ -303,7 +240,7 @@ export default function CandidateNavbar() {
                 <Link
                   href="/candidate/about"
                   onClick={() => setIsSidebarOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-900 rounded-md hover:bg-gray-100 transition-colors"
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-(--filter-header-text-color) rounded-md hover:bg-gray-100 transition-colors"
                 >
                   <Info className="h-4 w-4 text-gray-600" />
                   <span>About</span>
@@ -313,7 +250,7 @@ export default function CandidateNavbar() {
                 <Link
                   href="/candidate/contact"
                   onClick={() => setIsSidebarOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-900 rounded-md hover:bg-gray-100 transition-colors"
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-(--filter-header-text-color) rounded-md hover:bg-gray-100 transition-colors"
                 >
                   <Phone className="h-4 w-4 text-gray-600" />
                   <span>Contact</span>
@@ -328,7 +265,7 @@ export default function CandidateNavbar() {
                 <Link
                   href="/candidate/contact"
                   onClick={() => setIsSidebarOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-900 rounded-md hover:bg-gray-100 transition-colors"
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-(--filter-header-text-color) rounded-md hover:bg-gray-100 transition-colors"
                 >
                   <Phone className="h-4 w-4 text-gray-600" />
                   <span>Contact us</span>
@@ -337,7 +274,7 @@ export default function CandidateNavbar() {
                 <Link
                   href="/candidate/download-app"
                   onClick={() => setIsSidebarOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-900 rounded-md hover:bg-gray-100 transition-colors"
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-(--filter-header-text-color) rounded-md hover:bg-gray-100 transition-colors"
                 >
                   <Download className="h-4 w-4 text-gray-600" />
                   <span>Download Apna app</span>
@@ -345,7 +282,7 @@ export default function CandidateNavbar() {
                 
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-900 rounded-md hover:bg-gray-100 transition-colors"
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-(--filter-header-text-color) rounded-md hover:bg-gray-100 transition-colors"
                 >
                   <LogOut className="h-4 w-4 text-gray-600" />
                   <span>Logout</span>

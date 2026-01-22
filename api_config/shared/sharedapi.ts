@@ -1,3 +1,4 @@
+// "use server"
 import { getSession } from "next-auth/react";
 import { CandidateSignUpSkillResponse } from "../SignupApi/type";
 import { customFetch } from "../apiconfig";
@@ -45,40 +46,44 @@ export const MarkJobHiredApi = async (jobId: string) => {
     }
 }
 
-interface JobsPageProps {
+export interface JobsPageProps {
     searchParams: Promise<{
         text?: string;
         date?: string;
         mode?: string;
-        type?: string
-        department?: string
+        type?: string;
+        department?: string;
+        page?: string | number;
+        limit?: string | number;
     }>;
 }
 
 export const getJobsApi = async ({ searchParams }: JobsPageProps) => {
-    const session = await auth();
     const resolvedSearchParams = await searchParams;
-
-    if (!session?.user) {
-        throw new Error("No authenticated user found");
-    }
-
     const params = new URLSearchParams();
 
-    if (resolvedSearchParams?.text)
+    // Manual Appending (No loops)
+    if (resolvedSearchParams?.text) 
         params.append("text", resolvedSearchParams.text);
 
-    if (resolvedSearchParams?.mode)
+    if (resolvedSearchParams?.mode) 
         params.append("mode", resolvedSearchParams.mode);
 
-    if (resolvedSearchParams?.date)
+    if (resolvedSearchParams?.date) 
         params.append("date", resolvedSearchParams.date);
 
-    if (resolvedSearchParams?.type)
+    if (resolvedSearchParams?.type) 
         params.append("type", resolvedSearchParams.type);
 
-    if (resolvedSearchParams?.department)
+    if (resolvedSearchParams?.department) 
         params.append("department", resolvedSearchParams.department);
+
+    // Pagination Params (Must be added to talk to backend)
+    if (resolvedSearchParams?.page) 
+        params.append("page", resolvedSearchParams.page.toString());
+    
+    if (resolvedSearchParams?.limit) 
+        params.append("limit", resolvedSearchParams.limit.toString());
 
     const response = await customFetch({
         url: `/jobs?${params.toString()}`,
@@ -93,14 +98,32 @@ export const getDepartment = async()=>{
         const response = await customFetch({
           url:"/get-departments",
           method:"GET"
-        })   
-    
-        return response.data
-
-
+        })
+        return response.data ;
     } catch (error) {
          console.log("Error marking job as hired:", error);
-         throw error
+         throw error;
+    }
+}
+
+interface LikeJobResponse {
+    success: boolean;
+    message: string;
+}
+
+export const likeJobApi =async(jobId:string,action:string)=>{
+    try {
+          const response = await customFetch<LikeJobResponse>({
+            url :`/jobs/${jobId}/like`,
+            method:"POST",
+            body:{
+                action:action
+            }
+          })
+          return response.data ;
+    } catch (error) {
+         console.log("Error liking job:", error);
+         throw error;
     }
 }
 

@@ -30,6 +30,7 @@ export interface JobListingItem {
     companyId: string;
     rawDescription: string;
     status: string;
+    likeCount: number;
 }
 
 // Job Listings Response structure

@@ -1,68 +1,24 @@
 import { Search, Filter, X } from "lucide-react"
-import { useState, useEffect } from "react"
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/Components/ui/accordion"
-import { useSearchParams, useRouter } from "next/navigation"
 import { departmentApiResponse } from "@/types/types"
+import { useJobFilters } from "@/hooks/useJobFilters"
 
 export default function FiltersSidebar({ departmentres }: { departmentres: departmentApiResponse }) {
-  const [date, setDatePosted] = useState<string | null>(null)
-  const [workMode, setWorkMode] = useState<string | null>(null)
-  const [workType, setWorkType] = useState<string[]>([])
-  const [department, setDepartment] = useState<string[]>([])
-
-  const router = useRouter()
-  const searchParams = useSearchParams()
+  const {
+    date, setDate,
+    workMode, setWorkMode,
+    workType, toggleWorkType,
+    department, toggleDepartment,
+    clearAllFilters,
+    hasFilters
+  } = useJobFilters()
 
   console.log(departmentres?.data);
-
-
-  const toggleMultiValue = (
-    value: string,
-    setter: React.Dispatch<React.SetStateAction<string[]>>
-  ) => {
-    setter(prev =>
-      prev.includes(value)
-        ? prev.filter(v => v !== value)
-        : [...prev, value]
-    )
-  }
-
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString())
-
-    if (date) params.set("date", date)
-    else params.delete("date")
-
-    if (workMode) params.set("mode", workMode)
-    else params.delete("mode")
-
-    if (workType.length) params.set("type", workType.join(","))
-    else params.delete("type")
-
-    if (department.length) params.set("department", department.join(","))
-    else params.delete("department")
-
-    router.replace(
-      params.toString()
-        ? `/candidate/jobs?${params.toString()}`
-        : "/candidate/jobs",
-      { scroll: false }
-    )
-  }, [date, workMode, workType, department])
-  const clearAll = () => {
-    setDatePosted(null)
-    setWorkMode(null)
-    setWorkType([])
-    setDepartment([])
-
-  }
-
-  const hasFilters = date || workMode || workType.length || department.length
 
   const SelectedChip = ({
     label,
@@ -71,7 +27,7 @@ export default function FiltersSidebar({ departmentres }: { departmentres: depar
     label: string
     onRemove: () => void
   }) => (
-    <div className="flex items-center gap-1 px-3 py-1 bg-[#f0f9ff] text-[#0ea5e9] rounded-full text-xs">
+    <div className="flex items-center gap-1 px-3 py-1 bg-(--navbar-bg-button) text-(--navbar-text-color) rounded-full text-xs">
       {label}
       <button onClick={onRemove}>
         <X className="h-3 w-3 cursor-pointer" />
@@ -107,19 +63,19 @@ export default function FiltersSidebar({ departmentres }: { departmentres: depar
 
 
   return (
-    <div className="w-full md:w-72 lg:w-80 bg-white rounded-lg border border-gray-200 p-4 md:p-6 h-fit">
+    <div className="w-full md:w-72 lg:w-80 bg-white rounded-lg border border-(--profile-image-border-color) p-4 md:p-6 h-fit">
 
       {/* Header */}
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+        <h3 className="text-sm font-semibold text-(--filter-header-text-color) flex items-center gap-2">
           <Filter className="h-4 w-4" />
           Filters
         </h3>
 
         {hasFilters ?
           <button
-            onClick={clearAll}
-            className="text-xs text-[#0ea5e9] font-medium cursor-pointer"
+            onClick={clearAllFilters}
+            className="text-xs text-(--navbar-text-color) font-medium cursor-pointer"
           >
             Clear
           </button> : ""
@@ -133,7 +89,7 @@ export default function FiltersSidebar({ departmentres }: { departmentres: depar
             <SelectedChip
               key={d.value}
               label={d.label}
-              onRemove={() => setDatePosted(null)}
+              onRemove={() => setDate(null)}
             />
           ))}
 
@@ -153,7 +109,7 @@ export default function FiltersSidebar({ departmentres }: { departmentres: depar
             <SelectedChip
               key={v}
               label={item?.label || v}
-              onRemove={() => toggleMultiValue(v, setWorkType)}
+              onRemove={() => toggleWorkType(v)}
             />
           )
         })}
@@ -163,7 +119,7 @@ export default function FiltersSidebar({ departmentres }: { departmentres: depar
             <SelectedChip
               key={id}
               label={item?.label || "Department"}
-              onRemove={() => toggleMultiValue(id, setDepartment)}
+              onRemove={() => toggleDepartment(id)}
             />
           )
         })}
@@ -180,15 +136,16 @@ export default function FiltersSidebar({ departmentres }: { departmentres: depar
           <AccordionTrigger className="no-underline hover:no-underline">
             Date posted
           </AccordionTrigger>
-          <AccordionContent className="space-y-2 pt-2">
+          <AccordionContent className="space-y-2 pt-2 pl-2">
             {DATE_OPTIONS.map(opt => (
               <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="radio"
                   checked={date === opt.value}
-                  onChange={() => setDatePosted(opt.value)}
+                  onChange={() => setDate(opt.value)}
+                  className="scale-125"
                 />
-                <span className="text-sm text-gray-700">{opt.label}</span>
+                <span className="text-sm text-(--profile-menu-text-color)">{opt.label}</span>
               </label>
             ))}
           </AccordionContent>
@@ -199,7 +156,7 @@ export default function FiltersSidebar({ departmentres }: { departmentres: depar
           <AccordionTrigger className="no-underline hover:no-underline">
             Work Mode
           </AccordionTrigger>
-          <AccordionContent className="space-y-2 pt-2">
+          <AccordionContent className="space-y-2 pt-2 pl-2">
             {WORK_MODE_OPTIONS.map(opt => (
               <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -208,8 +165,9 @@ export default function FiltersSidebar({ departmentres }: { departmentres: depar
                   value={opt.value}
                   checked={workMode === opt.value}
                   onChange={(e) => setWorkMode(e.target.value)}
+                  className="scale-125"
                 />
-                <span className="text-sm text-gray-700">{opt.label}</span>
+                <span className="text-sm text-(--profile-menu-text-color)">{opt.label}</span>
               </label>
             ))}
           </AccordionContent>
@@ -220,15 +178,16 @@ export default function FiltersSidebar({ departmentres }: { departmentres: depar
           <AccordionTrigger className="no-underline hover:no-underline">
             Work Type
           </AccordionTrigger>
-          <AccordionContent className="space-y-2 pt-2">
+          <AccordionContent className="space-y-2 pt-2 pl-2">
             {WORK_TYPE_OPTIONS.map(opt => (
               <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={workType.includes(opt.value)}
-                  onChange={() => toggleMultiValue(opt.value, setWorkType)}
+                  onChange={() => toggleWorkType(opt.value)}
+                  className="scale-125"
                 />
-                <span className="text-sm text-gray-700">{opt.label}</span>
+                <span className="text-sm text-(--profile-menu-text-color)">{opt.label}</span>
               </label>
             ))}
           </AccordionContent>
@@ -239,26 +198,27 @@ export default function FiltersSidebar({ departmentres }: { departmentres: depar
           <AccordionTrigger className="no-underline hover:no-underline">
             Department
           </AccordionTrigger>
-          <AccordionContent className="space-y-3 pt-2">
+          <AccordionContent className="space-y-3 pt-2 pl-2">
 
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            {/* <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-(--job-post-bg-color)" />
               <input
                 type="text"
                 placeholder="Search"
-                className="block w-[95%] mx-auto pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg outline-none  focus:outline-none focus:ring-2 focus:ring-[#0ea5e9] focus:border-transparent"
+                className="block w-[99%] mx-auto pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg outline-none  focus:outline-none focus:ring-2 focus:ring-(--navbar-text-color) focus:border-transparent"
               />
-            </div>
+            </div> */}
             {DEPARTMENT_OPTIONS.map(opt => (
               <label key={opt.value} className="flex gap-2 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={department.includes(opt.value)} // opt.value = _id
+                  checked={department.includes(opt.value)} 
                   onChange={() =>
-                    toggleMultiValue(opt.value, setDepartment)
+                    toggleDepartment(opt.value)
                   }
+                  className="scale-125"
                 />
-                <span>{opt.label}</span>
+                <span className="text-sm text-(--profile-menu-text-color)">{opt.label}</span>
               </label>
             ))}
           </AccordionContent>
