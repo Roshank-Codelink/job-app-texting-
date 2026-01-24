@@ -141,7 +141,7 @@ export default function SignIn() {
                             </div>
                         )}
                         {/* SIGNUP/REGISTER LINKS */}
-                        {!showOtp && (
+                        {/* {!showOtp && (
                             <div className="mt-6 text-center">
                                 <p className="text-sm text-(--profile-title-color) mb-3">
                                     Don't have an account?{" "}
@@ -150,7 +150,7 @@ export default function SignIn() {
                                     </Link>
                                 </p>
                             </div>
-                        )}
+                        )} */}
                     </div>
                 </div>
             </div>

@@ -1,7 +1,7 @@
 "use client"
 import Image from "next/image"
 import Link from "next/link"
-import { Search, Briefcase, MapPin, X, Menu, User, LogOut, Phone, Download, DollarSign, Info, ChevronDown } from "lucide-react"
+import { Search, Briefcase, MapPin, X, Menu, User, LogOut, Phone, Download, DollarSign, Info, ChevronDown, Bookmark } from "lucide-react"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { Input } from "@/Components/ui/input"
 import {
@@ -54,8 +54,11 @@ function UserProfile() {
             <User className="h-4 w-4 text-gray-600" />
             <span>View Profile</span>
           </Link>
-          <div className="border-t border-gray-200 my-1"></div>
-         <button onClick={handleLogout} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 transition-colors">
+          <Link href="/candidate/save-jobs" className="flex items-center cursor-pointer gap-2 px-3 py-2 text-sm text-(--profile-menu-text-color) rounded-md hover:bg-gray-100 transition-colors" >
+            <Bookmark className="h-4 w-4 text-gray-600" />
+            <span>Saved Jobs</span>
+          </Link>
+         <button onClick={handleLogout} className="flex items-center cursor-pointer gap-2 px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 transition-colors">
             <LogOut className="h-4 w-4 text-gray-600" />
             <span>Logout</span>
           </button>

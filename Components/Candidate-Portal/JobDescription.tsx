@@ -30,7 +30,7 @@ interface JobDescriptionProps {
 }
 
 export default function JobDescription({ isOpen, onClose, companyName, companyLogo, companyAddress, companyWebsite, rawDescription, extractedData, isprofileStrength }: JobDescriptionProps) {
-
+   
     return (
         <Sheet open={isOpen} onOpenChange={onClose}>
             <SheetOverlay

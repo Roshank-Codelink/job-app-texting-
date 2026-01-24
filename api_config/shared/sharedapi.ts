@@ -3,8 +3,9 @@ import { getSession } from "next-auth/react";
 import { CandidateSignUpSkillResponse } from "../SignupApi/type";
 import { customFetch } from "../apiconfig";
 import { auth } from "@/lib/auth-config";
+import { SaveJobsApiResponse } from "./type";
 
-export const candidateSignUpSkillApi = async (): Promise<CandidateSignUpSkillResponse> => {
+export const candidateOnboardingSkill = async (): Promise<CandidateSignUpSkillResponse> => {
     const response = await customFetch<CandidateSignUpSkillResponse>({
         url: "/get-skills",
         method: "GET",
@@ -89,7 +90,7 @@ export const getJobsApi = async ({ searchParams }: JobsPageProps) => {
         url: `/jobs?${params.toString()}`,
         method: "GET",
     });
-
+    console.log("csdmckmosdm",response)
     return response.data;
 };
 
@@ -127,5 +128,40 @@ export const likeJobApi =async(jobId:string,action:string)=>{
     }
 }
 
+interface SaveJobResponse{
+    success: boolean
+    savedCount:number
+    message: string;
+}
 
+export const saveJobApi = async(jobId:string,action:string)=>{
+    console.log(jobId,action)
+    try {
+       const response = await customFetch<SaveJobResponse>({
+        url:`/jobs/${jobId}/save`,
+        method:"POST",
+        body:{
+            action:action
+        }
+       })
+        return response.data ;
+    } catch (error) {
+        console.log("Error saving job:", error);
+        throw error;
+    }
+}
+
+export const getSavedJobApi= async(page:number,limit:number)=>{
+    try {
+        const response = await customFetch<SaveJobsApiResponse>({
+            url:`/jobs/saved?page=${page}&limit=${limit}`,
+            method:"GET"
+        })
+        console.log("cbujb",response)
+        return response.data;
+    } catch (error) {
+        console.log("Error get  saving job:", error);
+        throw error
+    }
+}
 

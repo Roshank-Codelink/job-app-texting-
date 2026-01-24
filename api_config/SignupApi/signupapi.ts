@@ -1,5 +1,5 @@
 import { customFetch } from "../apiconfig";
-import { CandidateSignUpPayload, CandidateSignUpResponse, CandidateSignUpSkillResponse, SignupPayload, SignupResponse } from "./type";
+import { CandidateOnboardingPayload, CandidateOnboadingResponse, CandidateSignUpSkillResponse, SignupPayload, SignupResponse } from "./type";
 
 export const signupApi = async (payload: SignupPayload) => {
  const response = await customFetch<SignupResponse>({
@@ -11,12 +11,12 @@ export const signupApi = async (payload: SignupPayload) => {
 }
 
 
-// candidate SignUp api 
-export const candidateSignUpApi=async (payload: CandidateSignUpPayload) => {
+// candidate Onboarding Api
+export const candidateOnboarding=async (payload: CandidateOnboardingPayload) => {
    console.log(payload);
    
-   const response = await customFetch<CandidateSignUpResponse>({
-    url: "/employee-signup",
+   const response = await customFetch<CandidateOnboadingResponse>({
+    url: "/employee-onboarding",
     method: "POST",
     body: payload,
    });

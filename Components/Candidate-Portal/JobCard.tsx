@@ -2,11 +2,12 @@ import { useState } from "react"
 import { ThumbsUp, Bookmark, TrendingUp, ShieldCheck } from "lucide-react"
 import Image from "next/image"
 import JobDescription from "./JobDescription"
-import { likeJobApi } from "@/api_config/shared/sharedapi"
+import { likeJobApi, saveJobApi } from "@/api_config/shared/sharedapi"
+import { error } from "console"
 
 
 interface JobCardProps {
-  
+
   extractedData: {
     jobTitle: string,
     workMode: string | null
@@ -20,27 +21,46 @@ interface JobCardProps {
   isprofileStrength?: string
   companyAddress?: string,
   companyWebsite?: string,
-  isLiked?: boolean
+  isLiked?: boolean,
+  isSaved?: boolean,
 }
 
-export default function JobCard({ jobId,rawDescription, companyLogo, companyName, isVerified, isprofileStrength, extractedData, companyAddress, companyWebsite, isLiked }: JobCardProps) {
+export default function JobCard({ jobId, rawDescription, companyLogo, companyName, isVerified, isprofileStrength, extractedData, companyAddress, companyWebsite, isLiked, isSaved }: JobCardProps) {
   const [isSliderOpen, setIsSliderOpen] = useState(false)
   const [isLikedState, setIsLikedState] = useState(isLiked || false)
-  const [isSaved, setIsSaved] = useState(false)
+  const [isSavedState, setIsSavedState] = useState(isSaved || false)
 
-  const handleLike = async()=>{
+  const handleLike = async () => {
     try {
       const action = isLikedState ? "unlike" : "like"
       const response = await likeJobApi(jobId, action)
-      if(response?.success){
+      if (response?.success) {
         setIsLikedState(!isLikedState)
       }
-      console.log("joblikeResponse",response)
+      console.log("joblikeResponse", response)
     } catch (error) {
-       console.log("Error liking job:", error);
-       throw error;
+      console.log("Error liking job:", error);
+      throw error;
     }
   }
+
+  const handleSave = async () => {
+    try {
+      const action = isSavedState ? "unsave" : "save"
+       
+      const response = await saveJobApi(jobId, action)
+      if (response?.success) {
+        setIsSavedState(!isSavedState)
+      }
+      console.log("jobsaveResponse", response)
+    } catch (error) {
+      console.log("Error saving job:", error);
+      throw error
+    } {
+
+    }
+  }
+
   return (
     <div className="bg-white rounded-[10px] border border-gray-200 shadow-sm overflow-hidden">
       {/* Company Header */}
@@ -51,21 +71,21 @@ export default function JobCard({ jobId,rawDescription, companyLogo, companyName
           <button
             onClick={handleLike}
             className={`p-1.5 sm:p-2 rounded-full transition-all duration-200 cursor-pointer ${isLikedState
-                ? "bg-(--navbar-bg-button) text-(--navbar-text-color)"
-                : "text-(--profile-title-color) hover:text-(--navbar-text-color) hover:bg-(--navbar-bg-button)"
+              ? "bg-(--navbar-bg-button) text-(--navbar-text-color)"
+              : "text-(--profile-title-color) hover:text-(--navbar-text-color) hover:bg-(--navbar-bg-button)"
               }`}
           >
             <ThumbsUp className={`w-4 h-4 sm:w-5 sm:h-5 ${isLikedState ? "fill-current" : ""}`} />
           </button>
 
           <button
-            onClick={() => setIsSaved(!isSaved)}
-            className={`p-1.5 sm:p-2 rounded-full transition-all duration-200 cursor-pointer ${isSaved
-                ? "bg-(--navbar-bg-button) text-(--job-post-button-bg-to)"
-                : "text-(--profile-title-color) hover:text-(--job-post-button-bg-to) hover:bg-(--navbar-bg-button)"
+            onClick={handleSave}
+            className={`p-1.5 sm:p-2 rounded-full transition-all duration-200 cursor-pointer ${isSavedState
+              ? "bg-(--navbar-bg-button) text-(--job-post-button-bg-to)"
+              : "text-(--profile-title-color) hover:text-(--job-post-button-bg-to) hover:bg-(--navbar-bg-button)"
               }`}
           >
-            <Bookmark className={`w-4 h-4 sm:w-5 sm:h-5 ${isSaved ? "fill-current" : ""}`} />
+            <Bookmark className={`w-4 h-4 sm:w-5 sm:h-5 ${isSavedState ? "fill-current" : ""}`} />
           </button>
         </div>
 

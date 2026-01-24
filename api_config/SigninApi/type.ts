@@ -15,5 +15,6 @@ export interface VerifyOTPResponse {
         id: string;
         jobTitle: string;
         companyName: string;
+        isOnboardingCompleted:boolean
     }
 }

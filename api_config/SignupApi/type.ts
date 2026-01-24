@@ -33,7 +33,7 @@ export interface CandidateSignUpSkillResponse {
 
 // candidate SignUp payload
 
-export interface CandidateSignUpPayload {
+export interface CandidateOnboardingPayload {
     name: string;
     email: string;
     phone: string;
@@ -43,6 +43,6 @@ export interface CandidateSignUpPayload {
 }
 
 
-export interface CandidateSignUpResponse {
+export interface CandidateOnboadingResponse {
     message: string;
 }

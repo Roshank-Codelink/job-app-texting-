@@ -1,6 +1,6 @@
 "use client"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Briefcase, MapPin,X } from "lucide-react"
+import { Briefcase, MapPin, X } from "lucide-react"
 import JobFilters from "./JobFilters"
 import FiltersSidebar from "./FiltersSidebar"
 import JobCard from "./JobCard"
@@ -9,7 +9,7 @@ import { getJobsApi } from "@/api_config/shared/sharedapi"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 export default function JobsFeed({ jobs, departments }: { jobs: any, departments: departmentApiResponse }) {
-    console.log("jobs", jobs)
+    // console.log("jobs", jobs)
     const searchParams = useSearchParams()
     const urlSearchValue = decodeURIComponent(searchParams.get('text') || '')
     const [searchQuery, setSearchQuery] = useState(urlSearchValue)
@@ -120,7 +120,7 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                                    focus:outline-none focus:ring-2 focus:ring-(--navbar-text-color)
                                    focus:border-transparent shadow-sm md:shadow-none"
                         />
-                       {searchQuery && <X className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-(--job-post-bg-color) cursor-pointer" onClick={() => setSearchQuery("")} />}
+                        {searchQuery && <X className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-(--job-post-bg-color) cursor-pointer" onClick={() => setSearchQuery("")} />}
                     </div>
                     {/* Location Input and Button - Same row on mobile */}
                     <div className="flex gap-2 md:hidden">
@@ -209,8 +209,18 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                                 {SearchBar}
                             </div>
                             {allJobs.length === 0 ? (
-                                <div className="flex items-center justify-center py-12">
-                                    <p className="text-gray-500">No jobs found</p>
+                                <div className="w-[90%] mx-auto mt-12 bg-white rounded-xl shadow-sm border border-gray-100 px-6 py-14 text-center">
+                                    {/* Icon */}
+                                    <div className="flex justify-center mb-5">
+                                        <div className="h-14 w-14 rounded-full bg-gray-100 flex items-center justify-center">
+                                            <svg className="h-7 w-7 text-gray-400" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    {/* Title */}
+                                    <h2 className="text-gray-900 font-semibold text-xl">No matching jobs found</h2>
+                                    <p className="text-gray-500 text-sm mt-3 max-w-md mx-auto">We couldn’t find any jobs that match your current filters.Try adjusting your preferences or explore other opportunities.</p>
                                 </div>
                             ) : (
                                 <div className="space-y-4">
@@ -226,6 +236,7 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                                             companyAddress={job.employer?.companyAddress}
                                             companyWebsite={job.employer?.companyWebsite}
                                             isLiked={job.isLiked}
+                                            isSaved={job.isSaved}
 
                                         />
                                     ))}
@@ -248,7 +259,8 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                   0%, 80%, 100% { transform: translateY(0); opacity: .5; }
                   40% { transform: translateY(-8px); opacity: 1; }
                 }
-              `,}}/>
+              `,
+                                        }} />
                                 </div>
                             )}
                         </div>

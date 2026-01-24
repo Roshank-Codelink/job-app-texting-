@@ -42,6 +42,7 @@ const credentialsConfig = CredentialsProvider({
                 role: response.data.data.role,
                 token: response.data.data.token,
                 companyName: response.data.data.companyName,
+                isOnboardingCompleted:response.data.data.isOnboardingCompleted
             }
 
         } catch (error) {

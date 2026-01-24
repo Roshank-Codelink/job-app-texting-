@@ -15,8 +15,6 @@ export default function CompanyLayoutClient({ children }: CompanyLayoutClientPro
 
   return (
     <SidebarProvider>
-   
-
       {/* ✅ MAIN LAYOUT (always rendered) */}
       <div className="flex flex-col h-screen w-full">
         {/* Navbar */}

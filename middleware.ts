@@ -3,20 +3,18 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const { pathname, searchParams } = request.nextUrl;
 
-  /* ---------- ROUTES ---------- */
-  const employerRoutes = pathname.startsWith("/employer");
-  const candidateRoutes = pathname.startsWith("/candidate");
+  /* ---------- AUTH PAGES ---------- */
+  const employerAuthPages = ["/employer-signin", "/employer-signup"];
+  const candidateAuthPages = ["/candidate-signin"];
 
-  const authPages = [
-    "/employer-signin",
-    "/employer-signup",
-    "/candidate-signin",
-    "/candidate-signup",
-  ];
+  const isEmployerAuthPage = employerAuthPages.includes(pathname);
+  const isCandidateAuthPage = candidateAuthPages.includes(pathname);
 
-  const isAuthPage = authPages.includes(pathname);
+  /* ---------- ADMIN PAGES ---------- */
+  const isAdminAuthPage = pathname === "/admin-login";
+  const isAdminRoute = pathname.startsWith("/admin");
 
   /* ---------- TOKEN ---------- */
   const token = await getToken({
@@ -24,80 +22,129 @@ export async function middleware(request: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET,
   });
 
-  // Get role from token - check both token.role and token.user.role
   const role = token?.role || (token as any)?.user?.role;
+  const onboarding = Boolean((token as any)?.user?.isOnboardingCompleted);
 
   /* ==================================================
-     1️⃣ AUTH PAGES (LOGIN / SIGNUP)
+     ADMIN LOGIN PAGE
      ================================================== */
-  if (isAuthPage) {
-    // ❗ IMPORTANT: No token → allow signin/signup
+  if (isAdminAuthPage) {
+    // Not logged in → allow
     if (!token) {
       return NextResponse.next();
     }
 
-    // Check which auth page user is trying to access
-    const isEmployerAuthPage = pathname === "/employer-signin" || pathname === "/employer-signup";
-    const isCandidateAuthPage = pathname === "/candidate-signin" || pathname === "/candidate-signup";
-
-    // If EMPLOYER is logged in
-    if (role === "EMPLOYER") {
-      // If trying to access employer auth pages → redirect to dashboard
-      if (isEmployerAuthPage) {
-        return NextResponse.redirect(new URL("/employer/dashboard", request.url));
-      }
-      // If trying to access candidate auth pages → redirect to dashboard (block access)
-      if (isCandidateAuthPage) {
-        return NextResponse.redirect(new URL("/employer/dashboard", request.url));
-      }
+    // Logged in ADMIN → dashboard
+    if (role === "ADMIN") {
+      return NextResponse.redirect(
+        new URL("/admin/dashboard", request.url)
+      );
     }
 
-    // If EMPLOYEE is logged in
-    if (role === "EMPLOYEE") {
-      // If trying to access candidate auth pages → redirect to dashboard
-      if (isCandidateAuthPage) {
-        return NextResponse.redirect(new URL("/", request.url));
-      }
-      // If trying to access employer auth pages → redirect to dashboard (block access)
-      if (isEmployerAuthPage) {
-        return NextResponse.redirect(new URL("/", request.url));
-      }
+    // Logged in but not admin → block
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  /* ==================================================
+     ADMIN ROUTES
+     ================================================== */
+  if (isAdminRoute) {
+    // Not logged in → admin-login
+    if (!token) {
+      return NextResponse.redirect(
+        new URL("/admin-login", request.url)
+      );
     }
 
+    // Logged in but NOT admin
+    if (role !== "ADMIN") {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+  }
+
+  /* ==================================================
+     EMPLOYER AUTH PAGES
+     ================================================== */
+  if (isEmployerAuthPage) {
+    if (token && role === "EMPLOYER") {
+      return NextResponse.redirect(
+        new URL("/employer/dashboard", request.url)
+      );
+    }
     return NextResponse.next();
   }
 
   /* ==================================================
-     2️⃣ PROTECTED EMPLOYER ROUTES
+     CANDIDATE AUTH PAGE (SIGNIN)
      ================================================== */
-  if (employerRoutes) {
+  if (isCandidateAuthPage) {
+    if (!token) {
+      return NextResponse.next();
+    }
+
+    if (role === "EMPLOYEE") {
+      if (!onboarding) {
+        return NextResponse.redirect(
+          new URL("/candidate-onboarding", request.url)
+        );
+      }
+
+      const jobTitle = (token as any)?.user?.jobTitle ?? "";
+      const url = new URL("/candidate/jobs", request.url);
+      if (jobTitle) {
+        url.searchParams.set("text", jobTitle);
+      }
+      return NextResponse.redirect(url);
+    }
+
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  /* ==================================================
+     EMPLOYER ROUTES
+     ================================================== */
+  if (pathname.startsWith("/employer")) {
     if (!token || role !== "EMPLOYER") {
-      return NextResponse.redirect(new URL("/employer-signin", request.url));
+      return NextResponse.redirect(
+        new URL("/employer-signin", request.url)
+      );
     }
   }
 
   /* ==================================================
-     3️⃣ PROTECTED CANDIDATE ROUTES
+     CANDIDATE ROUTES
      ================================================== */
-  if (candidateRoutes) {
+  if (pathname.startsWith("/candidate")) {
     if (!token || role !== "EMPLOYEE") {
-      return NextResponse.redirect(new URL("/candidate-signin", request.url));
+      return NextResponse.redirect(
+        new URL("/candidate-signin", request.url)
+      );
     }
 
-    // 🔥 URL GUARD for candidate routes that need text parameter
-    const routesNeedingText = ["/candidate/jobs"];
-    
-    if (routesNeedingText.includes(pathname)) {
-      const { searchParams } = request.nextUrl;
-      const currentText = searchParams.get("text");
-      
-      // Get jobTitle from token
+    // onboarding NOT completed → only onboarding allowed
+    if (!onboarding && pathname !== "/candidate-onboarding") {
+      return NextResponse.redirect(
+        new URL("/candidate-onboarding", request.url)
+      );
+    }
+
+    // onboarding completed → block onboarding page
+    if (onboarding && pathname === "/candidate-onboarding") {
       const jobTitle = (token as any)?.user?.jobTitle ?? "";
-      
-      // If no text parameter, add it automatically
+      const url = new URL("/candidate/jobs", request.url);
+      if (jobTitle) {
+        url.searchParams.set("text", jobTitle);
+      }
+      return NextResponse.redirect(url);
+    }
+
+    // auto add text param on jobs page
+    if (pathname === "/candidate/jobs") {
+      const currentText = searchParams.get("text");
+      const jobTitle = (token as any)?.user?.jobTitle ?? "";
+
       if (!currentText && jobTitle) {
-        const url = new URL(pathname, request.url);
-        // Add text parameter without URL encoding
+        const url = new URL(request.url);
         url.searchParams.set("text", jobTitle);
         return NextResponse.redirect(url);
       }
@@ -107,14 +154,18 @@ export async function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
+/* ==================================================
+   MATCHER
+   ================================================== */
 export const config = {
   matcher: [
+    "/admin/:path*",
+    "/admin-login",
     "/employer/:path*",
     "/candidate/:path*",
     "/employer-signin",
     "/employer-signup",
     "/candidate-signin",
-    "/candidate-signup",
-    "/profile",
+    "/candidate-onboarding",
   ],
 };
