@@ -1,10 +1,10 @@
-import SignIn from "@/Components/Admin-Authentication/Signin"
+import AdminSignin from "@/Components/Admin-Authentication/Signin";
 
 
-export default function adminlogin(){
+export default function adminlogin() {
     return (
         <>
-           <SignIn/>
+            <AdminSignin />
         </>
     )
 }
