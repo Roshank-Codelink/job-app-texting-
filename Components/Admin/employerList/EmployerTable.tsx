@@ -1,6 +1,6 @@
 "use client"
 
-import { EmployersData } from '@/api_config/Admin/types';
+import { EmployersData, GetEmployersResponse } from '@/api_config/Admin/types';
 import { approveRejectEmployer } from '@/api_config/Admin/employers';
 import { DataTable } from '@/Components/Common/DataTable';
 import { Button } from '@/Components/ui/button';
@@ -29,7 +29,7 @@ import { toast } from 'react-toastify';
 
 
 
-const EmployerTable = React.memo(({ employerList }: { employerList: EmployersData[] }) => {
+const EmployerTable = React.memo(({ employerData }: { employerData: GetEmployersResponse }) => {
     const router = useRouter();
     const [isProcessing, setIsProcessing] = useState<string | null>(null);
     const [confirmDialog, setConfirmDialog] = useState<{
@@ -64,10 +64,10 @@ const EmployerTable = React.memo(({ employerList }: { employerList: EmployersDat
 
         setIsProcessing(userId);
         setConfirmDialog({ open: false, userId: null, employerName: null, status: null });
-        
+
         try {
             const response = await approveRejectEmployer(userId, status);
-            
+
             if (response.error || response.statusCode !== 200) {
                 const errorMessage = response.data?.message || `Failed to ${status === "ACTIVE" ? "approve" : "reject"} employer`;
                 toast.error(errorMessage);
@@ -75,7 +75,7 @@ const EmployerTable = React.memo(({ employerList }: { employerList: EmployersDat
             } else {
                 const successMessage = response.data?.message || `Employer ${status === "ACTIVE" ? "approved" : "rejected"} successfully`;
                 toast.success(successMessage);
-                
+
                 // Refresh the page data
                 router.refresh();
             }
@@ -117,7 +117,7 @@ const EmployerTable = React.memo(({ employerList }: { employerList: EmployersDat
             header: 'Actions',
             cell: ({ row }: { row: Row<EmployersData> }) => {
                 const isDisabled = row.original.status === "ACTIVE" || isProcessing === row.original.userId;
-                
+
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild disabled={isDisabled}>
@@ -126,7 +126,7 @@ const EmployerTable = React.memo(({ employerList }: { employerList: EmployersDat
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent side="bottom" align="start">
-                            <DropdownMenuItem 
+                            <DropdownMenuItem
                                 onClick={() => handleApproveRejectClick(row.original.userId, row.original.companyName || row.original.name, "ACTIVE")}
                                 disabled={isProcessing === row.original.userId}
                             >
@@ -161,7 +161,16 @@ const EmployerTable = React.memo(({ employerList }: { employerList: EmployersDat
     return (
         <>
             <div className="w-full">
-                <DataTable columns={columns} data={employerList} />
+                <DataTable
+                    columns={columns}
+                    data={employerData?.data || []}
+                    pagination={employerData ? {
+                        currentPage: employerData.currentPage,
+                        total: employerData.total,
+                        totalCount: employerData.totalCount,
+                        limit: employerData.limit,
+                    } : undefined}
+                />
             </div>
 
             {/* Approval Confirmation Dialog */}
@@ -185,7 +194,7 @@ const EmployerTable = React.memo(({ employerList }: { employerList: EmployersDat
                         <Button
                             onClick={handleConfirm}
                             disabled={isProcessing === confirmDialog.userId}
-                            className="bg-gradient-to-r from-(--job-post-button-bg-from) to-(--job-post-button-bg-to) text-white hover:from-(--navbar-text-color) hover:to-(--job-post-button-hover) cursor-pointer"
+                            className="from-(--job-post-button-bg-from) to-(--job-post-button-bg-to) text-white hover:from-(--navbar-text-color) hover:to-(--job-post-button-hover) cursor-pointer"
                         >
                             {isProcessing === confirmDialog.userId ? "Processing..." : "Approve"}
                         </Button>

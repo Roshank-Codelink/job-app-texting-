@@ -78,8 +78,9 @@ interface JobHeaderProps {
   jobStatus?: string;
   onStatusUpdate?: (jobId: string, newStatus: string) => void;
   likeCount?: number;
+  savedCount?: number;
 }
-function JobHeader({ companyName, postedTime, jobId, jobStatus, onStatusUpdate, likeCount }: JobHeaderProps) {
+function JobHeader({ companyName, postedTime, jobId, jobStatus, onStatusUpdate, likeCount, savedCount }: JobHeaderProps) {
 
   return (
     <CardHeader className="pb-3 pt-5 px-6">
@@ -108,7 +109,7 @@ function JobHeader({ companyName, postedTime, jobId, jobStatus, onStatusUpdate, 
                 <div className="flex items-center gap-2.5">
                   <Heart className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-(--navbar-text-color) transition-all" strokeWidth={2.5} />
                   <div className="flex flex-col leading-none">
-                    <span className="text-xs font-bold text-(--profile-name-color)">{likeCount}</span>
+                    <span className="text-xs font-bold text-(--profile-name-color)">{likeCount || 0}</span>
                     <span className="text-[9px] text-(--profile-title-color) ">like</span>
                   </div>
                 </div>
@@ -138,7 +139,7 @@ function JobHeader({ companyName, postedTime, jobId, jobStatus, onStatusUpdate, 
                 <div className="flex items-center gap-2.5">
                   <Bookmark className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-(--navbar-text-color) transition-all" strokeWidth={2.5} />
                   <div className="flex flex-col leading-none">
-                    <span className="text-xs font-bold text-(--profile-name-color)">42</span>
+                    <span className="text-xs font-bold text-(--profile-name-color)">{savedCount || 0}</span>
                     <span className="text-[9px] text-(--profile-title-color)">Saved</span>
                   </div>
                 </div>
@@ -182,6 +183,9 @@ interface JobListingCardsProps {
 }
 export default function JobListingCards({ jobs, onJobStatusUpdate }: JobListingCardsProps) {
 
+
+
+  console.log("jobs", jobs);
   return (
     <div className="w-full p-4 space-y-6">
       <h1 className="text-xl font-bold text-(--profile-name-color) mb-4">Recent Job Posts</h1>
@@ -218,12 +222,13 @@ export default function JobListingCards({ jobs, onJobStatusUpdate }: JobListingC
               </div>
               <div>
                 <JobHeader
-                  companyName="CodeLink Infotech"
+                  companyName={job?.companyName || ""}
                   postedTime="Recently"
                   jobId={job._id}
                   jobStatus={job.status}
                   onStatusUpdate={onJobStatusUpdate}
                   likeCount={job.likeCount}
+                  savedCount={job?.savedCount || 0}
                 />
                 <JobDescription description={job.rawDescription} />
                 {/* Stats Cards - Mobile aur iPad me bottom pe dikhenge */}
@@ -235,7 +240,7 @@ export default function JobListingCards({ jobs, onJobStatusUpdate }: JobListingC
                         <div className="flex items-center justify-center gap-2">
                           <Heart className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-(--navbar-text-color) transition-all" strokeWidth={2.5} />
                           <div className="flex flex-col leading-none">
-                            <span className="text-xs font-bold text-(--profile-name-color)">{job.likeCount}</span>
+                            <span className="text-xs font-bold text-(--profile-name-color)">{job?.likeCount || 0}</span>
                             <span className="text-[9px] text-(--profile-title-color)">like</span>
                           </div>
                         </div>
@@ -261,7 +266,7 @@ export default function JobListingCards({ jobs, onJobStatusUpdate }: JobListingC
                         <div className="flex items-center justify-center gap-2">
                           <Bookmark className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-(--navbar-text-color) transition-all" strokeWidth={2.5} />
                           <div className="flex flex-col leading-none">
-                            <span className="text-xs font-bold text-(--profile-name-color)">42</span>
+                            <span className="text-xs font-bold text-(--profile-name-color)">{job?.savedCount || 0}</span>
                             <span className="text-[9px] text-(--profile-title-color)">Saved</span>
                           </div>
                         </div>

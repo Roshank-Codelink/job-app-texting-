@@ -153,6 +153,7 @@ export default function JobPost({ initialJobs }: JobPostProps) {
               )
             );
           }}
+          
         />
         {/* Infinite Loader - Only show if we have at least limit number of jobs */}
         {hasMore && jobs.length >= limit && (

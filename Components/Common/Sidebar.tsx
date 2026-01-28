@@ -13,6 +13,7 @@ import {
 } from "@/Components/ui/sidebar";
 import {
   AlertCircle,
+  FileText,
   User
 } from "lucide-react";
 import { BiSolidZap } from "react-icons/bi";
@@ -32,11 +33,13 @@ export default function AppSidebar() {
       setActiveItem("dashboard");
     } else if (pathname?.includes("/employer/profile")) {
       setActiveItem("profile"); // No item selected on profile page
+    } else if (pathname?.includes("/employer/job-applications")) {
+      setActiveItem("job-applications");
     } else {
       setActiveItem(""); // Default to no selection
     }
   }, [pathname]);
-  
+
   return (
     <Sidebar className="bg-(--sidebar-bg-color)">
       {/* ✅ Only ONE wrapper inside Sidebar */}
@@ -48,20 +51,18 @@ export default function AppSidebar() {
               <SidebarGroupContent>
                 <SidebarMenu className="gap-2">
                   {/* Dashboard */}
-                  <SidebarMenuItem 
-                    className={`rounded-lg transition-all ${
-                      activeItem === "dashboard" 
-                        ? "bg-(--navbar-bg-button) border-r-[3px] border-(--navbar-text-color)" 
+                  <SidebarMenuItem
+                    className={`rounded-lg transition-all ${activeItem === "dashboard"
+                        ? "bg-(--navbar-bg-button) border-r-[3px] border-(--navbar-text-color)"
                         : ""
-                    }`}
+                      }`}
                   >
-                     <Link href="/employer/dashboard">  <SidebarMenuButton 
+                    <Link href="/employer/dashboard">  <SidebarMenuButton
                       onClick={() => setActiveItem("dashboard")}
-                      className={`flex items-center gap-3 px-4 py-5 rounded-lg w-full cursor-pointer border-none shadow-none outline-none [&_svg]:transition ${
-                        activeItem === "dashboard"
+                      className={`flex items-center gap-3 px-4 py-5 rounded-lg w-full cursor-pointer border-none shadow-none outline-none [&_svg]:transition ${activeItem === "dashboard"
                           ? "bg-transparent hover:bg-transparent text-(--navbar-text-color) [&_svg]:text-(--navbar-text-color)"
                           : "bg-transparent hover:bg-(--navbar-bg-button) text-(--profile-title-color) hover:text-(--navbar-text-color) [&_svg]:text-(--sidebar-menu-icone-color) [&:hover_svg]:text-(--navbar-text-color) [&:hover_svg]:scale-110"
-                      }`}
+                        }`}
                     >
                       <AlertCircle className="w-5 h-5" />
                       <span className={activeItem === "dashboard" ? "font-medium" : ""}>Dashboard</span>
@@ -148,24 +149,41 @@ export default function AppSidebar() {
                     </SidebarMenuButton>
                   </SidebarMenuItem> */}
                   {/* Settings */}
-                  <SidebarMenuItem 
-                    className={`rounded-lg transition-all ${
-                      activeItem === "profile" 
-                        ? "bg-(--navbar-bg-button) border-r-[3px] border-(--navbar-text-color)" 
+                  <SidebarMenuItem
+                    className={`rounded-lg transition-all ${activeItem === "profile"
+                        ? "bg-(--navbar-bg-button) border-r-[3px] border-(--navbar-text-color)"
                         : ""
-                    }`}
+                      }`}
                   >
-                    <Link href="/employer/profile">
-                      <SidebarMenuButton 
-                        onClick={() => setActiveItem("profile")}
-                        className={`flex items-center gap-3 px-4 py-5 rounded-lg w-full cursor-pointer border-none shadow-none outline-none [&_svg]:transition ${
-                          activeItem === "profile"
+                    <Link href="/employer/job-applications">
+                      <SidebarMenuButton
+                        onClick={() => setActiveItem("job-applications")}
+                        className={`flex items-center gap-3 px-4 py-5 rounded-lg w-full cursor-pointer border-none shadow-none outline-none [&_svg]:transition ${activeItem === "job-applications"
                             ? "bg-transparent hover:bg-transparent text-(--navbar-text-color) font-medium [&_svg]:text-(--navbar-text-color)"
                             : "bg-transparent hover:bg-(--navbar-bg-button) text-(--profile-title-color) hover:text-(--navbar-text-color) [&_svg]:text-(--sidebar-menu-icone-color) [&:hover_svg]:text-(--navbar-text-color) [&:hover_svg]:scale-110"
-                        }`}
+                          }`}
                       >
-                          <User className="w-5 h-5" />
-                          <span>Profile</span>
+                        <FileText className="w-5 h-5" />
+                        <span>Job Applications</span>
+                      </SidebarMenuButton>
+                    </Link>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem
+                    className={`rounded-lg transition-all ${activeItem === "profile"
+                        ? "bg-(--navbar-bg-button) border-r-[3px] border-(--navbar-text-color)"
+                        : ""
+                      }`}
+                  >
+                    <Link href="/employer/profile">
+                      <SidebarMenuButton
+                        onClick={() => setActiveItem("profile")}
+                        className={`flex items-center gap-3 px-4 py-5 rounded-lg w-full cursor-pointer border-none shadow-none outline-none [&_svg]:transition ${activeItem === "profile"
+                            ? "bg-transparent hover:bg-transparent text-(--navbar-text-color) font-medium [&_svg]:text-(--navbar-text-color)"
+                            : "bg-transparent hover:bg-(--navbar-bg-button) text-(--profile-title-color) hover:text-(--navbar-text-color) [&_svg]:text-(--sidebar-menu-icone-color) [&:hover_svg]:text-(--navbar-text-color) [&:hover_svg]:scale-110"
+                          }`}
+                      >
+                        <User className="w-5 h-5" />
+                        <span>Profile</span>
                       </SidebarMenuButton>
                     </Link>
                   </SidebarMenuItem>
@@ -195,6 +213,6 @@ export default function AppSidebar() {
         </div>
       </div>
       {/* END WRAPPER */}
-    </Sidebar>  
+    </Sidebar>
   );
 }

@@ -3,16 +3,19 @@
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { useSidebar } from "@/Components/ui/sidebar";
-import UserProfiles from "../Common/UserProfiles";
 import { Button } from "@/Components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import AdminProfile from "./AdminProfile";
 
 export default function AdminNavbar() {
   const { openMobile, setOpenMobile } = useSidebar();
   const { data: session } = useSession();
   const user = session?.user;
+
+  console.log("user", user);
+
 
   const handleToggle = () => {
     console.log('Toggle clicked - openMobile:', openMobile);
@@ -23,7 +26,7 @@ export default function AdminNavbar() {
   return (
     <div className="w-full h-full flex items-center justify-between px-3 sm:px-4 md:px-5 lg:px-6 bg-(--navbar-bg-parent)">
       <div className="left-content w-auto md:w-[11%] h-full flex items-center gap-1 sm:gap-1.5 md:gap-2 min-w-0">
-        <div className="logo w-[22px] h-[22px] sm:w-[24px] sm:h-[24px] md:w-[29px] md:h-[29px] shrink-0">
+        <div className="logo w-[22px] h-[22px] sm:w-6 sm:h-6 md:w-[29px] md:h-[29px] shrink-0">
           <Image src="/Gemini_Generated_Image_hjxynfhjxynfhjxy.png" alt="logo" width={100} height={100} className="w-full h-full" />
         </div>
         <div className="logo-text min-w-0">
@@ -56,7 +59,7 @@ export default function AdminNavbar() {
         </Button>
         {/* UserProfiles - Visible only on desktop (hidden on mobile) */}
         <div className="user-profile shrink-0 hidden md:block">
-          <UserProfiles user={user} />
+          <AdminProfile user={user} />
         </div>
       </div>
     </div>

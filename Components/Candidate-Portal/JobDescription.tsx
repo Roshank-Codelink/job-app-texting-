@@ -11,6 +11,8 @@ import {
     SheetClose,
     SheetOverlay,
 } from "@/Components/ui/sheet"
+import { ApplyJob } from "@/api_config/Candidate/manageJobs"
+import { toast } from "react-toastify"
 
 interface JobDescriptionProps {
     isOpen: boolean
@@ -26,11 +28,19 @@ interface JobDescriptionProps {
         jobTitle: string,
         workMode: string | null
     }
+    jobId: string
     // badge?: "growing" | "trusted"
 }
 
-export default function JobDescription({ isOpen, onClose, companyName, companyLogo, companyAddress, companyWebsite, rawDescription, extractedData, isprofileStrength }: JobDescriptionProps) {
-   
+export default function JobDescription({ isOpen, onClose, companyName, companyLogo, companyAddress, companyWebsite, rawDescription, extractedData, isprofileStrength, jobId }: JobDescriptionProps) {
+
+    const handleApply = async () => {
+        const response = await ApplyJob(jobId);
+        if (response?.data?.success) {
+            toast.success(response?.data?.message);
+        }
+    }
+
     return (
         <Sheet open={isOpen} onOpenChange={onClose}>
             <SheetOverlay
@@ -76,7 +86,7 @@ export default function JobDescription({ isOpen, onClose, companyName, companyLo
                                     <SheetTitle className="font-semibold text-(--filter-header-text-color) text-base m-0 truncate">
                                         {extractedData.jobTitle}
                                     </SheetTitle>
-                                   
+
                                 </div>
                                 <p className="text-xs text-(--profile-title-color) mt-0.5 text-left">{extractedData.workMode || ""}</p>
                             </div>
@@ -128,7 +138,7 @@ export default function JobDescription({ isOpen, onClose, companyName, companyLo
                                     <div>
                                         <p className="text-xs font-medium text-(--profile-title-color) mb-1">Website</p>
 
-                                        <a href={companyWebsite?.startsWith("http")? companyWebsite: `https://${companyWebsite}`}
+                                        <a href={companyWebsite?.startsWith("http") ? companyWebsite : `https://${companyWebsite}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-xs sm:text-sm text-(--navbar-text-color) hover:underline cursor-pointer break-all">
@@ -192,8 +202,8 @@ export default function JobDescription({ isOpen, onClose, companyName, companyLo
 
                 {/* Apply Button - Bottom */}
                 <div className="sticky bottom-0 bg-white border-t border-(--profile-image-border-color) px-4 sm:px-6 py-2.5 z-10 flex justify-start">
-                    <button className="bg-gradient-to-r from-(--job-post-button-bg-from) to-(--job-post-button-bg-to) text-white h-9 px-4 sm:px-6 rounded-md font-medium hover:from-(--navbar-text-color) hover:to-(--job-post-button-hover) transition-all shadow-sm text-xs sm:text-sm cursor-pointer w-full sm:w-auto">
-                     Apply Now
+                    <button className="bg-gradient-to-r from-(--job-post-button-bg-from) to-(--job-post-button-bg-to) text-white h-9 px-4 sm:px-6 rounded-md font-medium hover:from-(--navbar-text-color) hover:to-(--job-post-button-hover) transition-all shadow-sm text-xs sm:text-sm cursor-pointer w-full sm:w-auto" onClick={handleApply}>
+                        Apply Now
                     </button>
                 </div>
             </SheetContent>

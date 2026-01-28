@@ -159,6 +159,7 @@ export default function JobCard({ jobId, rawDescription, companyLogo, companyNam
         extractedData={extractedData}
         companyWebsite={companyWebsite}
         companyAddress={companyAddress}
+        jobId={jobId}
       />
     </div>
   )

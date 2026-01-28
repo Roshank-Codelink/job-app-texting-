@@ -227,6 +227,7 @@ export default function SaveJobs({ saved }: { saved: SaveJobsApiResponse }) {
                     companyWebsite={selectedJob?.employer?.companyWebsite}
                     companyAddress={selectedJob?.employer?.companyAddress}
                     isprofileStrength={selectedJob?.employer?.profileStrength}
+                    jobId={selectedJob?._id}
                 />
             )}
         </div>

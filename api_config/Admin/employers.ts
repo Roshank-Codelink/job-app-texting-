@@ -1,9 +1,14 @@
+import { buildQueryString } from "@/lib/helpers";
 import { customFetch } from "../apiconfig";
 import { ApproveRejectEmployerResponse, GetEmployersResponse } from "./types";
 
-export const getEmployers = async () => {
+export const getEmployers = async (props:{
+    page?: number;
+    limit?: number;
+   
+}) => {
     const response = await customFetch<GetEmployersResponse>({
-        url: "/admin/employers",
+        url: `/admin/employers?${buildQueryString(props)}`,
         method: "GET",
     })
     return response;

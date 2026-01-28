@@ -15,10 +15,8 @@ import {
   AlertCircle,
   Users
 } from "lucide-react";
-import { BiSolidZap } from "react-icons/bi";
-import { Button } from "@/Components/ui/button";
-import UserProfiles from "../Common/UserProfiles";
 import Link from "next/link";
+import AdminProfile from "./AdminProfile";
 
 export default function AdminSidebar() {
   const pathname = usePathname();
@@ -50,16 +48,16 @@ export default function AdminSidebar() {
                   {/* Dashboard */}
                   <SidebarMenuItem
                     className={`rounded-lg transition-all ${activeItem === "dashboard"
-                        ? "bg-(--navbar-bg-button) border-r-[3px] border-(--navbar-text-color)"
-                        : ""
+                      ? "bg-(--navbar-bg-button) border-r-[3px] border-(--navbar-text-color)"
+                      : ""
                       }`}
                   >
                     <Link href="/admin/dashboard">
                       <SidebarMenuButton
                         onClick={() => setActiveItem("dashboard")}
                         className={`flex items-center gap-3 px-4 py-5 rounded-lg w-full cursor-pointer border-none shadow-none outline-none [&_svg]:transition ${activeItem === "dashboard"
-                            ? "bg-transparent hover:bg-transparent text-(--navbar-text-color) [&_svg]:text-(--navbar-text-color)"
-                            : "bg-transparent hover:bg-(--navbar-bg-button) text-(--profile-title-color) hover:text-(--navbar-text-color) [&_svg]:text-(--sidebar-menu-icone-color) [&:hover_svg]:text-(--navbar-text-color) [&:hover_svg]:scale-110"
+                          ? "bg-transparent hover:bg-transparent text-(--navbar-text-color) [&_svg]:text-(--navbar-text-color)"
+                          : "bg-transparent hover:bg-(--navbar-bg-button) text-(--profile-title-color) hover:text-(--navbar-text-color) [&_svg]:text-(--sidebar-menu-icone-color) [&:hover_svg]:text-(--navbar-text-color) [&:hover_svg]:scale-110"
                           }`}
                       >
                         <AlertCircle className="w-5 h-5" />
@@ -71,16 +69,16 @@ export default function AdminSidebar() {
                   {/* Manage Employers */}
                   <SidebarMenuItem
                     className={`rounded-lg transition-all ${activeItem === "manage-employers"
-                        ? "bg-(--navbar-bg-button) border-r-[3px] border-(--navbar-text-color)"
-                        : ""
+                      ? "bg-(--navbar-bg-button) border-r-[3px] border-(--navbar-text-color)"
+                      : ""
                       }`}
                   >
                     <Link href="/admin/manage-employers">
                       <SidebarMenuButton
                         onClick={() => setActiveItem("manage-employers")}
                         className={`flex items-center gap-3 px-4 py-5 rounded-lg w-full cursor-pointer border-none shadow-none outline-none [&_svg]:transition ${activeItem === "manage-employers"
-                            ? "bg-transparent hover:bg-transparent text-(--navbar-text-color) font-medium [&_svg]:text-(--navbar-text-color)"
-                            : "bg-transparent hover:bg-(--navbar-bg-button) text-(--profile-title-color) hover:text-(--navbar-text-color) [&_svg]:text-(--sidebar-menu-icone-color) [&:hover_svg]:text-(--navbar-text-color) [&:hover_svg]:scale-110"
+                          ? "bg-transparent hover:bg-transparent text-(--navbar-text-color) font-medium [&_svg]:text-(--navbar-text-color)"
+                          : "bg-transparent hover:bg-(--navbar-bg-button) text-(--profile-title-color) hover:text-(--navbar-text-color) [&_svg]:text-(--sidebar-menu-icone-color) [&:hover_svg]:text-(--navbar-text-color) [&:hover_svg]:scale-110"
                           }`}
                       >
                         <Users className="w-5 h-5" />
@@ -96,7 +94,7 @@ export default function AdminSidebar() {
         </div>
         {/* USER PROFILE - At Absolute Bottom - Visible only on mobile */}
         <div className="absolute bottom-0 left-0 right-0 p-2 pb-4 md:hidden">
-          <UserProfiles variant="sidebar" user={user} />
+          <AdminProfile variant="sidebar" user={user} />
         </div>
       </div>
       {/* END WRAPPER */}

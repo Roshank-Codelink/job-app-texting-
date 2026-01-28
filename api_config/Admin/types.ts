@@ -11,6 +11,10 @@ export interface AdminLoginResponse {
 export interface GetEmployersResponse {
   message: string;
   data: EmployersData[];
+  currentPage: number;
+  total: number;
+  totalCount: number;
+  limit: number;
 }
 
 export interface EmployersData {
