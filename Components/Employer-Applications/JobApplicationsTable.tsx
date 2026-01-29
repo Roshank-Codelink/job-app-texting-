@@ -132,27 +132,27 @@ export default function JobApplicationsTable({
         );
       },
     },
-    {
-      id: "actions",
-      header: "Actions",
-      cell: ({ row }) => {
-        const employee = row.original.employee;
-        return (
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              className="h-8 px-3 text-xs cursor-pointer border-(--profile-border-color) text-(--profile-name-color) hover:bg-(--profile-border-color)"
-              onClick={() => {
-                // Placeholder for future: view candidate profile
-                console.log("View application", row.original._id, employee?.userId);
-              }}
-            >
-              View details
-            </Button>
-          </div>
-        );
-      },
-    },
+    // {
+    //   id: "actions",
+    //   header: "Actions",
+    //   cell: ({ row }) => {
+    //     const employee = row.original.employee;
+    //     return (
+    //       <div className="flex items-center gap-2">
+    //         <Button
+    //           variant="outline"
+    //           className="h-8 px-3 text-xs cursor-pointer border-(--profile-border-color) text-(--profile-name-color) hover:bg-(--profile-border-color)"
+    //           onClick={() => {
+    //             // Placeholder for future: view candidate profile
+    //             console.log("View application", row.original._id, employee?.userId);
+    //           }}
+    //         >
+    //           View details
+    //         </Button>
+    //       </div>
+    //     );
+    //   },
+    // },
   ];
 
   return (

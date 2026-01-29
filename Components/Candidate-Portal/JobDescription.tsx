@@ -1,6 +1,6 @@
 "use client"
 
-import { X, ChevronLeft, Megaphone, TrendingUp, ShieldCheck } from "lucide-react"
+import { X, ChevronLeft, Megaphone, TrendingUp, ShieldCheck, CircleUserRound } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
 import {
@@ -70,6 +70,11 @@ export default function JobDescription({ isOpen, onClose, companyName, companyLo
                                 //     (e.target as HTMLImageElement).src = "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg"
                                 // }}
                                 />
+                                {isprofileStrength === "New" && (
+                                    <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm border border-sky-500">
+                                        <CircleUserRound className="w-3 h-3 text-sky-600" />
+                                    </div>
+                                )}
                                 {isprofileStrength === "Growing" && (
                                     <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm border border-green-500">
                                         <TrendingUp className="w-3 h-3 text-green-600" />

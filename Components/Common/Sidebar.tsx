@@ -150,7 +150,7 @@ export default function AppSidebar() {
                   </SidebarMenuItem> */}
                   {/* Settings */}
                   <SidebarMenuItem
-                    className={`rounded-lg transition-all ${activeItem === "profile"
+                    className={`rounded-lg transition-all ${activeItem === "job-applications"
                         ? "bg-(--navbar-bg-button) border-r-[3px] border-(--navbar-text-color)"
                         : ""
                       }`}
