@@ -12,14 +12,28 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     // console.log("jobs", jobs)
     const searchParams = useSearchParams()
     const urlSearchValue = decodeURIComponent(searchParams.get('text') || '')
+    const urlLocationValue = decodeURIComponent(searchParams.get('location') || '')
     const [searchQuery, setSearchQuery] = useState(urlSearchValue)
+    const [locationQuery, setLocationQuery] = useState(urlLocationValue)
     const router = useRouter()
+
+    useEffect(() => {
+        setSearchQuery(decodeURIComponent(searchParams.get('text') || ''))
+        setLocationQuery(decodeURIComponent(searchParams.get('location') || ''))
+    }, [searchParams])
 
     const handleSearch = useCallback(() => {
         const value = searchQuery.trim()
-        if (!value) return
-        router.push(`/candidate/jobs?text=${encodeURIComponent(value)}`)
-    }, [searchQuery, router])
+        const locationValue = locationQuery.trim()
+        if (!value && !locationValue) return
+        const params = new URLSearchParams(searchParams.toString())
+        if (value) params.set('text', value)
+        else params.delete('text')
+        if (locationValue) params.set('location', locationValue)
+        else params.delete('location')
+        params.delete('page')
+        router.push(`/candidate/jobs?${params.toString()}`)
+    }, [searchQuery, locationQuery, searchParams, router])
 
 
     const [allJobs, setAllJobs] = useState(jobs?.data || [])
@@ -54,6 +68,7 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
             const nextPage = pageRef.current + 1;
             const currentFilters = {
                 text: searchParams.get('text') || undefined,
+                location: searchParams.get('location') || undefined,
                 date: searchParams.get('date') || undefined,
                 mode: searchParams.get('mode') || undefined,
                 type: searchParams.get('type') || undefined,
@@ -129,6 +144,8 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                             <input
                                 type="text"
                                 placeholder="Location"
+                                value={locationQuery}
+                                onChange={(e) => setLocationQuery(e.target.value)}
                                 className="w-full pl-9 pr-3 h-10 bg-white border border-(--profile-image-border-color) rounded-lg
                                        text-sm text-gray-600 placeholder:text-(--job-post-bg-color)
                                        focus:outline-none focus:ring-2 focus:ring-(--navbar-text-color)
@@ -154,6 +171,8 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                         <input
                             type="text"
                             placeholder="Location"
+                            value={locationQuery}
+                            onChange={(e) => setLocationQuery(e.target.value)}
                             className="w-full pl-10 pr-4 h-12 bg-white border border-(--profile-image-border-color) rounded-lg
                                    text-sm text-gray-600 placeholder:text-(--job-post-bg-color)
                                    focus:outline-none focus:ring-2 focus:ring-(--navbar-text-color)
@@ -175,7 +194,7 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                 </div>
             </div>
         );
-    }, [searchQuery, handleSearch])
+    }, [searchQuery, locationQuery, handleSearch])
     return (
         <div className="w-full bg-(--Profile-hover-bg) min-h-screen">
             <div className="w-full max-w-[1050px] mx-auto px-4 lg:px-6 pt-0 md:pt-4 pb-4 md:pb-6">
@@ -214,7 +233,7 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                                     <div className="flex justify-center mb-5">
                                         <div className="h-14 w-14 rounded-full bg-gray-100 flex items-center justify-center">
                                             <svg className="h-7 w-7 text-gray-400" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z"/>
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z" />
                                             </svg>
                                         </div>
                                     </div>

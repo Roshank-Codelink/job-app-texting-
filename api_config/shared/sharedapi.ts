@@ -50,6 +50,7 @@ export const MarkJobHiredApi = async (jobId: string) => {
 export interface JobsPageProps {
     searchParams: Promise<{
         text?: string;
+        location?: string;
         date?: string;
         mode?: string;
         type?: string;
@@ -66,6 +67,9 @@ export const getJobsApi = async ({ searchParams }: JobsPageProps) => {
     // Manual Appending (No loops)
     if (resolvedSearchParams?.text) 
         params.append("text", resolvedSearchParams.text);
+
+    if (resolvedSearchParams?.location) 
+        params.append("location", resolvedSearchParams.location);
 
     if (resolvedSearchParams?.mode) 
         params.append("mode", resolvedSearchParams.mode);
