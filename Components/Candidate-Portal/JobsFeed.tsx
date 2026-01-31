@@ -5,9 +5,10 @@ import JobFilters from "./JobFilters"
 import FiltersSidebar from "./FiltersSidebar"
 import JobCard from "./JobCard"
 import { departmentApiResponse } from "@/types/types"
-import { getJobsApi, recordJobImpressionsApi } from "@/api_config/shared/sharedapi"
+import { getJobsApi } from "@/api_config/shared/sharedapi"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useSession } from "next-auth/react"
+import { recordJobImpressionsApi } from "@/api_config/Candidate/manageJobs"
 
 const IMPRESSION_DEBOUNCE_MS = 150
 const IMPRESSION_THRESHOLD = 0.5
