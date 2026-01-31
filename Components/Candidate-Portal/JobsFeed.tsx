@@ -5,17 +5,53 @@ import JobFilters from "./JobFilters"
 import FiltersSidebar from "./FiltersSidebar"
 import JobCard from "./JobCard"
 import { departmentApiResponse } from "@/types/types"
-import { getJobsApi } from "@/api_config/shared/sharedapi"
+import { getJobsApi, recordJobImpressionsApi } from "@/api_config/shared/sharedapi"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useSession } from "next-auth/react"
+
+const IMPRESSION_DEBOUNCE_MS = 150
+const IMPRESSION_THRESHOLD = 0.5
 
 export default function JobsFeed({ jobs, departments }: { jobs: any, departments: departmentApiResponse }) {
     // console.log("jobs", jobs)
+    const { data: session } = useSession()
     const searchParams = useSearchParams()
     const urlSearchValue = decodeURIComponent(searchParams.get('text') || '')
     const urlLocationValue = decodeURIComponent(searchParams.get('location') || '')
     const [searchQuery, setSearchQuery] = useState(urlSearchValue)
     const [locationQuery, setLocationQuery] = useState(urlLocationValue)
     const router = useRouter()
+
+    // Impression tracking: only when authenticated
+    const feedContainerRef = useRef<HTMLDivElement | null>(null)
+    const sentIdsRef = useRef<Set<string>>(new Set())
+    const pendingIdsRef = useRef<Set<string>>(new Set())
+    const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+    const flushImpressions = useCallback(() => {
+        const ids = Array.from(pendingIdsRef.current)
+        pendingIdsRef.current.clear()
+        if (ids.length === 0) return
+        recordJobImpressionsApi(ids).then((res) => {
+            if (res.error) {
+                if (process.env.NODE_ENV === "development") {
+                    console.warn("[impressions] API error:", res.data)
+                }
+            } else {
+                ids.forEach((id) => sentIdsRef.current.add(id))
+            }
+        }).catch(() => {
+            if (process.env.NODE_ENV === "development") {
+                console.warn("[impressions] request failed")
+            }
+        })
+    }, [])
+    const scheduleFlush = useCallback(() => {
+        if (debounceRef.current) clearTimeout(debounceRef.current)
+        debounceRef.current = setTimeout(() => {
+            debounceRef.current = null
+            flushImpressions()
+        }, IMPRESSION_DEBOUNCE_MS)
+    }, [flushImpressions])
 
     useEffect(() => {
         setSearchQuery(decodeURIComponent(searchParams.get('text') || ''))
@@ -117,6 +153,37 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
             observer.disconnect();
         };
     }, [hasMore, fetchMoreJobs]);
+
+    // Impression tracking: observe job cards when they enter viewport (authenticated only)
+    useEffect(() => {
+        if (!session?.user || allJobs.length === 0) return
+        const container = feedContainerRef.current
+        if (!container) return
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                for (const entry of entries) {
+                    if (!entry.isIntersecting) continue
+                    const jobId = (entry.target as HTMLElement).getAttribute("data-job-id")
+                    if (!jobId || sentIdsRef.current.has(jobId)) continue
+                    pendingIdsRef.current.add(jobId)
+                    scheduleFlush()
+                }
+            },
+            { root: null, rootMargin: "0px", threshold: IMPRESSION_THRESHOLD }
+        )
+
+        const cards = container.querySelectorAll("[data-job-id]")
+        cards.forEach((el) => observer.observe(el))
+
+        return () => {
+            observer.disconnect()
+            if (debounceRef.current) {
+                clearTimeout(debounceRef.current)
+                debounceRef.current = null
+            }
+        }
+    }, [session?.user, allJobs, scheduleFlush])
     const SearchBar = useMemo(() => {
         return (
             <div className=" bg-[#fafafb] -mx-4 px-4 py-3
@@ -242,22 +309,22 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                                     <p className="text-gray-500 text-sm mt-3 max-w-md mx-auto">We couldn’t find any jobs that match your current filters.Try adjusting your preferences or explore other opportunities.</p>
                                 </div>
                             ) : (
-                                <div className="space-y-4">
+                                <div ref={feedContainerRef} className="space-y-4">
                                     {allJobs.map((job: any, index: number) => (
-                                        <JobCard
-                                            key={job._id}
-                                            jobId={job._id}
-                                            index={index}
-                                            rawDescription={job.rawDescription}
-                                            extractedData={job.extractedData}
-                                            companyName={job.employer?.companyName}
-                                            isprofileStrength={job.employer?.profileStrength}
-                                            companyAddress={job.employer?.companyAddress}
-                                            companyWebsite={job.employer?.companyWebsite}
-                                            isLiked={job.isLiked}
-                                            isSaved={job.isSaved}
-
-                                        />
+                                        <div key={job._id} data-job-id={job._id}>
+                                            <JobCard
+                                                jobId={job._id}
+                                                index={index}
+                                                rawDescription={job.rawDescription}
+                                                extractedData={job.extractedData}
+                                                companyName={job.employer?.companyName}
+                                                isprofileStrength={job.employer?.profileStrength}
+                                                companyAddress={job.employer?.companyAddress}
+                                                companyWebsite={job.employer?.companyWebsite}
+                                                isLiked={job.isLiked}
+                                                isSaved={job.isSaved}
+                                            />
+                                        </div>
                                     ))}
                                 </div>
                             )}
