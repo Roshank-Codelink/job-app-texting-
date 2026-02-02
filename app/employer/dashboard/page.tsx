@@ -7,9 +7,10 @@ export default async function EmployerDashboard() {
   let jobsArray: any[] = [];
 
   const jobsData = await GetAllJobsAPI(1, limit);
-  console.log(jobsData)
 
   jobsArray = jobsData?.data?.data || [];
+
+  console.log("jobsArray",jobsArray)
 
   return (
     <JobPost initialJobs={jobsArray} />

@@ -79,8 +79,9 @@ interface JobHeaderProps {
   onStatusUpdate?: (jobId: string, newStatus: string) => void;
   likeCount?: number;
   savedCount?: number;
+  impressionCount?: number;
 }
-function JobHeader({ companyName, postedTime, jobId, jobStatus, onStatusUpdate, likeCount, savedCount }: JobHeaderProps) {
+function JobHeader({ companyName, postedTime, jobId, jobStatus, onStatusUpdate, likeCount, savedCount, impressionCount }: JobHeaderProps) {
 
   return (
     <CardHeader className="pb-3 pt-5 px-6">
@@ -110,7 +111,7 @@ function JobHeader({ companyName, postedTime, jobId, jobStatus, onStatusUpdate, 
                   <Heart className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-(--navbar-text-color) transition-all" strokeWidth={2.5} />
                   <div className="flex flex-col leading-none">
                     <span className="text-xs font-bold text-(--profile-name-color)">{likeCount || 0}</span>
-                    <span className="text-[9px] text-(--profile-title-color) ">like</span>
+                    {/* <span className="text-[9px] text-(--profile-title-color) ">like</span> */}
                   </div>
                 </div>
               </div>
@@ -125,7 +126,7 @@ function JobHeader({ companyName, postedTime, jobId, jobStatus, onStatusUpdate, 
                   <Eye className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-(--navbar-text-color) transition-all" strokeWidth={2.5} />
                   <div className="flex flex-col leading-none">
                     <span className="text-xs font-bold text-(--profile-name-color)">234</span>
-                    <span className="text-[9px] text-(--profile-title-color)">Views</span>
+                    {/* <span className="text-[9px] text-(--profile-title-color)">Views</span> */}
                   </div>
                 </div>
               </div>
@@ -140,12 +141,27 @@ function JobHeader({ companyName, postedTime, jobId, jobStatus, onStatusUpdate, 
                   <Bookmark className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-(--navbar-text-color) transition-all" strokeWidth={2.5} />
                   <div className="flex flex-col leading-none">
                     <span className="text-xs font-bold text-(--profile-name-color)">{savedCount || 0}</span>
-                    <span className="text-[9px] text-(--profile-title-color)">Saved</span>
+                    {/* <span className="text-[9px] text-(--profile-title-color)">Saved</span> */}
                   </div>
                 </div>
               </div>
               <span className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-(--profile-name-color) text-(--sidebar-bg-color) text-[10px] font-medium px-2 py-1 rounded shadow-lg whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none z-50">
                 Saved by Users
+              </span>
+            </div>
+            {/* Impression Count Box */}
+            <div className="relative group">
+              <div className="bg-(--sidebar-bg-color) border border-(--profile-border-color) rounded-lg px-3 py-2 hover:border-(--navbar-text-color) hover:shadow-md transition-all duration-200 cursor-pointer">
+                <div className="flex items-center gap-2.5">
+                  <BarChart3 className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-(--navbar-text-color) transition-all" strokeWidth={2.5} />
+                  <div className="flex flex-col leading-none">
+                    <span className="text-xs font-bold text-(--profile-name-color)">{impressionCount || 0}</span>
+                    {/* <span className="text-[9px] text-(--profile-title-color)">Impression</span> */}
+                  </div>
+                </div>
+              </div>
+              <span className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-(--profile-name-color) text-(--sidebar-bg-color) text-[10px] font-medium px-2 py-1 rounded shadow-lg whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none z-50">
+                Total Impression
               </span>
             </div>
           </div>
@@ -228,7 +244,8 @@ export default function JobListingCards({ jobs, onJobStatusUpdate }: JobListingC
                   jobStatus={job.status}
                   onStatusUpdate={onJobStatusUpdate}
                   likeCount={job.likeCount}
-                  savedCount={job?.savedCount || 0}
+                  savedCount={job?.savedCount}
+                  impressionCount={job?.impressionCount}
                 />
                 <JobDescription description={job.rawDescription} />
                 {/* Stats Cards - Mobile aur iPad me bottom pe dikhenge */}
@@ -241,7 +258,7 @@ export default function JobListingCards({ jobs, onJobStatusUpdate }: JobListingC
                           <Heart className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-(--navbar-text-color) transition-all" strokeWidth={2.5} />
                           <div className="flex flex-col leading-none">
                             <span className="text-xs font-bold text-(--profile-name-color)">{job?.likeCount || 0}</span>
-                            <span className="text-[9px] text-(--profile-title-color)">like</span>
+                            {/* <span className="text-[9px] text-(--profile-title-color)">like</span> */}
                           </div>
                         </div>
                       </div>
@@ -253,7 +270,7 @@ export default function JobListingCards({ jobs, onJobStatusUpdate }: JobListingC
                           <Eye className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-(--navbar-text-color) transition-all" strokeWidth={2.5} />
                           <div className="flex flex-col leading-none">
                             <span className="text-xs font-bold text-(--profile-name-color)">234</span>
-                            <span className="text-[9px] text-(--profile-title-color)">Views</span>
+                            {/* <span className="text-[9px] text-(--profile-title-color)">Views</span> */}
                           </div>
                         </div>
                       </div>
@@ -267,7 +284,19 @@ export default function JobListingCards({ jobs, onJobStatusUpdate }: JobListingC
                           <Bookmark className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-(--navbar-text-color) transition-all" strokeWidth={2.5} />
                           <div className="flex flex-col leading-none">
                             <span className="text-xs font-bold text-(--profile-name-color)">{job?.savedCount || 0}</span>
-                            <span className="text-[9px] text-(--profile-title-color)">Saved</span>
+                            {/* <span className="text-[9px] text-(--profile-title-color)">Saved</span> */}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Impression Count Box */}
+                    <div className="relative group flex-1">
+                      <div className="bg-(--sidebar-bg-color) border border-(--profile-border-color) rounded-lg px-2.5 py-2 hover:border-(--navbar-text-color) hover:shadow-md transition-all duration-200 cursor-pointer">
+                        <div className="flex items-center justify-center gap-2">
+                          <BarChart3 className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-(--navbar-text-color) transition-all" strokeWidth={2.5} />
+                          <div className="flex flex-col leading-none">
+                            <span className="text-xs font-bold text-(--profile-name-color)">{job?.impressionCount || 0}</span>
+                            {/* <span className="text-[9px] text-(--profile-title-color)">Impression</span> */}
                           </div>
                         </div>
                       </div>
