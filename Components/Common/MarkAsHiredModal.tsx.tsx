@@ -22,8 +22,10 @@ export default function MarkAsHiredModal({ jobId, open, onOpenChange, onStatusUp
         try {
             const response = await MarkJobHiredApi(jobId);
             // Update job status immediately without reload
-            if (onStatusUpdate) {
-                onStatusUpdate(jobId, "hired");
+            if (response.success) {
+                if (onStatusUpdate) {
+                    onStatusUpdate(jobId, "hired");
+                }
             }
         } catch (error) {
             console.error("Error marking job as hired:", error);

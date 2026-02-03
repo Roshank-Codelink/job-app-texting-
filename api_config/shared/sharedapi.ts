@@ -3,7 +3,7 @@ import { getSession } from "next-auth/react";
 import { CandidateSignUpSkillResponse } from "../SignupApi/type";
 import { customFetch } from "../apiconfig";
 import { auth } from "@/lib/auth-config";
-import { SaveJobsApiResponse } from "./type";
+import { MarkJobHiredResponse, SaveJobsApiResponse } from "./type";
 
 export const candidateOnboardingSkill =
   async (): Promise<CandidateSignUpSkillResponse> => {
@@ -33,7 +33,7 @@ export const LogoutAPI = async () => {
 
 export const MarkJobHiredApi = async (jobId: string) => {
   try {
-    const response = await customFetch({
+    const response = await customFetch<MarkJobHiredResponse>({
       url: `/mark-job-hired/${jobId}`,
       method: "PATCH",
     });

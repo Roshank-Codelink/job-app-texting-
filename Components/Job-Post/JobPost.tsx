@@ -153,7 +153,12 @@ export default function JobPost({ initialJobs }: JobPostProps) {
               )
             );
           }}
-          
+          onJobDelete={(jobId: string) => {
+            console.log("Job deleted:", jobId);
+            console.log("Jobs:", jobs);
+            
+            setJobs((prevJobs) => prevJobs.filter((job) => job._id !== jobId));
+          }}
         />
         {/* Infinite Loader - Only show if we have at least limit number of jobs */}
         {hasMore && jobs.length >= limit && (
