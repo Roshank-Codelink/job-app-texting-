@@ -3,10 +3,11 @@ import { useState } from "react";
 import Image from "next/image";
 import { Card, CardHeader, CardContent } from "@/Components/ui/card";
 import { JobListingItem } from "@/api_config/JobPostApi/type";
-import { Briefcase, Eye, Heart, Award, MoreVertical, Bookmark, Edit, UserCheck, Trash2, BarChart3, Copy, Archive } from "lucide-react";
+import { Briefcase, Eye, Heart, Award, MoreVertical, Bookmark, Edit, UserCheck, Trash2, BarChart3, Copy, Archive, RefreshCw } from "lucide-react";
 import MarkAsHiredModal from "@/Components/Common/MarkAsHiredModal.tsx";
 import CloseJobModel from "@/Components/Common/CloseJobModel";
 import DeleteJobModel from "@/Components/Common/DeleteJobModel";
+import RenewJobModel from "@/Components/Common/RenewJobModel";
 // ✅ Three Dot Menu Component
 interface ThreeDotMenuProps {
   jobId: string;
@@ -14,16 +15,19 @@ interface ThreeDotMenuProps {
   className?: string;
   onStatusUpdate?: (jobId: string, newStatus: string) => void;
   onJobDelete?: (jobId: string) => void;
+  onRefreshJobs?: () => void | Promise<void>;
 }
-function ThreeDotMenu({ jobId, jobStatus, className = "", onStatusUpdate, onJobDelete }: ThreeDotMenuProps) {
+function ThreeDotMenu({ jobId, jobStatus, className = "", onStatusUpdate, onJobDelete, onRefreshJobs }: ThreeDotMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isRenewModalOpen, setIsRenewModalOpen] = useState(false);
 
   const menuItems = [
     ...(jobStatus?.toLowerCase() !== "hired" ? [{ icon: UserCheck, label: "Mark as Hired", color: "text-green-600", action: () => { setIsOpen(false); setTimeout(() => { setIsModalOpen(true); }, 0); } }] : []),
     { icon: Archive, label: "Close", color: "text-yellow-600", action: () => { setIsCloseModalOpen(false); setTimeout(() => { setIsCloseModalOpen(true); }, 0); } },
+    { icon: RefreshCw, label: "Renew Job", color: "text-blue-600", action: () => { setIsRenewModalOpen(false); setTimeout(() => { setIsRenewModalOpen(true); }, 0); } },
     { icon: Trash2, label: "Delete", color: "text-red-600", action: () => { setIsDeleteModalOpen(false); setTimeout(() => { setIsDeleteModalOpen(true); }, 0); } },
   ];
 
@@ -57,6 +61,9 @@ function ThreeDotMenu({ jobId, jobStatus, className = "", onStatusUpdate, onJobD
                   if (item.label !== "Close") {
                     setIsOpen(false);
                   }
+                  if (item.label !== "Renew Job") {
+                    setIsOpen(false);
+                  }
                   if (item.label !== "Delete") {
                     setIsOpen(false);
                   }
@@ -85,7 +92,12 @@ function ThreeDotMenu({ jobId, jobStatus, className = "", onStatusUpdate, onJobD
         onOpenChange={setIsCloseModalOpen}
         onStatusUpdate={onStatusUpdate}
       />
-
+      <RenewJobModel
+        jobId={jobId}
+        open={isRenewModalOpen}
+        onOpenChange={setIsRenewModalOpen}
+        onRefreshJobs={onRefreshJobs}
+      />
       <DeleteJobModel
         jobId={jobId}
         open={isDeleteModalOpen}
@@ -103,11 +115,12 @@ interface JobHeaderProps {
   jobStatus?: string;
   onStatusUpdate?: (jobId: string, newStatus: string) => void;
   onJobDelete?: (jobId: string) => void;
+  onRefreshJobs?: () => void | Promise<void>;
   likeCount?: number;
   savedCount?: number;
   impressionCount?: number;
 }
-function JobHeader({ companyName, postedTime, jobId, jobStatus, onStatusUpdate, onJobDelete, likeCount, savedCount, impressionCount }: JobHeaderProps) {
+function JobHeader({ companyName, postedTime, jobId, jobStatus, onStatusUpdate, onJobDelete, onRefreshJobs, likeCount, savedCount, impressionCount }: JobHeaderProps) {
 
   return (
     <CardHeader className="pb-3 pt-5 px-6">
@@ -192,7 +205,7 @@ function JobHeader({ companyName, postedTime, jobId, jobStatus, onStatusUpdate, 
             </div>
           </div>
           {/* Three Dot Menu - Last Position */}
-          <ThreeDotMenu className="cursor-pointer" jobId={jobId} jobStatus={jobStatus} onStatusUpdate={onStatusUpdate} onJobDelete={onJobDelete} />
+          <ThreeDotMenu className="cursor-pointer" jobId={jobId} jobStatus={jobStatus} onStatusUpdate={onStatusUpdate} onJobDelete={onJobDelete} onRefreshJobs={onRefreshJobs} />
         </div>
       </div>
     </CardHeader>
@@ -223,8 +236,9 @@ interface JobListingCardsProps {
   jobs: JobListingItem[];
   onJobStatusUpdate?: (jobId: string, newStatus: string) => void;
   onJobDelete?: (jobId: string) => void;
+  onRefreshJobs?: () => void | Promise<void>;
 }
-export default function JobListingCards({ jobs, onJobStatusUpdate, onJobDelete }: JobListingCardsProps) {
+export default function JobListingCards({ jobs, onJobStatusUpdate, onJobDelete, onRefreshJobs }: JobListingCardsProps) {
 
 
 
@@ -270,10 +284,11 @@ export default function JobListingCards({ jobs, onJobStatusUpdate, onJobDelete }
                   jobId={job._id}
                   jobStatus={job.status}
                   onStatusUpdate={onJobStatusUpdate}
+                  onJobDelete={onJobDelete}
+                  onRefreshJobs={onRefreshJobs}
                   likeCount={job.likeCount}
                   savedCount={job?.savedCount}
                   impressionCount={job?.impressionCount}
-                  onJobDelete={onJobDelete}
                 />
                 <JobDescription description={job.rawDescription} />
                 {/* Stats Cards - Mobile aur iPad me bottom pe dikhenge */}

@@ -94,7 +94,6 @@ export const getJobsApi = async ({ searchParams }: JobsPageProps) => {
     url: `/jobs?${params.toString()}`,
     method: "GET",
   });
-  console.log("csdmckmosdm", response);
   return response.data;
 };
 

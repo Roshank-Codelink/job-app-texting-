@@ -18,7 +18,6 @@ export default function FiltersSidebar({ departmentres }: { departmentres: depar
     hasFilters
   } = useJobFilters()
 
-  console.log(departmentres?.data);
 
   const SelectedChip = ({
     label,
@@ -212,7 +211,7 @@ export default function FiltersSidebar({ departmentres }: { departmentres: depar
               <label key={opt.value} className="flex gap-2 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={department.includes(opt.value)} 
+                  checked={department.includes(opt.value)}
                   onChange={() =>
                     toggleDepartment(opt.value)
                   }

@@ -1,6 +1,8 @@
 import React from 'react'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../ui/alert-dialog';
 import { closeJob, deleteJob } from '@/api_config/EmployerInfoApi/jobApplications';
+import { toast } from 'react-toastify';
+import { parseMsg } from '@/lib/helpers';
 
 
 interface DeleteJobModelProps {
@@ -18,6 +20,8 @@ const DeleteJobModel = ({ open, onOpenChange, jobId, onJobDelete }: DeleteJobMod
             if (response.success) {
                 // Remove job from list after successful delete
                 onJobDelete?.(jobId);
+            } else {
+                toast.error(parseMsg(response?.message));
             }
         } catch (error) {
             console.error("Error deleting job:", error);

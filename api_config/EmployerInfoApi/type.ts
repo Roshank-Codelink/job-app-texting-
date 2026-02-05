@@ -9,6 +9,7 @@ export interface EmployerInfoData {
   companyWebsite: string;
   contactNumber: string;
   profileStrength?: string;
+  companyLogo?: string;
 }
 
 export interface EmployerInfoResponse {
@@ -62,5 +63,21 @@ export interface DeleteJobResponse {
   message: string;
   data: {
     jobId: string;
+  };
+}
+
+export interface RenewJobResponse {
+  success: boolean;
+  message: string;
+  data: {
+    jobId: string;
+  };
+}
+
+export interface UploadLogoResponse {
+  success: boolean;
+  message: string;
+  data: {
+    companyLogo: string;
   };
 }

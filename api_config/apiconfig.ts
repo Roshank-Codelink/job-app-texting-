@@ -23,7 +23,6 @@ export const customFetch = async <TResponse>({
 
 
   const token = await getAuthToken();
-  console.log("Token:", token);
   try {
     // Default headers
     const defaultHeaders: Record<string, string> = {

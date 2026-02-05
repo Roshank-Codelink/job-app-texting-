@@ -3,6 +3,7 @@ import {
   CloseJobResponse,
   DeleteJobResponse,
   JobApplicationsResponse,
+  RenewJobResponse,
 } from "./type";
 
 export const getJobApplications = async () => {
@@ -25,6 +26,14 @@ export const deleteJob = async (jobId: string) => {
   const response = await customFetch<DeleteJobResponse>({
     url: `/delete-job/${jobId}`,
     method: "DELETE",
+  });
+  return response.data;
+};
+
+export const renewJob = async (jobId: string) => {
+  const response = await customFetch<RenewJobResponse>({
+    url: `/renew-job/${jobId}`,
+    method: "POST",
   });
   return response.data;
 };

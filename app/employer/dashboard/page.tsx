@@ -1,20 +1,10 @@
 import JobPost from "@/Components/Job-Post/JobPost";
-import { GetAllJobsAPI } from "@/api_config/JobPostApi/JobPostApi";
-import { auth } from "@/lib/auth-config";
+import { getJobsForListingServer } from "@/api_config/JobPostApi/getJobsServer";
 
 export default async function EmployerDashboard() {
   const limit = 10;
-  let jobsArray: any[] = [];
+  const jobsResult = await getJobsForListingServer(1, limit);
+  const jobsArray = jobsResult?.data ?? [];
 
-  const jobsData = await GetAllJobsAPI(1, limit);
-
-  jobsArray = jobsData?.data?.data || [];
-
-  console.log("jobsArray",jobsArray)
-
-  return (
-    <JobPost initialJobs={jobsArray} />
-  )
-
-
+  return <JobPost initialJobs={jobsArray} />;
 }

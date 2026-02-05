@@ -10,6 +10,8 @@ import {
     AlertDialogTrigger,
 } from "@/Components/ui/alert-dialog"
 import { MarkJobHiredApi } from "@/api_config/shared/sharedapi";
+import { parseMsg } from "../../lib/helpers";
+import { toast } from "react-toastify";
 interface MarkAsHiredModalProps {
     jobId: string;
     open: boolean;
@@ -26,6 +28,8 @@ export default function MarkAsHiredModal({ jobId, open, onOpenChange, onStatusUp
                 if (onStatusUpdate) {
                     onStatusUpdate(jobId, "hired");
                 }
+            } else {
+                toast.error(parseMsg(response?.message));
             }
         } catch (error) {
             console.error("Error marking job as hired:", error);

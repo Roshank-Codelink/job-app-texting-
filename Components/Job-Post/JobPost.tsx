@@ -1,31 +1,35 @@
 "use client";
 import { useEffect, useRef, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import JobListingCards from "./Job-Management/JobListingCards";
 import JobPostForm from "./Job-Management/JobPostForm";
 import { GetAllJobsAPI } from "@/api_config/JobPostApi/JobPostApi";
 import { JobListingItem } from "@/api_config/JobPostApi/type";
+import { revalidateEmployerJobsAction } from "@/app/employer/dashboard/actions";
 
 interface JobPostProps {
   initialJobs: JobListingItem[];
 }
 export default function JobPost({ initialJobs }: JobPostProps) {
-  // Ensure initialJobs is always an array to prevent crashes
+  const router = useRouter();
   const safeInitialJobs = Array.isArray(initialJobs) ? initialJobs : [];
   const [jobs, setJobs] = useState(safeInitialJobs);
   const [page, setPage] = useState(1);
   const limit = 10;
-  // Set hasMore based on initial data - if initial data is less than limit, no more data
   const [hasMore, setHasMore] = useState(safeInitialJobs.length >= limit);
   const [isLoading, setIsLoading] = useState(false);
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const isLoadingRef = useRef(false);
   const pageRef = useRef(1);
-  // console.log("Session:", session);
-  // Sync refs with state
 
-
-    console.log("Jobs:", jobs);
-
+  // Sync state when server sends new initialJobs (e.g. after revalidate + router.refresh())
+  useEffect(() => {
+    const next = Array.isArray(initialJobs) ? initialJobs : [];
+    setJobs(next);
+    setPage(1);
+    pageRef.current = 1;
+    setHasMore(next.length >= limit);
+  }, [initialJobs, limit]);
 
   useEffect(() => {
     isLoadingRef.current = isLoading;
@@ -33,41 +37,21 @@ export default function JobPost({ initialJobs }: JobPostProps) {
   useEffect(() => {
     pageRef.current = page;
   }, [page]);
-  // ⭐ Refresh Jobs After Posting
-  const refreshJobs = async () => {
+
+  // Refresh jobs via revalidateTag + router.refresh() (no client-side API call)
+  const refreshJobs = useCallback(async () => {
     setIsLoading(true);
     isLoadingRef.current = true;
     try {
-      const response = await GetAllJobsAPI(1, limit);
-      if (response.error || !response.data) {
-        console.error("Error refreshing jobs:", response.error ? "API error" : "No data received");
-        setIsLoading(false);
-        isLoadingRef.current = false;
-        return;
-      }
-      const { success, data } = response.data;
-      if (success && Array.isArray(data)) {
-        setJobs(data);
-        setPage(1);
-        pageRef.current = 1;
-        // Only set hasMore to true if we got full limit of data
-        setHasMore(data.length >= limit);
-      } else {
-        // If success is false or data is not an array, set empty array
-        setJobs([]);
-        setPage(1);
-        pageRef.current = 1;
-        setHasMore(false);
-      }
+      await revalidateEmployerJobsAction();
+      await router.refresh();
     } catch (error) {
-      console.error("Unexpected error refreshing jobs:", error);
-      // On error, keep existing jobs but stop loading
-      setHasMore(false);
+      console.error("Error refreshing jobs:", error);
     } finally {
       setIsLoading(false);
       isLoadingRef.current = false;
     }
-  };
+  }, [router]);
   // ⭐ Fetch More Jobs (Infinite Scroll) - Using refs to avoid dependency issues
   const fetchMoreJobs = useCallback(async () => {
     if (isLoadingRef.current) return;
@@ -154,11 +138,9 @@ export default function JobPost({ initialJobs }: JobPostProps) {
             );
           }}
           onJobDelete={(jobId: string) => {
-            console.log("Job deleted:", jobId);
-            console.log("Jobs:", jobs);
-            
             setJobs((prevJobs) => prevJobs.filter((job) => job._id !== jobId));
           }}
+          onRefreshJobs={refreshJobs}
         />
         {/* Infinite Loader - Only show if we have at least limit number of jobs */}
         {hasMore && jobs.length >= limit && (
