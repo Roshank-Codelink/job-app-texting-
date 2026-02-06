@@ -21,11 +21,12 @@ interface UserProfileProps {
 }
 
 export default function UserProfiles({
-    imageUrl = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
+    imageUrl,
     variant = "navbar",
     user,
 }: UserProfileProps) {
     const [open, setOpen] = useState(false);
+
     // Get initials from name
     const getInitials = (fullName?: string) => {
         if (!fullName) return "";
@@ -64,14 +65,16 @@ export default function UserProfiles({
                             <Image
                                 src={imageUrl}
                                 alt={user?.name || ""}
-                                width={40}
-                                height={40}
+                                width={80}
+                                height={80}
+                                sizes="40px"
                                 className={cn(
-                                    "object-cover",
+                                    "object-contain",
                                     isSidebar
                                         ? "w-10 h-10 rounded-lg"
                                         : "rounded-xl  w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10"
                                 )}
+                                unoptimized={imageUrl.startsWith("http")}
                             />
                         ) : (
                             <div className={cn(
@@ -120,9 +123,11 @@ export default function UserProfiles({
                                 <Image
                                     src={imageUrl}
                                     alt={user?.name || ""}
-                                    width={48}
-                                    height={48}
-                                    className="rounded-[8px] object-cover "
+                                    width={96}
+                                    height={96}
+                                    sizes="48px"
+                                    className="rounded-[8px] object-contain w-12 h-12"
+                                    unoptimized={imageUrl.startsWith("http")}
                                 />
                             ) : (
                                 <div className="w-12 h-12 rounded-full bg-linear-to-br from-(--profile-liner-from-color) to-(--profile-liner-to-color) flex items-center justify-center border-2 border-(--profile-image-border-color)">
@@ -143,7 +148,7 @@ export default function UserProfiles({
                     <div className="py-1">
 
                         <Link
-                            href="/settings"
+                            href="/"
                             className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-(--profile-menu-text-color) hover:bg-(--Profile-hover-bg) cursor-pointer transition-colors rounded-none"
                             onClick={() => setOpen(false)}
                         >
@@ -151,7 +156,7 @@ export default function UserProfiles({
                             <span>Settings</span>
                         </Link>
                         <Link
-                            href="/help"
+                            href="/"
                             className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-(--profile-menu-text-color) hover:bg-(--Profile-hover-bg) cursor-pointer transition-colors rounded-none"
                             onClick={() => setOpen(false)}
                         >

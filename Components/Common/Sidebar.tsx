@@ -20,11 +20,14 @@ import { BiSolidZap } from "react-icons/bi";
 import { Button } from "@/Components/ui/button";
 import UserProfiles from "./UserProfiles";
 import Link from "next/link";
+import { useEmployerLogo } from "@/Providers/EmployerLogoProvider";
+import companyIcon from "@/public/Company_icon_webp.webp";
 
 export default function AppSidebar() {
   const pathname = usePathname();
   const [activeItem, setActiveItem] = useState("");
   const { data: session } = useSession();
+  const { companyLogoUrl } = useEmployerLogo();
   const user = session?.user;
 
   // Set active item based on current pathname
@@ -53,15 +56,15 @@ export default function AppSidebar() {
                   {/* Dashboard */}
                   <SidebarMenuItem
                     className={`rounded-lg transition-all ${activeItem === "dashboard"
-                        ? "bg-(--navbar-bg-button) border-r-[3px] border-(--navbar-text-color)"
-                        : ""
+                      ? "bg-(--navbar-bg-button) border-r-[3px] border-(--navbar-text-color)"
+                      : ""
                       }`}
                   >
                     <Link href="/employer/dashboard">  <SidebarMenuButton
                       onClick={() => setActiveItem("dashboard")}
                       className={`flex items-center gap-3 px-4 py-5 rounded-lg w-full cursor-pointer border-none shadow-none outline-none [&_svg]:transition ${activeItem === "dashboard"
-                          ? "bg-transparent hover:bg-transparent text-(--navbar-text-color) [&_svg]:text-(--navbar-text-color)"
-                          : "bg-transparent hover:bg-(--navbar-bg-button) text-(--profile-title-color) hover:text-(--navbar-text-color) [&_svg]:text-(--sidebar-menu-icone-color) [&:hover_svg]:text-(--navbar-text-color) [&:hover_svg]:scale-110"
+                        ? "bg-transparent hover:bg-transparent text-(--navbar-text-color) [&_svg]:text-(--navbar-text-color)"
+                        : "bg-transparent hover:bg-(--navbar-bg-button) text-(--profile-title-color) hover:text-(--navbar-text-color) [&_svg]:text-(--sidebar-menu-icone-color) [&:hover_svg]:text-(--navbar-text-color) [&:hover_svg]:scale-110"
                         }`}
                     >
                       <AlertCircle className="w-5 h-5" />
@@ -151,16 +154,16 @@ export default function AppSidebar() {
                   {/* Settings */}
                   <SidebarMenuItem
                     className={`rounded-lg transition-all ${activeItem === "job-applications"
-                        ? "bg-(--navbar-bg-button) border-r-[3px] border-(--navbar-text-color)"
-                        : ""
+                      ? "bg-(--navbar-bg-button) border-r-[3px] border-(--navbar-text-color)"
+                      : ""
                       }`}
                   >
                     <Link href="/employer/job-applications">
                       <SidebarMenuButton
                         onClick={() => setActiveItem("job-applications")}
                         className={`flex items-center gap-3 px-4 py-5 rounded-lg w-full cursor-pointer border-none shadow-none outline-none [&_svg]:transition ${activeItem === "job-applications"
-                            ? "bg-transparent hover:bg-transparent text-(--navbar-text-color) font-medium [&_svg]:text-(--navbar-text-color)"
-                            : "bg-transparent hover:bg-(--navbar-bg-button) text-(--profile-title-color) hover:text-(--navbar-text-color) [&_svg]:text-(--sidebar-menu-icone-color) [&:hover_svg]:text-(--navbar-text-color) [&:hover_svg]:scale-110"
+                          ? "bg-transparent hover:bg-transparent text-(--navbar-text-color) font-medium [&_svg]:text-(--navbar-text-color)"
+                          : "bg-transparent hover:bg-(--navbar-bg-button) text-(--profile-title-color) hover:text-(--navbar-text-color) [&_svg]:text-(--sidebar-menu-icone-color) [&:hover_svg]:text-(--navbar-text-color) [&:hover_svg]:scale-110"
                           }`}
                       >
                         <FileText className="w-5 h-5" />
@@ -170,16 +173,16 @@ export default function AppSidebar() {
                   </SidebarMenuItem>
                   <SidebarMenuItem
                     className={`rounded-lg transition-all ${activeItem === "profile"
-                        ? "bg-(--navbar-bg-button) border-r-[3px] border-(--navbar-text-color)"
-                        : ""
+                      ? "bg-(--navbar-bg-button) border-r-[3px] border-(--navbar-text-color)"
+                      : ""
                       }`}
                   >
                     <Link href="/employer/profile">
                       <SidebarMenuButton
                         onClick={() => setActiveItem("profile")}
                         className={`flex items-center gap-3 px-4 py-5 rounded-lg w-full cursor-pointer border-none shadow-none outline-none [&_svg]:transition ${activeItem === "profile"
-                            ? "bg-transparent hover:bg-transparent text-(--navbar-text-color) font-medium [&_svg]:text-(--navbar-text-color)"
-                            : "bg-transparent hover:bg-(--navbar-bg-button) text-(--profile-title-color) hover:text-(--navbar-text-color) [&_svg]:text-(--sidebar-menu-icone-color) [&:hover_svg]:text-(--navbar-text-color) [&:hover_svg]:scale-110"
+                          ? "bg-transparent hover:bg-transparent text-(--navbar-text-color) font-medium [&_svg]:text-(--navbar-text-color)"
+                          : "bg-transparent hover:bg-(--navbar-bg-button) text-(--profile-title-color) hover:text-(--navbar-text-color) [&_svg]:text-(--sidebar-menu-icone-color) [&:hover_svg]:text-(--navbar-text-color) [&:hover_svg]:scale-110"
                           }`}
                       >
                         <User className="w-5 h-5" />
@@ -209,7 +212,7 @@ export default function AppSidebar() {
         </div>
         {/* USER PROFILE - At Absolute Bottom - Visible only on mobile */}
         <div className="absolute bottom-0 left-0 right-0 p-2 pb-4 md:hidden">
-          <UserProfiles variant="sidebar" user={user} />
+          <UserProfiles variant="sidebar" user={user} imageUrl={companyLogoUrl ?? companyIcon.src} />
         </div>
       </div>
       {/* END WRAPPER */}

@@ -43,6 +43,7 @@ export interface Job {
     companyAddress:string,
     companyName:string,
     companyWebsite:string,
+    companyLogo:string,
     contactNumber:string,
     name:string
     profileStrength:string

@@ -1,19 +1,18 @@
 'use client';
 
-import { ReactNode} from 'react';
+import { ReactNode } from 'react';
 import Navbar from '@/Components/Common/Navbar';
 import Sidebar from '@/Components/Common/Sidebar';
 import { SidebarProvider } from '@/Components/ui/sidebar';
-
+import { EmployerLogoProvider } from '@/Providers/EmployerLogoProvider';
 
 interface CompanyLayoutClientProps {
   children: ReactNode;
 }
 
 export default function CompanyLayoutClient({ children }: CompanyLayoutClientProps) {
-
-
   return (
+    <EmployerLogoProvider>
     <SidebarProvider>
       {/* ✅ MAIN LAYOUT (always rendered) */}
       <div className="flex flex-col h-screen w-full">
@@ -35,5 +34,6 @@ export default function CompanyLayoutClient({ children }: CompanyLayoutClientPro
         </div>
       </div>
     </SidebarProvider>
+    </EmployerLogoProvider>
   );
 }

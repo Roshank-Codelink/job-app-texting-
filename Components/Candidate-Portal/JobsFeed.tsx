@@ -324,6 +324,7 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                                                 companyWebsite={job.employer?.companyWebsite}
                                                 isLiked={job.isLiked}
                                                 isSaved={job.isSaved}
+                                                companyLogo={job.employer?.companyLogo}
                                             />
                                         </div>
                                     ))}

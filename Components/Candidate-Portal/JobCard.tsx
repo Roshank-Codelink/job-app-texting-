@@ -4,6 +4,7 @@ import Image from "next/image"
 import JobDescription from "./JobDescription"
 import { likeJobApi, saveJobApi } from "@/api_config/shared/sharedapi"
 import { error } from "console"
+import companyIcon from "@/public/Company_icon_webp.webp"
 
 
 interface JobCardProps {
@@ -30,6 +31,8 @@ export default function JobCard({ jobId, rawDescription, companyLogo, companyNam
   const [isLikedState, setIsLikedState] = useState(isLiked || false)
   const [isSavedState, setIsSavedState] = useState(isSaved || false)
 
+  const logoUrl = companyLogo ? `${process.env.NEXT_PUBLIC_SERVER_LOGOS_ENDPOINT}/${companyLogo}` : companyIcon.src
+
   const handleLike = async () => {
     try {
       const action = isLikedState ? "unlike" : "like"
@@ -47,7 +50,7 @@ export default function JobCard({ jobId, rawDescription, companyLogo, companyNam
   const handleSave = async () => {
     try {
       const action = isSavedState ? "unsave" : "save"
-       
+
       const response = await saveJobApi(jobId, action)
       if (response?.success) {
         setIsSavedState(!isSavedState)
@@ -94,10 +97,16 @@ export default function JobCard({ jobId, rawDescription, companyLogo, companyNam
 
           {/* LOGO */}
           <div className="relative shrink-0">
-            <img
-              src={companyLogo || "/Company_icon_webp.webp"}
-              className="w-10 h-10 sm:w-12 sm:h-12 rounded-[10px] bg-gray-100 p-1 object-contain border border-(--profile-image-border-color)"
+            <Image
+              src={
+                logoUrl
+              }
+              className="w-10 h-10 sm:w-12 sm:h-12 rounded-[10px]  p-1 object-contain border border-(--profile-image-border-color)"
               alt={companyName || "Company"}
+              width={80}
+              height={80}
+              sizes="40px"
+              unoptimized={logoUrl?.startsWith("http")}
             />
 
             {isprofileStrength === "Growing" && (
@@ -153,13 +162,14 @@ export default function JobCard({ jobId, rawDescription, companyLogo, companyNam
         onClose={() => setIsSliderOpen(false)}
         companyName={companyName}
         isprofileStrength={isprofileStrength}
-        companyLogo={companyLogo}
+        companyLogo={logoUrl}
         isVerified={isVerified}
         rawDescription={rawDescription}
         extractedData={extractedData}
         companyWebsite={companyWebsite}
         companyAddress={companyAddress}
         jobId={jobId}
+
       />
     </div>
   )

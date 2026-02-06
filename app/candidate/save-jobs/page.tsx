@@ -9,7 +9,7 @@ export default async function Savejob() {
 
     const allsavedjobs = GetSavejobs || []
 
-    console.log("dfckjdsoifjdsiof", allsavedjobs);
+    console.log("dfckjdsoifjdsiof", allsavedjobs.data[0].employer);
 
 
     return (

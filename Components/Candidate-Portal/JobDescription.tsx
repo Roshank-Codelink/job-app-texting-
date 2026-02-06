@@ -18,7 +18,7 @@ interface JobDescriptionProps {
     isOpen: boolean
     onClose: () => void
     companyName?: string
-    companyLogo?: string
+    companyLogo: string
     isVerified?: string | undefined
     rawDescription?: string
     isprofileStrength?: string
@@ -62,10 +62,16 @@ export default function JobDescription({ isOpen, onClose, companyName, companyLo
                                 <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-(--navbar-text-color)" />
                             </SheetClose>
                             <div className="relative shrink-0">
-                                <img
-                                    src={companyLogo || "/Company_icon_webp.webp"}
+                                <Image
+                                    src={
+                                        companyLogo
+                                    }
                                     className="w-10 h-10 rounded-[10px] bg-(--profile-border-color) p-1 object-contain border border-(--profile-image-border-color)"
                                     alt={companyName || "Company"}
+                                    width={80}
+                                    height={80}
+                                    sizes="40px"
+                                    unoptimized={companyLogo?.startsWith("http")}
                                 // onError={(e) => {
                                 //     (e.target as HTMLImageElement).src = "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg"
                                 // }}

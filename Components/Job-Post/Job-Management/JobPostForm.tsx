@@ -15,6 +15,10 @@ import PostingLoader from "./PostingLoader";
 import { CharacterCount } from '@tiptap/extensions'
 import { LimitPasteHTML } from "@/utils/extensions/LimitPasteHTML";
 import { useSession } from "next-auth/react";
+import { useEmployerLogo } from "@/Providers/EmployerLogoProvider";
+import companyIcon from "@/public/Company_icon_webp.webp";
+const DEFAULT_AVATAR = companyIcon.src;
+
 export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [markdownText, setMarkdownText] = useState("");
@@ -229,8 +233,8 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
             setIsSubmitting(false);
         }
     };
-    const userImageUrl =
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face";
+    const { companyLogoUrl } = useEmployerLogo();
+    const displayImageUrl = companyLogoUrl ?? DEFAULT_AVATAR;
 
     return (
         <div className="w-full">
@@ -252,11 +256,13 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
                         onClick={() => setIsExpanded(true)}
                     >
                         <Image
-                            src={userImageUrl}
-                            alt="User"
-                            width={40}
-                            height={40}
-                            className="rounded-[8px] object-cover w-8 h-8 sm:w-10 sm:h-10 shrink-0"
+                            src={displayImageUrl}
+                            alt="Company"
+                            width={80}
+                            height={80}
+                            sizes="40px"
+                            className="rounded-2 object-contain w-8 h-8 sm:w-10 sm:h-10 shrink-0"
+                            unoptimized={displayImageUrl.startsWith("http")}
                         />
                         <div className="flex-1 text-sm sm:text-base text-(--job-post-bg-color) min-w-0">
                             <span className="truncate block">Create a job post...</span>
@@ -277,11 +283,13 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
                         <div className="flex items-center justify-between mb-4 gap-2">
                             <div className="flex items-center gap-2 min-w-0 flex-1">
                                 <Image
-                                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face"
-                                    alt="Profile"
-                                    width={40}
-                                    height={40}
-                                    className="rounded-[8px] object-cover w-8 h-8 sm:w-10 sm:h-10 shrink-0"
+                                    src={displayImageUrl}
+                                    alt="Company"
+                                    width={80}
+                                    height={80}
+                                    sizes="40px"
+                                    className="rounded-[8px] object-contain w-8 h-8 sm:w-10 sm:h-10 shrink-0"
+                                    unoptimized={displayImageUrl.startsWith("http")}
                                 />
                                 <div className="min-w-0 flex-1">
                                     <h2 className="text-base sm:text-lg font-semibold text-(--navbar-logo-text-color) truncate">

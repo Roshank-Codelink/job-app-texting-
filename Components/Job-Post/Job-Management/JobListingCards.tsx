@@ -8,6 +8,8 @@ import MarkAsHiredModal from "@/Components/Common/MarkAsHiredModal.tsx";
 import CloseJobModel from "@/Components/Common/CloseJobModel";
 import DeleteJobModel from "@/Components/Common/DeleteJobModel";
 import RenewJobModel from "@/Components/Common/RenewJobModel";
+import { useEmployerLogo } from "@/Providers/EmployerLogoProvider";
+import companyIcon from "@/public/Company_icon_webp.webp";
 // ✅ Three Dot Menu Component
 interface ThreeDotMenuProps {
   jobId: string;
@@ -121,16 +123,25 @@ interface JobHeaderProps {
   impressionCount?: number;
 }
 function JobHeader({ companyName, postedTime, jobId, jobStatus, onStatusUpdate, onJobDelete, onRefreshJobs, likeCount, savedCount, impressionCount }: JobHeaderProps) {
+  const { companyLogoUrl } = useEmployerLogo();
 
   return (
     <CardHeader className="pb-3 pt-5 px-6">
       <div className="flex items-center justify-between gap-4">
         {/* Left - Company Info */}
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-(--post-card-bg-color) rounded-md flex items-center justify-center shrink-0">
-            <span className="text-(--sidebar-bg-color) text-sm font-semibold">
-              {companyName?.[0]}
-            </span>
+          <div className="w-10 h-10 rounded-md flex items-center justify-center shrink-0 overflow-hidden">
+
+            <Image
+              src={companyLogoUrl ?? companyIcon.src}
+              alt={companyName || "Company"}
+              width={80}
+              height={80}
+              sizes="40px"
+              className="w-full h-full object-contain"
+              unoptimized={companyLogoUrl?.startsWith("http")}
+            />
+
           </div>
           <div>
             <h3 className="text-sm font-bold text-(--profile-name-color) leading-tight">
@@ -159,20 +170,19 @@ function JobHeader({ companyName, postedTime, jobId, jobStatus, onStatusUpdate, 
               </span>
             </div>
             {/* Views Box */}
-            <div className="relative group">
+            {/* <div className="relative group">
               <div className="bg-(--sidebar-bg-color) border border-(--profile-border-color) rounded-lg px-3 py-2 hover:border-(--navbar-text-color) hover:shadow-md transition-all duration-200 cursor-pointer">
                 <div className="flex items-center gap-2.5">
                   <Eye className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-(--navbar-text-color) transition-all" strokeWidth={2.5} />
                   <div className="flex flex-col leading-none">
                     <span className="text-xs font-bold text-(--profile-name-color)">234</span>
-                    {/* <span className="text-[9px] text-(--profile-title-color)">Views</span> */}
                   </div>
                 </div>
               </div>
               <span className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-(--profile-name-color) text-(--sidebar-bg-color) text-[10px] font-medium px-2 py-1 rounded shadow-lg whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none z-50">
                 Total Views
               </span>
-            </div>
+            </div> */}
             {/* Saved Box */}
             <div className="relative group">
               <div className="bg-(--sidebar-bg-color) border border-(--profile-border-color) rounded-lg px-3 py-2 hover:border-(--navbar-text-color) hover:shadow-md transition-all duration-200 cursor-pointer">
@@ -307,17 +317,16 @@ export default function JobListingCards({ jobs, onJobStatusUpdate, onJobDelete, 
                       </div>
                     </div>
                     {/* Views Box */}
-                    <div className="relative group flex-1">
+                    {/* <div className="relative group flex-1">
                       <div className="bg-(--sidebar-bg-color) border border-(--profile-border-color) rounded-lg px-2.5 py-2 hover:border-(--navbar-text-color) hover:shadow-md transition-all duration-200 cursor-pointer">
                         <div className="flex items-center justify-center gap-2">
                           <Eye className="w-4 h-4 text-(--sidebar-menu-icone-color) group-hover:text-(--navbar-text-color) transition-all" strokeWidth={2.5} />
                           <div className="flex flex-col leading-none">
                             <span className="text-xs font-bold text-(--profile-name-color)">234</span>
-                            {/* <span className="text-[9px] text-(--profile-title-color)">Views</span> */}
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
 
 
                     {/* Saved Box */}

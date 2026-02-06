@@ -6,22 +6,25 @@ import { useRouter } from "next/navigation"
 import { useState, useEffect, useRef, useCallback } from "react"
 import JobDescription from "./JobDescription"
 import { saveJobApi, getSavedJobApi } from "@/api_config/shared/sharedapi"
+import companyIcon from "@/public/Company_icon_webp.webp"
 
 export default function SaveJobs({ saved }: { saved: SaveJobsApiResponse }) {
     const router = useRouter()
     const jobs = saved?.data || []
-    const [allsavejobs,setallsavejobs]= useState<SaveJobsApiResponse["data"]>(jobs)
+    const [allsavejobs, setallsavejobs] = useState<SaveJobsApiResponse["data"]>(jobs)
     const [page, setPage] = useState(1);
     const limit = 10;
     const [hasMore, setHasMore] = useState(jobs.length >= limit);
     const [isLoading, setIsLoading] = useState(false);
-    
+
     const loaderRef = useRef<HTMLDivElement | null>(null);
     const isLoadingRef = useRef(false);
     const pageRef = useRef(1);
 
     const [isSliderOpen, setIsSliderOpen] = useState(false)
     const [selectedJob, setSelectedJob] = useState<any>(null)
+
+    const logoUrl = selectedJob?.employer?.companyLogo ? `${process.env.NEXT_PUBLIC_SERVER_LOGOS_ENDPOINT}/${selectedJob?.employer?.companyLogo}` : companyIcon.src
 
     useEffect(() => {
         isLoadingRef.current = isLoading;
@@ -38,11 +41,11 @@ export default function SaveJobs({ saved }: { saved: SaveJobsApiResponse }) {
         isLoadingRef.current = true;
         const nextPage = pageRef.current + 1;
         const startTime = Date.now();
-        const minLoadingTime = 600; 
+        const minLoadingTime = 600;
 
         try {
-            const response = await getSavedJobApi(nextPage,limit);
-            
+            const response = await getSavedJobApi(nextPage, limit);
+
             if (!response || !response.success) {
                 console.error("Error fetching more jobs");
                 setHasMore(false);
@@ -102,12 +105,12 @@ export default function SaveJobs({ saved }: { saved: SaveJobsApiResponse }) {
         try {
             const action = "unsave"
             const response = await saveJobApi(jobId, action)
-           if(response.success){
-              const newsavedata=allsavejobs.filter((job)=>{
-                 return job._id!==jobId;
-              })
-              setallsavejobs(newsavedata)
-           }
+            if (response.success) {
+                const newsavedata = allsavejobs.filter((job) => {
+                    return job._id !== jobId;
+                })
+                setallsavejobs(newsavedata)
+            }
         } catch (error) {
             console.log("error", error);
             throw error
@@ -220,7 +223,7 @@ export default function SaveJobs({ saved }: { saved: SaveJobsApiResponse }) {
                     isOpen={isSliderOpen}
                     onClose={() => setIsSliderOpen(false)}
                     companyName={selectedJob?.employer?.companyName}
-                    companyLogo={selectedJob?.employer?.companyLogo}
+                    companyLogo={logoUrl}
                     isVerified={selectedJob?.employer?.isVerified}
                     rawDescription={selectedJob?.rawDescription}
                     extractedData={selectedJob?.extractedData}

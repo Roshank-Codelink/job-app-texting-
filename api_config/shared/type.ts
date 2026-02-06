@@ -15,6 +15,7 @@ export interface SaveJob {
     companyAddress: string;
     companyName: string;
     companyWebsite: string;
+    companyLogo: string;
     contactNumber: string;
     name: string;
     profileStrength: string;

@@ -8,10 +8,13 @@ import { Button } from "@/Components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useEmployerLogo } from "@/Providers/EmployerLogoProvider";
+import companyIcon from "@/public/Company_icon_webp.webp";
 
 export default function Navbar() {
   const { openMobile, setOpenMobile } = useSidebar();
   const { data: session } = useSession();
+  const { companyLogoUrl } = useEmployerLogo();
   const user = session?.user;
 
   const handleToggle = () => {
@@ -59,7 +62,7 @@ export default function Navbar() {
         </Button>
         {/* UserProfiles - Visible only on desktop (hidden on mobile) */}
         <div className="user-profile shrink-0 hidden md:block">
-          <UserProfiles user={user} />
+          <UserProfiles user={user} imageUrl={companyLogoUrl ?? companyIcon.src} />
         </div>
       </div>
     </div>
