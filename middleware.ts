@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { auth } from "@/lib/auth-config";
 
-export async function middleware(request: NextRequest) {
+export default auth((request) => {
   const { pathname, searchParams } = request.nextUrl;
+
+  const token = request.auth?.user?.token as string;
+  const role = request.auth?.user?.role as string;
+  const onboarding = Boolean(request.auth?.user?.isOnboardingCompleted);
 
   /* ---------- AUTH PAGES ---------- */
   const employerAuthPages = ["/employer-signin", "/employer-signup"];
@@ -12,58 +15,25 @@ export async function middleware(request: NextRequest) {
   const isEmployerAuthPage = employerAuthPages.includes(pathname);
   const isCandidateAuthPage = candidateAuthPages.includes(pathname);
 
-  /* ---------- ADMIN PAGES ---------- */
-  const isAdminAuthPage = pathname === "/admin-login";
-  const isAdminRoute = pathname.startsWith("/admin");
-
-  /* ---------- TOKEN (Edge-compatible) ---------- */
-  // getToken() works in Edge Runtime when secret is provided
-  const token = await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET,
-  });
-
-  // Extract role and onboarding status from token
-  const role = token?.role || (token as any)?.user?.role;
-  const onboarding = Boolean((token as any)?.user?.isOnboardingCompleted);
-  const user = (token as any)?.user;
-
-  /* ==================================================
-     ADMIN LOGIN PAGE
-     ================================================== */
-  if (isAdminAuthPage) {
-    // Not logged in → allow
-    if (!token) {
-      return NextResponse.next();
-    }
-
-    // Logged in ADMIN → dashboard
+  /* ---------- ADMIN ---------- */
+  if (pathname === "/admin-login") {
+    if (!token) return NextResponse.next();
     if (role === "ADMIN") {
       return NextResponse.redirect(new URL("/admin/dashboard", request.url));
     }
-
-    // Logged in but not admin → block
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  /* ==================================================
-     ADMIN ROUTES
-     ================================================== */
-  if (isAdminRoute) {
-    // Not logged in → admin-login
+  if (pathname.startsWith("/admin")) {
     if (!token) {
       return NextResponse.redirect(new URL("/admin-login", request.url));
     }
-
-    // Logged in but NOT admin
     if (role !== "ADMIN") {
       return NextResponse.redirect(new URL("/", request.url));
     }
   }
 
-  /* ==================================================
-     EMPLOYER AUTH PAGES
-     ================================================== */
+  /* ---------- EMPLOYER AUTH ---------- */
   if (isEmployerAuthPage) {
     if (token && role === "EMPLOYER") {
       return NextResponse.redirect(new URL("/employer/dashboard", request.url));
@@ -71,13 +41,16 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  /* ==================================================
-     CANDIDATE AUTH PAGE (SIGNIN)
-     ================================================== */
-  if (isCandidateAuthPage) {
-    if (!token) {
-      return NextResponse.next();
+  /* ---------- EMPLOYER ROUTES ---------- */
+  if (pathname.startsWith("/employer")) {
+    if (!token || role !== "EMPLOYER") {
+      return NextResponse.redirect(new URL("/employer-signin", request.url));
     }
+  }
+
+  /* ---------- CANDIDATE AUTH ---------- */
+  if (isCandidateAuthPage) {
+    if (!token) return NextResponse.next();
 
     if (role === "EMPLOYEE") {
       if (!onboarding) {
@@ -86,55 +59,37 @@ export async function middleware(request: NextRequest) {
         );
       }
 
-      const jobTitle = user?.jobTitle ?? "";
+      const jobTitle = request.auth?.user?.jobTitle ?? "";
       const url = new URL("/candidate/jobs", request.url);
-      if (jobTitle) {
-        url.searchParams.set("text", jobTitle);
-      }
+      if (jobTitle) url.searchParams.set("text", jobTitle);
       return NextResponse.redirect(url);
     }
 
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  /* ==================================================
-     EMPLOYER ROUTES
-     ================================================== */
-  if (pathname.startsWith("/employer")) {
-    if (!token || role !== "EMPLOYER") {
-      return NextResponse.redirect(new URL("/employer-signin", request.url));
-    }
-  }
-
-  /* ==================================================
-     CANDIDATE ROUTES
-     ================================================== */
+  /* ---------- CANDIDATE ROUTES ---------- */
   if (pathname.startsWith("/candidate")) {
     if (!token || role !== "EMPLOYEE") {
       return NextResponse.redirect(new URL("/candidate-signin", request.url));
     }
 
-    // onboarding NOT completed → only onboarding allowed
     if (!onboarding && pathname !== "/candidate-onboarding") {
       return NextResponse.redirect(
         new URL("/candidate-onboarding", request.url),
       );
     }
 
-    // onboarding completed → block onboarding page
     if (onboarding && pathname === "/candidate-onboarding") {
-      const jobTitle = user?.jobTitle ?? "";
+      const jobTitle = request.auth?.user?.jobTitle ?? "";
       const url = new URL("/candidate/jobs", request.url);
-      if (jobTitle) {
-        url.searchParams.set("text", jobTitle);
-      }
+      if (jobTitle) url.searchParams.set("text", jobTitle);
       return NextResponse.redirect(url);
     }
 
-    // auto add text param on jobs page
     if (pathname === "/candidate/jobs") {
       const currentText = searchParams.get("text");
-      const jobTitle = user?.jobTitle ?? "";
+      const jobTitle = request.auth?.user?.jobTitle ?? "";
 
       if (!currentText && jobTitle) {
         const url = new URL(request.url);
@@ -145,11 +100,8 @@ export async function middleware(request: NextRequest) {
   }
 
   return NextResponse.next();
-}
+});
 
-/* ==================================================
-   MATCHER
-   ================================================== */
 export const config = {
   matcher: [
     "/admin/:path*",
