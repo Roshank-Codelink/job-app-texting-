@@ -10,6 +10,8 @@ export const loginApi = async (email: string, role: string) => {
         role,
     },
  });
+ 
+ console.log("🚀 ~ loginApi ~ response:", response)
  return response;
 }
 
@@ -24,5 +26,6 @@ export const verifyOTP = async (email: string, otp: string) => {
         otp,
     },
  });
+ console.log("🚀 ~ verifyOTP ~ response:", response)
  return response;
 }

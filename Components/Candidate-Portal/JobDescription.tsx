@@ -3,6 +3,7 @@
 import { X, ChevronLeft, Megaphone, TrendingUp, ShieldCheck, CircleUserRound } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
+import Link from "next/link"
 import {
     Sheet,
     SheetContent,
@@ -40,6 +41,7 @@ export default function JobDescription({ isOpen, onClose, companyName, companyLo
             toast.success(response?.data?.message);
         }
     }
+    console.log(companyLogo)
 
     return (
         <Sheet open={isOpen} onOpenChange={onClose}>
@@ -149,12 +151,12 @@ export default function JobDescription({ isOpen, onClose, companyName, companyLo
                                     <div>
                                         <p className="text-xs font-medium text-(--profile-title-color) mb-1">Website</p>
 
-                                        <a href={companyWebsite?.startsWith("http") ? companyWebsite : `https://${companyWebsite}`}
+                                        <Link href={companyWebsite?.startsWith("http") ? companyWebsite : `https://${companyWebsite}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-xs sm:text-sm text-(--navbar-text-color) hover:underline cursor-pointer break-all">
                                             {companyWebsite}
-                                        </a>
+                                        </Link>
                                     </div>
 
                                     {/* <div>

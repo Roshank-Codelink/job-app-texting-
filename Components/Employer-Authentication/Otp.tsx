@@ -27,7 +27,7 @@ export default function Otp({ email, onEdit }: OtpProps) {
             const result = await signIn("credentials", {
                 email,
                 otp: values.otp,
-                redirect: false,
+                // redirect: false,
             });
             console.log("Result:", result);
             if (result?.error) {

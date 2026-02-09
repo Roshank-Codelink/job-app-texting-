@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Card, CardHeader, CardContent } from "@/Components/ui/card";
-import { JobListingItem } from "@/api_config/JobPostApi/type";
+import { JobListingItem } from "@/api_config/EmployerInfoApi/type";
 import { Briefcase, Eye, Heart, Award, MoreVertical, Bookmark, Edit, UserCheck, Trash2, BarChart3, Copy, Archive, RefreshCw } from "lucide-react";
 import MarkAsHiredModal from "@/Components/Common/MarkAsHiredModal.tsx";
 import CloseJobModel from "@/Components/Common/CloseJobModel";
@@ -124,6 +124,7 @@ interface JobHeaderProps {
 }
 function JobHeader({ companyName, postedTime, jobId, jobStatus, onStatusUpdate, onJobDelete, onRefreshJobs, likeCount, savedCount, impressionCount }: JobHeaderProps) {
   const { companyLogoUrl } = useEmployerLogo();
+  console.log("logo",companyLogoUrl)
 
   return (
     <CardHeader className="pb-3 pt-5 px-6">

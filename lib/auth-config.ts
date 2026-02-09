@@ -98,9 +98,11 @@ const adminCredentialsConfig = CredentialsProvider({
 
 
 const config: NextAuthConfig = {
+    trustHost: true,
     providers: [credentialsConfig, adminCredentialsConfig],
     pages: {
         signIn: "/employer-signin",
+        
     },
     callbacks: {
         async jwt({ token, user, trigger, session, account }: any) {
@@ -119,6 +121,7 @@ const config: NextAuthConfig = {
 
 
         async session({ session, token }: any) {
+            console.log("🚀 ~ token - auth-config.ts:", token)
             if (token.user) {
                 session.user = {
                     ...session.user,

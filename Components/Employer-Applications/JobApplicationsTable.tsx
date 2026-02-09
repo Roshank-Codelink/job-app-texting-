@@ -46,7 +46,7 @@ export default function JobApplicationsTable({
     {
       header: "Candidate",
       accessorKey: "employee.name",
-      cell: ({ row }) => {
+      cell: ({ row }: { row: any }) => {
         const employee = row.original.employee;
         return (
           <div className="flex flex-col">
@@ -80,7 +80,7 @@ export default function JobApplicationsTable({
     {
       header: "Job",
       accessorKey: "job.jobTitle",
-      cell: ({ row }) => {
+      cell: ({ row }: { row: any }) => {
         const job = row.original.job;
         return (
           <div className="flex flex-col">
@@ -97,7 +97,7 @@ export default function JobApplicationsTable({
     {
       header: "Applied on",
       accessorKey: "createdAt",
-      cell: ({ row }) => (
+      cell: ({ row }: { row: any }) => (
         <span className="text-sm text-(--profile-title-color)">
           {formatDate(row.original.createdAt)}
         </span>
@@ -106,7 +106,7 @@ export default function JobApplicationsTable({
     {
       header: "Application status",
       accessorKey: "applicationStatus",
-      cell: ({ row }) => {
+      cell: ({ row }: { row: any })=> {
         const status = row.original.applicationStatus || "—";
         return (
           <span
@@ -123,7 +123,7 @@ export default function JobApplicationsTable({
     {
       header: "Job status",
       accessorKey: "job.status",
-      cell: ({ row }) => {
+      cell: ({ row }: { row: any }) => {
         const status = row.original.job?.status || "—";
         return (
           <span className="text-xs rounded-full px-2 py-1 bg-(--sidebar-bg-color) text-(--profile-title-color) border border-(--profile-border-color) capitalize">

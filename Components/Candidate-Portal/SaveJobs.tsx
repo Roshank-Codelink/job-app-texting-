@@ -5,7 +5,7 @@ import { Bookmark, ArrowRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState, useEffect, useRef, useCallback } from "react"
 import JobDescription from "./JobDescription"
-import { saveJobApi, getSavedJobApi } from "@/api_config/shared/sharedapi"
+import { CandidatesaveJob, CandidategetSavedJob } from "@/api_config/Candidate/manageJobs"
 import companyIcon from "@/public/Company_icon_webp.webp"
 
 export default function SaveJobs({ saved }: { saved: SaveJobsApiResponse }) {
@@ -44,7 +44,7 @@ export default function SaveJobs({ saved }: { saved: SaveJobsApiResponse }) {
         const minLoadingTime = 600;
 
         try {
-            const response = await getSavedJobApi(nextPage, limit);
+            const response = await CandidategetSavedJob(nextPage, limit);
 
             if (!response || !response.success) {
                 console.error("Error fetching more jobs");
@@ -104,7 +104,7 @@ export default function SaveJobs({ saved }: { saved: SaveJobsApiResponse }) {
     async function handleunsaved(jobId: string) {
         try {
             const action = "unsave"
-            const response = await saveJobApi(jobId, action)
+            const response = await CandidatesaveJob(jobId, action)
             if (response.success) {
                 const newsavedata = allsavejobs.filter((job) => {
                     return job._id !== jobId;

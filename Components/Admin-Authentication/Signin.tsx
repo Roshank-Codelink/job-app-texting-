@@ -36,7 +36,7 @@ export default function AdminSignin() {
       const result = await signIn("admin-credentials", {
         email: values.email,
         password: values.password,
-        redirect: false,
+        // redirect: false,
       })
 
       console.log("Admin Login Result:", result)

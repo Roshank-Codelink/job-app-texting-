@@ -5,7 +5,7 @@ import JobFilters from "./JobFilters"
 import FiltersSidebar from "./FiltersSidebar"
 import JobCard from "./JobCard"
 import { departmentApiResponse } from "@/types/types"
-import { getJobsApi } from "@/api_config/shared/sharedapi"
+import { CandidategetJobs } from "@/api_config/Candidate/manageJobs"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useSession } from "next-auth/react"
 import { recordJobImpressionsApi } from "@/api_config/Candidate/manageJobs"
@@ -113,7 +113,7 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                 page: nextPage,
                 limit: limit
             };
-            const response: any = await getJobsApi({
+            const response: any = await CandidategetJobs({
                 searchParams: Promise.resolve(currentFilters)
             });
             if (response && response.data) {

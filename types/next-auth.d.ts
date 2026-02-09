@@ -6,6 +6,7 @@ declare module "next-auth" {
     token?: string;
     companyName?: string;
     jobTitle?: string;
+    isOnboardingCompleted?: boolean;
   }
 
   interface Session extends DefaultSession {

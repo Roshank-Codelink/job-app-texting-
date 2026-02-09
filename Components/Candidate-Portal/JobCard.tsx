@@ -2,7 +2,7 @@ import { useState } from "react"
 import { ThumbsUp, Bookmark, TrendingUp, ShieldCheck } from "lucide-react"
 import Image from "next/image"
 import JobDescription from "./JobDescription"
-import { likeJobApi, saveJobApi } from "@/api_config/shared/sharedapi"
+import { CandidatelikeJob, CandidatesaveJob } from "@/api_config/Candidate/manageJobs"
 import { error } from "console"
 import companyIcon from "@/public/Company_icon_webp.webp"
 
@@ -32,11 +32,11 @@ export default function JobCard({ jobId, rawDescription, companyLogo, companyNam
   const [isSavedState, setIsSavedState] = useState(isSaved || false)
 
   const logoUrl = companyLogo ? `${process.env.NEXT_PUBLIC_SERVER_LOGOS_ENDPOINT}/${companyLogo}` : companyIcon.src
-
+     console.log("LOGO",logoUrl)
   const handleLike = async () => {
     try {
       const action = isLikedState ? "unlike" : "like"
-      const response = await likeJobApi(jobId, action)
+      const response = await CandidatelikeJob(jobId, action)
       if (response?.success) {
         setIsLikedState(!isLikedState)
       }
@@ -51,7 +51,7 @@ export default function JobCard({ jobId, rawDescription, companyLogo, companyNam
     try {
       const action = isSavedState ? "unsave" : "save"
 
-      const response = await saveJobApi(jobId, action)
+      const response = await CandidatesaveJob(jobId, action)
       if (response?.success) {
         setIsSavedState(!isSavedState)
       }
@@ -63,6 +63,7 @@ export default function JobCard({ jobId, rawDescription, companyLogo, companyNam
 
     }
   }
+  console.log("logo,", logoUrl)
 
   return (
     <div className="bg-white rounded-[10px] border border-gray-200 shadow-sm overflow-hidden">

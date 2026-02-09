@@ -9,7 +9,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/Components/ui/alert-dialog"
-import { MarkJobHiredApi } from "@/api_config/shared/sharedapi";
+import { MarkJobHiredApi } from "@/api_config/EmployerInfoApi/jobApplications";
 import { parseMsg } from "../../lib/helpers";
 import { toast } from "react-toastify";
 interface MarkAsHiredModalProps {

@@ -134,12 +134,12 @@ export function DataTable<TData, TValue>({
     return (
         <div className="overflow-hidden rounded-md border">
             <Table>
-                <TableHeader className="bg-gray-100">
-                    {table.getHeaderGroups().map((headerGroup) => (
+                <TableHeader className="bg-(--navbar-bg-button) ">
+                    {table.getHeaderGroups().map((headerGroup:any) => (
                         <TableRow key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => {
+                            {headerGroup.headers.map((header:any) => {
                                 return (
-                                    <TableHead key={header.id}>
+                                    <TableHead key={header.id} className="border text-[#0EA5E9]">
                                         {header.isPlaceholder
                                             ? null
                                             : flexRender(
@@ -154,13 +154,13 @@ export function DataTable<TData, TValue>({
                 </TableHeader>
                 <TableBody >
                     {table.getRowModel().rows?.length ? (
-                        table.getRowModel().rows.map((row) => (
+                        table.getRowModel().rows.map((row:any) => (
                             <TableRow
                                 key={row.id}
                                 data-state={row.getIsSelected() && "selected"}
                             >
-                                {row.getVisibleCells().map((cell) => (
-                                    <TableCell key={cell.id} className="p-3">
+                                {row.getVisibleCells().map((cell:any) => (
+                                    <TableCell key={cell.id} className="p-3 border">
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                     </TableCell>
                                 ))}
@@ -205,7 +205,7 @@ export function DataTable<TData, TValue>({
                             <Button
                                 variant="outline"
                                 size="icon"
-                                className="h-8 w-8"
+                                className="h-8 w-8 cursor-pointer bg-gradient-to-r from-(--job-post-button-bg-from) to-(--job-post-button-bg-to) text-white"
                                 onClick={() => handlePageChange(currentPage - 1)}
                                 disabled={currentPage === 1}
                             >
@@ -242,7 +242,7 @@ export function DataTable<TData, TValue>({
                             <Button
                                 variant="outline"
                                 size="icon"
-                                className="h-8 w-8"
+                                className="h-8 w-8  bg-gradient-to-r from-(--job-post-button-bg-from) to-(--job-post-button-bg-to) text-white cursor-pointer"
                                 onClick={() => handlePageChange(currentPage + 1)}
                                 disabled={currentPage === totalPages}
                             >

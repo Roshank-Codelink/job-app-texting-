@@ -21,6 +21,9 @@ export async function middleware(request: NextRequest) {
     req: request,
     secret: process.env.NEXTAUTH_SECRET,
   });
+  console.log("🚀 ~ middleware ~ token:", token)
+
+  
 
   const role = token?.role || (token as any)?.user?.role;
   const onboarding = Boolean((token as any)?.user?.isOnboardingCompleted);
@@ -90,6 +93,7 @@ export async function middleware(request: NextRequest) {
       }
 
       const jobTitle = (token as any)?.user?.jobTitle ?? "";
+      console.log("🚀 ~ middleware ~ jobTitle:", jobTitle)
       const url = new URL("/candidate/jobs", request.url);
       if (jobTitle) {
         url.searchParams.set("text", jobTitle);
@@ -131,6 +135,7 @@ export async function middleware(request: NextRequest) {
     // onboarding completed → block onboarding page
     if (onboarding && pathname === "/candidate-onboarding") {
       const jobTitle = (token as any)?.user?.jobTitle ?? "";
+      console.log("jobtitle-middleware",jobTitle)
       const url = new URL("/candidate/jobs", request.url);
       if (jobTitle) {
         url.searchParams.set("text", jobTitle);

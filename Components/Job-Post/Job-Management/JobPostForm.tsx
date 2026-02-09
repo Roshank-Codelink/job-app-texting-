@@ -9,7 +9,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import Link from "@tiptap/extension-link";
 import TurndownService from "turndown";
-import { AIJobPostAPI, PostJobAPI } from "@/api_config/JobPostApi/JobPostApi";
+import { AIEnhanceJob,PostJob } from "@/api_config/EmployerInfoApi/jobpost";
 import AILoader from "./AILoader";
 import PostingLoader from "./PostingLoader";
 import { CharacterCount } from '@tiptap/extensions'
@@ -152,7 +152,7 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
         const cleanedHTML = cleanTipTapHTML(htmlContent);
       
         try {
-            const response = await AIJobPostAPI({
+            const response = await AIEnhanceJob({
                 description: cleanedHTML,
             });
             // console.log("API Response >>>>>>>>>>>:", response);
@@ -204,7 +204,7 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
         try {
             setIsSubmitting(true);
             setError("");
-            const response = await PostJobAPI({
+            const response = await PostJob({
                 description: cleanedHTML,   // ⭐ SEND HTML DIRECTLY (NO MARKDOWN)
             });
             refreshJobs();
