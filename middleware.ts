@@ -16,14 +16,17 @@ export async function middleware(request: NextRequest) {
   const isAdminAuthPage = pathname === "/admin-login";
   const isAdminRoute = pathname.startsWith("/admin");
 
-  /* ---------- TOKEN ---------- */
+  /* ---------- TOKEN (Edge-compatible) ---------- */
+  // getToken() works in Edge Runtime when secret is provided
   const token = await getToken({
     req: request,
     secret: process.env.NEXTAUTH_SECRET,
   });
 
+  // Extract role and onboarding status from token
   const role = token?.role || (token as any)?.user?.role;
   const onboarding = Boolean((token as any)?.user?.isOnboardingCompleted);
+  const user = (token as any)?.user;
 
   /* ==================================================
      ADMIN LOGIN PAGE
@@ -83,7 +86,7 @@ export async function middleware(request: NextRequest) {
         );
       }
 
-      const jobTitle = (token as any)?.user?.jobTitle ?? "";
+      const jobTitle = user?.jobTitle ?? "";
       const url = new URL("/candidate/jobs", request.url);
       if (jobTitle) {
         url.searchParams.set("text", jobTitle);
@@ -120,7 +123,7 @@ export async function middleware(request: NextRequest) {
 
     // onboarding completed → block onboarding page
     if (onboarding && pathname === "/candidate-onboarding") {
-      const jobTitle = (token as any)?.user?.jobTitle ?? "";
+      const jobTitle = user?.jobTitle ?? "";
       const url = new URL("/candidate/jobs", request.url);
       if (jobTitle) {
         url.searchParams.set("text", jobTitle);
@@ -131,7 +134,7 @@ export async function middleware(request: NextRequest) {
     // auto add text param on jobs page
     if (pathname === "/candidate/jobs") {
       const currentText = searchParams.get("text");
-      const jobTitle = (token as any)?.user?.jobTitle ?? "";
+      const jobTitle = user?.jobTitle ?? "";
 
       if (!currentText && jobTitle) {
         const url = new URL(request.url);
@@ -148,7 +151,6 @@ export async function middleware(request: NextRequest) {
    MATCHER
    ================================================== */
 export const config = {
-  runtime: "nodejs",
   matcher: [
     "/admin/:path*",
     "/admin-login",
