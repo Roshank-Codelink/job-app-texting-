@@ -43,8 +43,11 @@ export default function Otp({ email, onEdit }: OtpProps) {
 
             const jobTitle = updatedSession?.user?.jobTitle ?? "";
             if ((updatedSession?.user as any)?.isOnboardingCompleted) {
+                console.log("updatedSession?.user:", updatedSession?.user);
+                console.log("Onboarding completed");
                 router.push(`/candidate/jobs?text=${encodeURIComponent(jobTitle)}`);
             }else{
+                console.log("Onboarding not completed");
                 router.push('/candidate-onboarding')
             }
         } catch (error) {
