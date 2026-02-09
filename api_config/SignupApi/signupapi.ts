@@ -14,7 +14,6 @@ export const signupApi = async (payload: SignupPayload) => {
 // candidate Onboarding Api
 export const candidateOnboarding=async (payload: CandidateOnboardingPayload) => {
    console.log(payload);
-   
    const response = await customFetch<CandidateOnboadingResponse>({
     url: "/employee-onboarding",
     method: "POST",

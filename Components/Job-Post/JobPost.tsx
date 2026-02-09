@@ -3,8 +3,8 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import JobListingCards from "./Job-Management/JobListingCards";
 import JobPostForm from "./Job-Management/JobPostForm";
-import { GetAllJobsAPI } from "@/api_config/JobPostApi/JobPostApi";
-import { JobListingItem } from "@/api_config/JobPostApi/type";
+import { EmployergetJobs } from "@/api_config/EmployerInfoApi/jobApplications";
+import { JobListingItem } from "@/api_config/EmployerInfoApi/type";
 import { revalidateEmployerJobsAction } from "@/app/employer/dashboard/actions";
 
 interface JobPostProps {
@@ -62,14 +62,15 @@ export default function JobPost({ initialJobs }: JobPostProps) {
     const startTime = Date.now();
     const minLoadingTime = 600; // Minimum 600ms loader display time
     try {
-      const response = await GetAllJobsAPI(nextPage, limit);
+      const response = await EmployergetJobs(nextPage, limit);
+      console.log("more data ",response.data)
       // Check if response has error or data is null
-      if (response.error || !response.data) {
-        console.error("Error fetching more jobs:", response.error ? "API error" : "No data received");
-        setHasMore(false);
-        return;
-      }
-      const { success, data } = response.data;
+      // if (response.error || !response.data) {
+      //   console.error("Error fetching more jobs:", response.error ? "API error" : "No data received");
+      //   setHasMore(false);
+      //   return;
+      // }
+      const { success, data } = response;
       // Calculate remaining time to show loader
       const elapsedTime = Date.now() - startTime;
       const remainingTime = Math.max(0, minLoadingTime - elapsedTime);

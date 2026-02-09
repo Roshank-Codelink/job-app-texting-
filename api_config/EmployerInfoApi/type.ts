@@ -81,3 +81,64 @@ export interface UploadLogoResponse {
     companyLogo: string;
   };
 }
+
+export interface MarkJobHiredResponse {
+  success: boolean;
+  message: string;
+  data: {
+    jobId: string;
+    status: string;
+    profileStrength: string;
+    hiredJobsCount: number;
+  };
+}
+
+export interface LikeJobResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface JobListingItem {
+    _id: string;
+    companyId: string;
+    rawDescription: string;
+    status: string;
+    likeCount: number;
+    companyName: string;
+    savedCount: number;
+    impressionCount: number;
+}
+
+// Job Listings Response structure
+export interface JobListingsResponseType {
+    success: boolean;
+    data: JobListingItem[];
+}
+
+export interface JobPostPayload {
+    description: string;
+}
+
+
+export interface JobPostResponseData {
+    message: string;
+    success?: boolean;
+    error?: boolean;
+    statusCode?: number;
+}
+
+export interface JobPostResponseType {
+    success: boolean;
+    message: string;
+    error: boolean;
+    statusCode: number;
+    data?: JobPostResponseData;
+}
+
+export interface JobPost{
+    description:string;
+}
+
+
+
+

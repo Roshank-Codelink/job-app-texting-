@@ -91,7 +91,7 @@ export default function CompanyProfileHeader({ employerInfo }: { employerInfo: E
       <div className="flex flex-col items-center gap-2 shrink-0">
         <label
           htmlFor="profileUpload"
-          className="w-[88px] h-[88px] sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] rounded-full relative cursor-pointer flex items-center justify-center overflow-hidden bg-(--profile-header-bg-color) group  hover:bg-(--profile-image-border-color) transition-all"
+          className="w-[88px] h-[88px] sm:w-[100px] sm:h-[100px] md:w-[90px] md:h-[90px] rounded-full relative cursor-pointer flex items-center justify-center overflow-hidden bg-(--profile-header-bg-color) group  hover:bg-(--profile-image-border-color) transition-all"
         >
           <input
             ref={fileInputRef}
