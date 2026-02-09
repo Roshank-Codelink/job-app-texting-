@@ -121,6 +121,7 @@ const config: NextAuthConfig = {
 
 
         async session({ session, token }: any) {
+            console.log("🚀 ~ token - auth-config.ts:", token)
             if (token.user) {
                 session.user = {
                     ...session.user,
