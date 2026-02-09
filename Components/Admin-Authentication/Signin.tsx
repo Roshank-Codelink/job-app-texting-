@@ -41,7 +41,7 @@ export default function AdminSignin() {
 
       console.log("Admin Login Result:", result)
 
-      if (result?.error) {
+      if ((result as any)?.error) {
         toast.error("Invalid email or password")
         return
       }

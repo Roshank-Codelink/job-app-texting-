@@ -30,7 +30,7 @@ export default function Otp({ email, onEdit }: OtpProps) {
                 // redirect: false,
             });
             console.log("Result:", result);
-            if (result?.error) {
+            if ((result as any)?.error) {
                 toast.error("Invalid OTP");
                 return;
             }
