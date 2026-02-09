@@ -36,9 +36,7 @@ export async function middleware(request: NextRequest) {
 
     // Logged in ADMIN → dashboard
     if (role === "ADMIN") {
-      return NextResponse.redirect(
-        new URL("/admin/dashboard", request.url)
-      );
+      return NextResponse.redirect(new URL("/admin/dashboard", request.url));
     }
 
     // Logged in but not admin → block
@@ -51,9 +49,7 @@ export async function middleware(request: NextRequest) {
   if (isAdminRoute) {
     // Not logged in → admin-login
     if (!token) {
-      return NextResponse.redirect(
-        new URL("/admin-login", request.url)
-      );
+      return NextResponse.redirect(new URL("/admin-login", request.url));
     }
 
     // Logged in but NOT admin
@@ -67,9 +63,7 @@ export async function middleware(request: NextRequest) {
      ================================================== */
   if (isEmployerAuthPage) {
     if (token && role === "EMPLOYER") {
-      return NextResponse.redirect(
-        new URL("/employer/dashboard", request.url)
-      );
+      return NextResponse.redirect(new URL("/employer/dashboard", request.url));
     }
     return NextResponse.next();
   }
@@ -85,7 +79,7 @@ export async function middleware(request: NextRequest) {
     if (role === "EMPLOYEE") {
       if (!onboarding) {
         return NextResponse.redirect(
-          new URL("/candidate-onboarding", request.url)
+          new URL("/candidate-onboarding", request.url),
         );
       }
 
@@ -105,9 +99,7 @@ export async function middleware(request: NextRequest) {
      ================================================== */
   if (pathname.startsWith("/employer")) {
     if (!token || role !== "EMPLOYER") {
-      return NextResponse.redirect(
-        new URL("/employer-signin", request.url)
-      );
+      return NextResponse.redirect(new URL("/employer-signin", request.url));
     }
   }
 
@@ -116,15 +108,13 @@ export async function middleware(request: NextRequest) {
      ================================================== */
   if (pathname.startsWith("/candidate")) {
     if (!token || role !== "EMPLOYEE") {
-      return NextResponse.redirect(
-        new URL("/candidate-signin", request.url)
-      );
+      return NextResponse.redirect(new URL("/candidate-signin", request.url));
     }
 
     // onboarding NOT completed → only onboarding allowed
     if (!onboarding && pathname !== "/candidate-onboarding") {
       return NextResponse.redirect(
-        new URL("/candidate-onboarding", request.url)
+        new URL("/candidate-onboarding", request.url),
       );
     }
 
