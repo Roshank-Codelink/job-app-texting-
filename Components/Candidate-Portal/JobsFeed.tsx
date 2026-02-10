@@ -125,9 +125,9 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                 if (newJobs.length < limit) setHasMore(false);
 
 
-                const newUrl = new URL(window.location.href);
-                newUrl.searchParams.set('page', nextPage.toString());
-                window.history.replaceState({}, '', newUrl.toString());
+                // const newUrl = new URL(window.location.href);
+                // newUrl.searchParams.set('page', nextPage.toString());
+                // window.history.replaceState({}, '', newUrl.toString());
             }
         } catch (error) {
             console.error("Fetch Error:", error);

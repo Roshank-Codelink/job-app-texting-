@@ -156,7 +156,7 @@ export default function JobApplicationsTable({
   ];
 
   return (
-    <div className="w-full p-4 sm:p-6 md:p-8 lg:p-8 bg-(--sidebar-bg-color) border-(--profile-border-color) rounded-lg space-y-4">
+    <div className="w-full p-4 sm:p-6 md:p-8 lg:p-8  border-(--profile-border-color) rounded-lg space-y-4">
       <div className="flex flex-col gap-2">
         <h1 className="text-xl md:text-2xl font-semibold text-(--profile-text-color)">
           Job applications
