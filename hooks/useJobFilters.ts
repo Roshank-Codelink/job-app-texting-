@@ -1,5 +1,3 @@
-"use client"
-
 import { useSearchParams, useRouter } from "next/navigation"
 import { useCallback } from "react"
 
@@ -77,7 +75,21 @@ export function useJobFilters() {
   }
 
   const clearAllFilters = () => {
-    router.replace("/candidate/jobs", { scroll: false })
+    // Keep search and location, only remove filters
+    const params = new URLSearchParams(searchParams.toString())
+    
+    // Explicitly remove filter keys
+    params.delete("date")
+    params.delete("mode")
+    params.delete("type")
+    params.delete("department")
+    params.delete("page") // Reset page too
+
+    // Use push instead of replace to fix mobile navigation stack
+    router.push(
+      params.toString() ? `/candidate/jobs?${params.toString()}` : "/candidate/jobs",
+      { scroll: false }
+    )
   }
 
   return {
