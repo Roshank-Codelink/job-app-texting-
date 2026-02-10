@@ -1,3 +1,5 @@
+"use client"
+
 import { Filter, X, Check, Calendar, Home, Briefcase, Building2 } from "lucide-react"
 import {
   Sheet,

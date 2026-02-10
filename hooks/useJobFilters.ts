@@ -1,3 +1,5 @@
+"use client"
+
 import { useSearchParams, useRouter } from "next/navigation"
 import { useCallback } from "react"
 
@@ -48,7 +50,7 @@ export function useJobFilters() {
       else params.delete("department")
     }
 
-    router.replace(
+    router.push(
       params.toString() ? `/candidate/jobs?${params.toString()}` : "/candidate/jobs",
       { scroll: false }
     )
