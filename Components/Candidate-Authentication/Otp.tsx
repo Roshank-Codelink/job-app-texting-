@@ -38,21 +38,19 @@ export default function Otp({ email, onEdit }: OtpProps) {
                 return;
             }
 
-            // Add a small delay to ensure session is properly established
+            // Add a small delay to ensure session cookie is set
             await new Promise(resolve => setTimeout(resolve, 500));
 
             const updatedSession = await getSession();
-            console.log("Updated session:", updatedSession);
-
             const jobTitle = updatedSession?.user?.jobTitle ?? "";
+
+            // Critical for production (Vercel): refresh so middleware sees the new session cookie
+            router.refresh();
+
             if ((updatedSession?.user as any)?.isOnboardingCompleted) {
-                console.log("updatedSession?.user:", updatedSession?.user);
-                console.log("Onboarding completed");
-                // Middleware will handle the redirect, just navigate to trigger it
                 router.push(`/candidate/jobs?text=${encodeURIComponent(jobTitle)}`);
-            }else{
-                console.log("Onboarding not completed");
-                router.push('/candidate-onboarding')
+            } else {
+                router.push("/candidate-onboarding");
             }
         } catch (error) {
             console.error("OTP Error:", error);

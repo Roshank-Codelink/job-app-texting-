@@ -35,11 +35,12 @@ export default function Otp({ email, onEdit }: OtpProps) {
                 return;
             }
 
-            // Add a small delay to ensure session is properly established
+            // Add a small delay to ensure session cookie is set
             await new Promise(resolve => setTimeout(resolve, 500));
 
             toast.success("Login successful!");
-            // Middleware will handle the redirect based on role and session
+            // Critical for production (Vercel): refresh so middleware sees the new session cookie
+            router.refresh();
             router.push("/employer/dashboard");
 
         } catch (error) {
