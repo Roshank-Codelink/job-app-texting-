@@ -27,17 +27,17 @@ export default function Otp({ email, onEdit }: OtpProps) {
             const result = await signIn("credentials", {
                 email,
                 otp: values.otp,
-                // redirect: false,
+                redirect: false,
             });
-            console.log("Result:", result);
-            if ((result as any)?.error) {
+            console.log("Resultxxsxsx:", result);
+            if (result?.error) {
                 toast.error("Invalid OTP");
                 return;
             }
 
 
             toast.success("Login successful!");
-            // router.push("https://a5e73cf7b1f8.ngrok-free.app/employer/dashboard");
+            // router.push("https://aead-122-179-139-247.ngrok-free.app/employer/dashboard");
             router.push("/employer/dashboard");
 
         } catch (error) {

@@ -178,7 +178,7 @@ export function DataTable<TData, TValue>({
 
             {/* Pagination Section */}
             {pagination && totalPages > 0 && (
-                <div className="flex items-center justify-between border-t bg-white px-4 py-3">
+                <div className="flex items-center justify-between border-t  px-4 py-3">
                     {/* Left Side - Rows per page */}
                     <div className="flex items-center gap-2">
                         <span className="text-sm text-gray-700">Rows per page</span>
@@ -230,7 +230,7 @@ export function DataTable<TData, TValue>({
                                         key={pageNum}
                                         variant={isActive ? "default" : "outline"}
                                         size="icon"
-                                        className={`h-8 w-8 ${isActive ? "bg-blue-600 text-white hover:bg-blue-700" : ""}`}
+                                        className={`h-8 w-8 ${isActive ? "bg-blue-600 text-gray-500 bg-[white] border-[1px] border-gray-200 hover:bg-[white]" : ""}`}
                                         onClick={() => handlePageChange(pageNum)}
                                     >
                                         {pageNum}

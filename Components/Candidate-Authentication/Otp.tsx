@@ -30,10 +30,10 @@ export default function Otp({ email, onEdit }: OtpProps) {
             const result = await signIn("credentials", {
                 email,
                 otp: values.otp,
-                // redirect: false,
+                redirect: false,
             });
             console.log(result)
-            if ((result as any)?.error) {
+            if (result?.error) {
                 toast.error("Invalid OTP");
                 return;
             }
@@ -45,8 +45,10 @@ export default function Otp({ email, onEdit }: OtpProps) {
             if ((updatedSession?.user as any)?.isOnboardingCompleted) {
                 console.log("updatedSession?.user:", updatedSession?.user);
                 console.log("Onboarding completed");
+                toast.success("Login successful!");
                 router.push(`/candidate/jobs?text=${encodeURIComponent(jobTitle)}`);
             }else{
+                toast.success("Login successful!");
                 console.log("Onboarding not completed");
                 router.push('/candidate-onboarding')
             }
