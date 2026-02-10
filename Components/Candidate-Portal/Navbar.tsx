@@ -233,34 +233,34 @@ export default function CandidateNavbar() {
                     </Link>
 
                     {/* Pricing Link */}
-                    <Link
+                    {/* <Link
                       href="/candidate/pricing"
                       onClick={() => setIsSidebarOpen(false)}
                       className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-(--filter-header-text-color) rounded-md hover:bg-gray-100 transition-colors"
                     >
                       <DollarSign className="h-4 w-4 text-gray-600" />
                       <span>Pricing</span>
-                    </Link>
+                    </Link> */}
 
                     {/* About Link */}
-                    <Link
+                    {/* <Link
                       href="/candidate/about"
                       onClick={() => setIsSidebarOpen(false)}
                       className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-(--filter-header-text-color) rounded-md hover:bg-gray-100 transition-colors"
                     >
                       <Info className="h-4 w-4 text-gray-600" />
                       <span>About</span>
-                    </Link>
+                    </Link> */}
 
                     {/* Contact Link */}
-                    <Link
+                    {/* <Link
                       href="/candidate/contact"
                       onClick={() => setIsSidebarOpen(false)}
                       className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-(--filter-header-text-color) rounded-md hover:bg-gray-100 transition-colors"
                     >
                       <Phone className="h-4 w-4 text-gray-600" />
                       <span>Contact</span>
-                    </Link>
+                    </Link> */}
                   </nav>
 
                   {/* Bottom Section - Separator */}
@@ -268,23 +268,23 @@ export default function CandidateNavbar() {
 
                   {/* Bottom Menu Items */}
                   <nav className="flex flex-col gap-1">
-                    <Link
+                    {/* <Link
                       href="/candidate/contact"
                       onClick={() => setIsSidebarOpen(false)}
                       className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-(--filter-header-text-color) rounded-md hover:bg-gray-100 transition-colors"
                     >
                       <Phone className="h-4 w-4 text-gray-600" />
                       <span>Contact us</span>
-                    </Link>
+                    </Link> */}
 
-                    <Link
+                    {/* <Link
                       href="/candidate/download-app"
                       onClick={() => setIsSidebarOpen(false)}
                       className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-(--filter-header-text-color) rounded-md hover:bg-gray-100 transition-colors"
                     >
                       <Download className="h-4 w-4 text-gray-600" />
                       <span>Download Apna app</span>
-                    </Link>
+                    </Link> */}
 
                     <button
                       onClick={handleLogout}
