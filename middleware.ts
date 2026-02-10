@@ -1,44 +1,50 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { auth } from "./lib/auth-config"; 
+import { getToken } from "next-auth/jwt";
 
 export async function middleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
 
-  const session = await auth();
-  const user = session?.user;
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
 
-  const role = (user?.role || "").toUpperCase();
-  const onboarding = Boolean(user?.isOnboardingCompleted);
+  const role = (
+    (token as any)?.role ||
+    (token as any)?.user?.role ||
+    ""
+  ).toUpperCase();
 
-  /* ================= ADMIN LOGIN ================= */
+  const onboarding = Boolean(
+    (token as any)?.user?.isOnboardingCompleted
+  );
+
+  /* ================= ADMIN ================= */
   if (pathname === "/admin-login") {
-    if (!session) return NextResponse.next();
-
+    if (!token) return NextResponse.next();
     if (role === "ADMIN") {
       return NextResponse.redirect(
         new URL("/admin/dashboard", request.url)
       );
     }
-
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  /* ================= ADMIN ROUTES ================= */
   if (pathname.startsWith("/admin/dashboard")) {
-    if (!session || role !== "ADMIN") {
+    if (!token || role !== "ADMIN") {
       return NextResponse.redirect(
         new URL("/admin-login", request.url)
       );
     }
   }
 
-  /* ================= EMPLOYER AUTH PAGES ================= */
+  /* ================= EMPLOYER AUTH ================= */
   if (
     pathname === "/employer-signin" ||
     pathname === "/employer-signup"
   ) {
-    if (session && role === "EMPLOYER") {
+    if (token && role === "EMPLOYER") {
       return NextResponse.redirect(
         new URL("/employer/dashboard", request.url)
       );
@@ -48,7 +54,7 @@ export async function middleware(request: NextRequest) {
 
   /* ================= EMPLOYER DASHBOARD ================= */
   if (pathname.startsWith("/employer/dashboard")) {
-    if (!session || role !== "EMPLOYER") {
+    if (!token || role !== "EMPLOYER") {
       return NextResponse.redirect(
         new URL("/employer-signin", request.url)
       );
@@ -57,7 +63,7 @@ export async function middleware(request: NextRequest) {
 
   /* ================= CANDIDATE AUTH ================= */
   if (pathname === "/candidate-signin") {
-    if (!session) return NextResponse.next();
+    if (!token) return NextResponse.next();
 
     if (role === "EMPLOYEE") {
       if (!onboarding) {
@@ -66,7 +72,7 @@ export async function middleware(request: NextRequest) {
         );
       }
 
-      const jobTitle = user?.jobTitle ?? "";
+      const jobTitle = (token as any)?.user?.jobTitle ?? "";
       const url = new URL("/candidate/jobs", request.url);
       if (jobTitle) url.searchParams.set("text", jobTitle);
       return NextResponse.redirect(url);
@@ -77,7 +83,7 @@ export async function middleware(request: NextRequest) {
 
   /* ================= CANDIDATE ROUTES ================= */
   if (pathname.startsWith("/candidate")) {
-    if (!session || role !== "EMPLOYEE") {
+    if (!token || role !== "EMPLOYEE") {
       return NextResponse.redirect(
         new URL("/candidate-signin", request.url)
       );
@@ -90,7 +96,7 @@ export async function middleware(request: NextRequest) {
     }
 
     if (onboarding && pathname === "/candidate-onboarding") {
-      const jobTitle = user?.jobTitle ?? "";
+      const jobTitle = (token as any)?.user?.jobTitle ?? "";
       const url = new URL("/candidate/jobs", request.url);
       if (jobTitle) url.searchParams.set("text", jobTitle);
       return NextResponse.redirect(url);
@@ -98,7 +104,7 @@ export async function middleware(request: NextRequest) {
 
     if (pathname === "/candidate/jobs") {
       const currentText = searchParams.get("text");
-      const jobTitle = user?.jobTitle ?? "";
+      const jobTitle = (token as any)?.user?.jobTitle ?? "";
 
       if (!currentText && jobTitle) {
         const url = new URL(request.url);
@@ -114,8 +120,8 @@ export async function middleware(request: NextRequest) {
 /* ================= MATCHER ================= */
 export const config = {
   matcher: [
-    "/admin/:path*",
     "/admin-login",
+    "/admin/dashboard/:path*",
     "/employer/dashboard/:path*",
     "/employer-signin",
     "/employer-signup",
