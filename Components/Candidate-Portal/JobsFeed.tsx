@@ -55,20 +55,9 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     }, [flushImpressions])
 
     useEffect(() => {
-        // Reset state when URL changes (Sync UI with URL)
         setSearchQuery(decodeURIComponent(searchParams.get('text') || ''))
         setLocationQuery(decodeURIComponent(searchParams.get('location') || ''))
-        
-        // Reset pagination when filters change (important!)
-        setPage(1)
-        pageRef.current = 1
-        setHasMore(true)
-        setIsLoading(false)
-        isLoadingRef.current = false
-        
-        // Update jobs from props
-        setAllJobs(jobs?.data || [])
-    }, [searchParams, jobs])
+    }, [searchParams])
 
     const handleSearch = useCallback(() => {
         const value = searchQuery.trim()

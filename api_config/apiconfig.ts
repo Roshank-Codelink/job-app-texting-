@@ -34,18 +34,9 @@ export const customFetch = async <TResponse>({
 
 
     // Build axios config
-    const cleanBaseUrl = API_BASE_URL?.replace(/\/+$/, '') || '';
-    const cleanUrl = url.startsWith('/') ? url : `/${url}`;
-    const finalUrl = `${cleanBaseUrl}${cleanUrl}`;
-
-    // Debug log to verify URL in production logs
-    if (process.env.NODE_ENV === 'production') {
-        console.log(`[API Request] ${method} ${finalUrl}`);
-    }
-    
     const axiosConfig: AxiosRequestConfig = {
       method,
-      url: finalUrl,
+      url: `${API_BASE_URL}${url}`,
       headers: defaultHeaders,
       data: body,
       params: params,

@@ -7,12 +7,9 @@ export const CandidategetDepartment = async () => {
       url: "/get-departments",
       method: "GET",
     });
-    if (response.error) {
-        console.error("Error fetching departments:", response.data);
-    }
     return response.data;
   } catch (error) {
-    console.error("Error calling get-departments:", error);
-    return null;
+    console.log("Error marking job as hired:", error);
+    throw error;
   }
 };
