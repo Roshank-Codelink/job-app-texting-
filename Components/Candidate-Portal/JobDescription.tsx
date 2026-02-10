@@ -38,6 +38,7 @@ export default function JobDescription({ isOpen, onClose, companyName, companyLo
     const handleApply = async () => {
         const response = await ApplyJob(jobId);
         if (response?.data?.success) {
+            console.log(response?.data?.message);
             toast.success(response?.data?.message);
         }
     }
