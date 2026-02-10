@@ -48,8 +48,11 @@ export function useJobFilters() {
       else params.delete("department")
     }
 
+    // Force %20 instead of +
+    const queryString = params.toString().replace(/\+/g, "%20")
+
     router.push(
-      params.toString() ? `/candidate/jobs?${params.toString()}` : "/candidate/jobs",
+      queryString ? `/candidate/jobs?${queryString}` : "/candidate/jobs",
       { scroll: false }
     )
   }, [searchParams, router])
@@ -85,9 +88,12 @@ export function useJobFilters() {
     params.delete("department")
     params.delete("page") // Reset page too
 
+    // Force %20 instead of +
+    const queryString = params.toString().replace(/\+/g, "%20")
+
     // Use push instead of replace to fix mobile navigation stack
     router.push(
-      params.toString() ? `/candidate/jobs?${params.toString()}` : "/candidate/jobs",
+      queryString ? `/candidate/jobs?${queryString}` : "/candidate/jobs",
       { scroll: false }
     )
   }

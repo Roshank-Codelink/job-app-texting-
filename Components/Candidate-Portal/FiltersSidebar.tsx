@@ -52,7 +52,7 @@ export default function FiltersSidebar({ departmentres }: { departmentres: depar
     { label: "Part time", value: "part_time" },
     { label: "Contract", value: "contract" },
   ]
-
+  // console.log("workType", departmentres)
   const DEPARTMENT_OPTIONS =
     departmentres?.data?.map(dep => ({
       label: dep.department,
@@ -60,6 +60,8 @@ export default function FiltersSidebar({ departmentres }: { departmentres: depar
     })) || []
 
 
+
+    // console.log("department", department)
       
 
 

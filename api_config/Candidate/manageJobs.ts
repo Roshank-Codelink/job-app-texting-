@@ -25,8 +25,12 @@ export const CandidategetJobs = async ({ searchParams }: JobsPageProps) => {
     params.append("page", resolvedSearchParams.page.toString());
   if (resolvedSearchParams?.limit)
     params.append("limit", resolvedSearchParams.limit.toString());
+    
+  // Ensure we send %20 instead of + for spaces in the backend API call
+  const queryString = params.toString().replace(/\+/g, "%20");
+  
   const response = await customFetch({
-    url: `/jobs?${params.toString()}`,
+    url: `/jobs?${queryString}`,
     method: "GET",
   });
   return response.data;

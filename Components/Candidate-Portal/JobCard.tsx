@@ -32,7 +32,7 @@ export default function JobCard({ jobId, rawDescription, companyLogo, companyNam
   const [isSavedState, setIsSavedState] = useState(isSaved || false)
 
   const logoUrl = companyLogo ? `${process.env.NEXT_PUBLIC_SERVER_LOGOS_ENDPOINT}/${companyLogo}` : companyIcon.src
-     console.log("LOGO",logoUrl)
+   
   const handleLike = async () => {
     try {
       const action = isLikedState ? "unlike" : "like"
@@ -63,7 +63,7 @@ export default function JobCard({ jobId, rawDescription, companyLogo, companyNam
 
     }
   }
-  console.log("logo,", logoUrl)
+
 
   return (
     <div className="bg-white rounded-[10px] border border-gray-200 shadow-sm overflow-hidden">

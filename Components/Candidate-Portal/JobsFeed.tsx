@@ -17,8 +17,8 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     // console.log("jobs", jobs)
     const { data: session } = useSession()
     const searchParams = useSearchParams()
-    const urlSearchValue = decodeURIComponent(searchParams.get('text') || '')
-    const urlLocationValue = decodeURIComponent(searchParams.get('location') || '')
+    const urlSearchValue = searchParams.get('text') || ''
+    const urlLocationValue = searchParams.get('location') || ''
     const [searchQuery, setSearchQuery] = useState(urlSearchValue)
     const [locationQuery, setLocationQuery] = useState(urlLocationValue)
     const router = useRouter()
@@ -55,8 +55,8 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     }, [flushImpressions])
 
     useEffect(() => {
-        setSearchQuery(decodeURIComponent(searchParams.get('text') || ''))
-        setLocationQuery(decodeURIComponent(searchParams.get('location') || ''))
+        setSearchQuery(searchParams.get('text') || '')
+        setLocationQuery(searchParams.get('location') || '')
     }, [searchParams])
 
     const handleSearch = useCallback(() => {
@@ -69,7 +69,11 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
         if (locationValue) params.set('location', locationValue)
         else params.delete('location')
         params.delete('page')
-        router.push(`/candidate/jobs?${params.toString()}`)
+
+        // Force %20 instead of +
+        const queryString = params.toString().replace(/\+/g, "%20")
+        
+        router.push(`/candidate/jobs?${queryString}`)
     }, [searchQuery, locationQuery, searchParams, router])
 
 
