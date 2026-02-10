@@ -190,7 +190,7 @@ export default function ProfileOnboarding({ skillsData }: { skillsData: Candidat
         </div>
         {/* Image - Bottom */}
         <div className="relative z-10 ml-4 lg:ml-[3rem] xl:ml-[4rem] mt-4 lg:mt-[1.5rem] xl:mt-[2rem] mb-4 lg:mb-6 xl:mb-8">
-          <img src="/candidateLogin.png" alt="Candidate working" className="w-full max-w-xs lg:max-w-sm xl:max-w-md" />
+          <img src="/CandidateLogin.png" alt="Candidate working" className="w-full max-w-xs lg:max-w-sm xl:max-w-md" />
         </div>
       </div>
       <div className="w-full lg:w-[55%] bg-transparent lg:bg-white relative ml-0 lg:-ml-[6rem] rounded-none lg:rounded-l-[2.75rem] flex items-center justify-center py-4 lg:py-0">

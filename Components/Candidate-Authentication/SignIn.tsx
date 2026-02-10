@@ -70,7 +70,7 @@ export default function SignIn() {
 
                 {/* Image - Bottom */}
                 <div className="relative z-10 ml-4 lg:ml-[3rem] xl:ml-[4rem] mt-4 lg:mt-[1.5rem] xl:mt-[2rem] mb-4 lg:mb-6 xl:mb-8">
-                    <img src="/candidateLogin.png" alt="Candidate working" className="w-full max-w-xs lg:max-w-sm xl:max-w-md" />
+                    <img src="/CandidateLogin.png" alt="Candidate working" className="w-full max-w-xs lg:max-w-sm xl:max-w-md" />
                 </div>
 
             </div>

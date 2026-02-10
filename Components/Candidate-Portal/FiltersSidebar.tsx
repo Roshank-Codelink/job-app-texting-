@@ -60,6 +60,8 @@ export default function FiltersSidebar({ departmentres }: { departmentres: depar
     })) || []
 
 
+      
+
 
   return (
     <div className="w-full md:w-72 lg:w-80 bg-white rounded-lg border border-(--profile-image-border-color) p-4 md:p-6 h-fit">
