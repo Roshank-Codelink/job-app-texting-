@@ -143,7 +143,7 @@ export default function CompanyProfileHeader({ employerInfo }: { employerInfo: E
           </h1>
           <div className="flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-2 py-0.5 shrink-0 -ml-2 sm:-ml-1.5">
             <Image
-              src="/verify.svg"
+              src="/Verify.svg"
               alt="Verified"
               width={16}
               height={16}

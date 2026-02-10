@@ -129,7 +129,7 @@ export default function JobDescription({ isOpen, onClose, companyName, companyLo
                                                 {companyName || "Company Name"}
                                             </h4>
                                             <Image
-                                                src="/verify.svg"
+                                                src="/Verify.svg"
                                                 alt="Verified"
                                                 width={16}
                                                 height={16}

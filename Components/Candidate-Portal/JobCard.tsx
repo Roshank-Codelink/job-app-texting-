@@ -135,7 +135,7 @@ export default function JobCard({ jobId, rawDescription, companyLogo, companyNam
             <div className="flex items-center gap-1 mt-0.5">
               <p className="text-xs text-(--profile-title-color) truncate">{companyName}</p>
               <Image
-                src="/verify.svg"
+                src="/Verify.svg"
                 alt="Verified"
                 width={14}
                 height={14}

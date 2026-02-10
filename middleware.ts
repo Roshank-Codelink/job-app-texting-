@@ -12,7 +12,6 @@ export async function middleware(request: NextRequest) {
   });
 
 
-  console.log("secret key ",process.env.NEXTAUTH_SECRET)
 
   const role = (
     (token as any)?.role ||
