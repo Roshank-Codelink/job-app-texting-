@@ -132,7 +132,7 @@ const config: NextAuthConfig = {
         },
 
     },
-    secret: process.env.NEXTAUTH_SECRET || 'your-secret-key-here',
+    secret: process.env.NEXTAUTH_SECRET,
     session: {
         strategy: 'jwt',
     },
