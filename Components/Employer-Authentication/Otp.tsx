@@ -27,7 +27,7 @@ export default function Otp({ email, onEdit }: OtpProps) {
             const result = await signIn("credentials", {
                 email,
                 otp: values.otp,
-                // redirect: false,
+                redirect: false,
             });
             console.log("Result:", result);
             if ((result as any)?.error) {
@@ -35,9 +35,11 @@ export default function Otp({ email, onEdit }: OtpProps) {
                 return;
             }
 
+            // Add a small delay to ensure session is properly established
+            await new Promise(resolve => setTimeout(resolve, 500));
 
             toast.success("Login successful!");
-            // router.push("https://a5e73cf7b1f8.ngrok-free.app/employer/dashboard");
+            // Middleware will handle the redirect based on role and session
             router.push("/employer/dashboard");
 
         } catch (error) {

@@ -36,7 +36,7 @@ export default function AdminSignin() {
       const result = await signIn("admin-credentials", {
         email: values.email,
         password: values.password,
-        // redirect: false,
+        redirect: false,
       })
 
       console.log("Admin Login Result:", result)
@@ -46,7 +46,11 @@ export default function AdminSignin() {
         return
       }
 
+      // Add a small delay to ensure session is properly established
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       toast.success("Login successful!")
+      // Middleware will handle the redirect based on role and session
       router.push("/admin/dashboard")
     } catch (error) {
       console.error("Admin Login Error:", error)

@@ -30,13 +30,16 @@ export default function Otp({ email, onEdit }: OtpProps) {
             const result = await signIn("credentials", {
                 email,
                 otp: values.otp,
-                // redirect: false,
+                redirect: false,
             });
             console.log(result)
             if ((result as any)?.error) {
                 toast.error("Invalid OTP");
                 return;
             }
+
+            // Add a small delay to ensure session is properly established
+            await new Promise(resolve => setTimeout(resolve, 500));
 
             const updatedSession = await getSession();
             console.log("Updated session:", updatedSession);
@@ -45,6 +48,7 @@ export default function Otp({ email, onEdit }: OtpProps) {
             if ((updatedSession?.user as any)?.isOnboardingCompleted) {
                 console.log("updatedSession?.user:", updatedSession?.user);
                 console.log("Onboarding completed");
+                // Middleware will handle the redirect, just navigate to trigger it
                 router.push(`/candidate/jobs?text=${encodeURIComponent(jobTitle)}`);
             }else{
                 console.log("Onboarding not completed");
