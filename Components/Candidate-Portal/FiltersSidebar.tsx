@@ -1,3 +1,5 @@
+"use client"
+
 import { Search, Filter, X } from "lucide-react"
 import {
   Accordion,
