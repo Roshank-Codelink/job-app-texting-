@@ -42,7 +42,7 @@ export default function JobDescription({ isOpen, onClose, companyName, companyLo
             toast.success(response?.data?.message);
         }
     }
-    console.log(companyLogo)
+
 
     return (
         <Sheet open={isOpen} onOpenChange={onClose}>
