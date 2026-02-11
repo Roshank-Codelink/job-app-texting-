@@ -28,23 +28,28 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     const [isSearchPending, startSearchTransition] = useTransition()
     const [isDataLoading, setIsDataLoading] = useState(false)
     const prevSearchParams = useRef(searchParams.toString())
+    const lastJobsRef = useRef(jobs)
 
-    // 1. Sync state and STOP loading when jobs prop changes (from server)
-    useEffect(() => {
-        setAllJobs(jobs?.data || [])
-        setPage(1)
-        setHasMore((jobs?.data?.length || 0) >= limit)
-        setIsDataLoading(false) // Always stop loading when we get new data
-    }, [jobs])
-
-    // 2. Detect URL changes to START loading state
+    // Combined effect to handle loading state deterministically
     useEffect(() => {
         const currentParams = searchParams.toString()
+        
+        // If jobs prop changed, it means the server has returned new data
+        if (jobs !== lastJobsRef.current) {
+            setAllJobs(jobs?.data || [])
+            setPage(1)
+            setHasMore((jobs?.data?.length || 0) >= limit)
+            setIsDataLoading(false)
+            lastJobsRef.current = jobs
+            prevSearchParams.current = currentParams // Mark these params as processed
+            return
+        }
+
+        // If URL params changed but jobs haven't updated yet, we are loading
         if (currentParams !== prevSearchParams.current) {
             setIsDataLoading(true)
-            prevSearchParams.current = currentParams
         }
-    }, [searchParams])
+    }, [jobs, searchParams])
 
     // Combined pending state
     const isAnyPending = isSearchPending || isDataLoading
