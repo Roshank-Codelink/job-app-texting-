@@ -24,6 +24,7 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     const [locationQuery, setLocationQuery] = useState(urlLocationValue)
     const router = useRouter()
     const pathname = usePathname()
+    const [isDataLoading, setIsDataLoading] = useState(false)
     const prevSearchParams = useRef(searchParams.toString())
 
     // 1. Sync data when jobs prop changes
@@ -31,10 +32,20 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
         setAllJobs(jobs?.data || [])
         setPage(1)
         setHasMore((jobs?.data?.length || 0) >= limit)
+        setIsDataLoading(false) // Data aa gaya, loading band
         
         // Sync ref to current params
         prevSearchParams.current = searchParams.toString()
     }, [jobs, searchParams])
+
+    // 2. Trigger loading when URL changes
+    useEffect(() => {
+        const currentParams = searchParams.toString()
+        if (currentParams !== prevSearchParams.current) {
+            setIsDataLoading(true) // URL badla, loading shuru
+            prevSearchParams.current = currentParams
+        }
+    }, [searchParams])
 
     // Impression tracking: only when authenticated
     const feedContainerRef = useRef<HTMLDivElement | null>(null)
@@ -363,7 +374,37 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                             <div className="hidden md:block">
                                 {SearchBar}
                             </div>
-                            {allJobs.length === 0 && !isLoading ? (
+                            {isDataLoading ? (
+                                 <div className="space-y-4">
+                                     {[...Array(3)].map((_, i) => (
+                                         <div key={i} className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-4">
+                                             <div className="flex items-start justify-between">
+                                                 <div className="flex gap-4">
+                                                     <div className="h-12 w-12 rounded-lg bg-gray-100 animate-pulse" />
+                                                     <div className="space-y-2">
+                                                         <div className="h-6 w-48 bg-gray-100 animate-pulse rounded" />
+                                                         <div className="h-4 w-32 bg-gray-100 animate-pulse rounded" />
+                                                     </div>
+                                                 </div>
+                                                 <div className="h-8 w-8 rounded-full bg-gray-100 animate-pulse" />
+                                             </div>
+                                             <div className="flex gap-2">
+                                                 <div className="h-6 w-20 rounded-full bg-gray-100 animate-pulse" />
+                                                 <div className="h-6 w-20 rounded-full bg-gray-100 animate-pulse" />
+                                                 <div className="h-6 w-20 rounded-full bg-gray-100 animate-pulse" />
+                                             </div>
+                                             <div className="space-y-2">
+                                                 <div className="h-4 w-full bg-gray-100 animate-pulse rounded" />
+                                                 <div className="h-4 w-[90%] bg-gray-100 animate-pulse rounded" />
+                                             </div>
+                                             <div className="flex justify-between items-center pt-2">
+                                                 <div className="h-4 w-24 bg-gray-100 animate-pulse rounded" />
+                                                 <div className="h-10 w-28 rounded-lg bg-gray-100 animate-pulse" />
+                                             </div>
+                                         </div>
+                                     ))}
+                                 </div>
+                             ) : allJobs.length === 0 && !isLoading ? (
                                  <div className="w-[90%] mx-auto mt-12 bg-white rounded-xl shadow-sm border border-gray-100 px-6 py-14 text-center">
                                     {/* Icon */}
                                     <div className="flex justify-center mb-5">
