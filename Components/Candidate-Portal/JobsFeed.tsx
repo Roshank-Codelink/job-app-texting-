@@ -9,6 +9,7 @@ import { CandidategetJobs } from "@/api_config/Candidate/manageJobs"
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react"
 import { useSession } from "next-auth/react"
 import { recordJobImpressionsApi } from "@/api_config/Candidate/manageJobs"
+import { useJobFilters } from "@/hooks/useJobFilters"
 
 
 const IMPRESSION_DEBOUNCE_MS = 150
@@ -20,21 +21,56 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     const searchParams = useSearchParams()
     const urlSearchValue = searchParams.get('text') || ''
     const urlLocationValue = searchParams.get('location') || ''
+    
+    // 1. Hook for filters
+    const { 
+        setDate, setWorkMode, toggleWorkType, toggleDepartment, 
+        clearAllFilters, date, workMode, workType, department,
+        isPending: isFilterPending, hasFilters, activeFiltersCount
+    } = useJobFilters()
+
+    // 2. Local state for search
     const [searchQuery, setSearchQuery] = useState(urlSearchValue)
     const [locationQuery, setLocationQuery] = useState(urlLocationValue)
+    const [isDataLoading, setIsDataLoading] = useState(false)
+    const [isSearchPending, startTransition] = useTransition()
+    const [isInputInvalid, setIsInputInvalid] = useState(false)
+    const hasClearedManually = useRef(false)
+    
     const router = useRouter()
     const pathname = usePathname()
     const prevSearchParams = useRef(searchParams.toString())
 
-    // 1. Sync data when jobs prop changes
+    // Unified loading state
+    const isAnyPending = isFilterPending || isSearchPending || isDataLoading
+
+    // 3. Sync data when jobs prop changes (from server)
     useEffect(() => {
         setAllJobs(jobs?.data || [])
         setPage(1)
         setHasMore((jobs?.data?.length || 0) >= limit)
+        setIsDataLoading(false) // Data is here, stop loading
         
         // Sync ref to current params
         prevSearchParams.current = searchParams.toString()
     }, [jobs, searchParams])
+
+    // Detect URL changes and show skeleton immediately
+    useEffect(() => {
+        const currentParams = searchParams.toString()
+        if (currentParams !== prevSearchParams.current) {
+            const params = new URLSearchParams(currentParams)
+            const prevParams = new URLSearchParams(prevSearchParams.current)
+            
+            // Ignore page changes for full skeleton (infinite scroll has its own loader)
+            params.delete('page')
+            prevParams.delete('page')
+            
+            if (params.toString() !== prevParams.toString()) {
+                setIsDataLoading(true)
+            }
+        }
+    }, [searchParams])
 
     // Impression tracking: only when authenticated
     const feedContainerRef = useRef<HTMLDivElement | null>(null)
@@ -73,7 +109,8 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
         const defaultTitle = (session?.user as any)?.jobTitle
 
         // If 'text' is missing and we have a default title, apply it instantly to URL
-        if (!urlText && defaultTitle) {
+        // ONLY if the user hasn't manually cleared it
+        if (!urlText && defaultTitle && !hasClearedManually.current) {
             const params = new URLSearchParams(window.location.search)
             params.set('text', defaultTitle)
             const queryString = params.toString().replace(/\+/g, "%20")
@@ -96,7 +133,13 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
         const value = searchQuery.trim()
         const locationValue = locationQuery.trim()
         
-        // Always allow clearing search even if value is empty
+        if (!value) {
+            setIsInputInvalid(true)
+            setTimeout(() => setIsInputInvalid(false), 2000)
+            return
+        }
+
+        setIsInputInvalid(false)
         const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "")
         
         if (value) params.set('text', value)
@@ -111,7 +154,9 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
         const queryString = params.toString().replace(/\+/g, "%20")
         const url = queryString ? `${pathname}?${queryString}` : pathname
 
-        router.push(url, { scroll: false })
+        startTransition(() => {
+            router.push(url, { scroll: false })
+        })
     }, [searchQuery, locationQuery, router, pathname])
 
 
@@ -239,18 +284,30 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                             type="text"
                             placeholder="Job title or section"
                             value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onChange={(e) => {
+                                setSearchQuery(e.target.value)
+                                if (isInputInvalid) setIsInputInvalid(false)
+                            }}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
                                     handleSearch()
                                 }
                             }}
-                            className="w-full pl-9 md:pl-10 pr-3 md:pr-4 h-10 md:h-12 bg-white border border-(--profile-image-border-color) rounded-lg
+                            className={`w-full pl-9 md:pl-10 pr-3 md:pr-4 h-10 md:h-12 bg-white border rounded-lg
                                    text-sm text-gray-600 placeholder:(--job-post-bg-color)
                                    focus:outline-none focus:ring-2 focus:ring-(--navbar-text-color)
-                                   focus:border-transparent shadow-sm md:shadow-none"
+                                   focus:border-transparent shadow-sm md:shadow-none transition-colors
+                                   ${isInputInvalid ? "border-red-500 ring-1 ring-red-500" : "border-(--profile-image-border-color)"}`}
                         />
-                        {searchQuery && <X className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-(--job-post-bg-color) cursor-pointer" onClick={() => setSearchQuery("")} />}
+                        {searchQuery && (
+                            <X 
+                                className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-(--job-post-bg-color) cursor-pointer" 
+                                onClick={() => {
+                                    setSearchQuery("")
+                                    hasClearedManually.current = true
+                                }} 
+                            />
+                        )}
                     </div>
                     {/* Location Input and Button - Same row on mobile */}
                     <div className="flex gap-2 md:hidden">
@@ -330,7 +387,19 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                     </div>
                     {/* Header Section */}
                     <div className="mb-2 md:mb-4">
-                        <JobFilters departmentres={departments} />
+                        <JobFilters 
+                            departmentres={departments} 
+                            date={date}
+                            setDate={setDate}
+                            workMode={workMode}
+                            setWorkMode={setWorkMode}
+                            workType={workType}
+                            toggleWorkType={toggleWorkType}
+                            department={department}
+                            toggleDepartment={toggleDepartment}
+                            clearAllFilters={clearAllFilters}
+                            activeFiltersCount={activeFiltersCount}
+                        />
                     </div>
                     <div className="mb-6">
                         <h1 className="text-xl md:text-2xl lg:text-2xl font-bold text-(--filter-header-text-color) mb-2">
@@ -344,7 +413,19 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                     <div className="flex flex-col lg:flex-row gap-4 md:gap-6 md:flex-row">
                         {/* Left Sidebar - Filters (iPad and Desktop only, not mobile) */}
                         <div className="hidden md:block shrink-0">
-                            <FiltersSidebar departmentres={departments} />
+                            <FiltersSidebar 
+                                departmentres={departments} 
+                                date={date}
+                                setDate={setDate}
+                                workMode={workMode}
+                                setWorkMode={setWorkMode}
+                                workType={workType}
+                                toggleWorkType={toggleWorkType}
+                                department={department}
+                                toggleDepartment={toggleDepartment}
+                                clearAllFilters={clearAllFilters}
+                                hasFilters={hasFilters}
+                            />
                         </div>
                         {/* Right Side - Job Listings */}
                         <div className="flex-1 min-w-0">

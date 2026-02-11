@@ -6,19 +6,28 @@ import {
   AccordionTrigger,
 } from "@/Components/ui/accordion"
 import { departmentApiResponse } from "@/types/types"
-import { useJobFilters } from "@/hooks/useJobFilters"
 
-export default function FiltersSidebar({ departmentres }: { departmentres: departmentApiResponse }) {
-  const {
-    date, setDate,
-    workMode, setWorkMode,
-    workType, toggleWorkType,
-    department, toggleDepartment,
-    clearAllFilters,
-    hasFilters
-  } = useJobFilters()
-
-
+export default function FiltersSidebar({ 
+  departmentres,
+  date, setDate,
+  workMode, setWorkMode,
+  workType, toggleWorkType,
+  department, toggleDepartment,
+  clearAllFilters,
+  hasFilters
+}: { 
+  departmentres: departmentApiResponse,
+  date: string | null,
+  setDate: (v: string | null) => void,
+  workMode: string | null,
+  setWorkMode: (v: string | null) => void,
+  workType: string[],
+  toggleWorkType: (v: string) => void,
+  department: string[],
+  toggleDepartment: (v: string) => void,
+  clearAllFilters: () => void,
+  hasFilters: boolean
+}) {
   const SelectedChip = ({
     label,
     onRemove,
