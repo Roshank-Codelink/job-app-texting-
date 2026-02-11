@@ -70,19 +70,25 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     useEffect(() => {
         const urlText = searchParams.get('text')
         const urlLocation = searchParams.get('location')
-        setSearchQuery(urlText || '')
-        setLocationQuery(urlLocation || '')
-
-        // Only enforce default jobTitle if NO searchParams exist at all
-        const hasAnyParams = Array.from(searchParams.keys()).length > 0
         const defaultTitle = (session?.user as any)?.jobTitle
 
-        if (!hasAnyParams && defaultTitle) {
-            setSearchQuery(defaultTitle)
-            const params = new URLSearchParams()
+        // If 'text' is missing and we have a default title, apply it instantly to URL
+        if (!urlText && defaultTitle) {
+            const params = new URLSearchParams(window.location.search)
             params.set('text', defaultTitle)
             const queryString = params.toString().replace(/\+/g, "%20")
-            router.replace(`${pathname}?${queryString}`)
+            const newUrl = `${pathname}?${queryString}`
+            
+            // Update URL instantly
+            window.history.replaceState(null, '', newUrl)
+            router.replace(newUrl, { scroll: false })
+            
+            // Also sync local state
+            setSearchQuery(defaultTitle)
+            setLocationQuery(urlLocation || '')
+        } else {
+            setSearchQuery(urlText || '')
+            setLocationQuery(urlLocation || '')
         }
     }, [searchParams, session, pathname, router])
 
@@ -244,15 +250,7 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                                    focus:outline-none focus:ring-2 focus:ring-(--navbar-text-color)
                                    focus:border-transparent shadow-sm md:shadow-none"
                         />
-                        {searchQuery && <X className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-(--job-post-bg-color) cursor-pointer" onClick={() => {
-                            setSearchQuery("")
-                            const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "")
-                            params.delete('text')
-                            params.delete('page')
-                            const queryString = params.toString().replace(/\+/g, "%20")
-                            const url = queryString ? `${pathname}?${queryString}` : pathname
-                            router.push(url, { scroll: false })
-                        }} />}
+                        {searchQuery && <X className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-(--job-post-bg-color) cursor-pointer" onClick={() => setSearchQuery("")} />}
                     </div>
                     {/* Location Input and Button - Same row on mobile */}
                     <div className="flex gap-2 md:hidden">
