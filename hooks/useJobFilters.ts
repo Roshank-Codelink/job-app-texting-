@@ -106,5 +106,11 @@ export function useJobFilters() {
     clearAllFilters,
     hasFilters:
       !!(date || workMode || workType.length || department.length),
+      
+  activeFiltersCount:
+    (date ? 1 : 0) +
+    (workMode ? 1 : 0) +
+    workType.length +
+    department.length,
   }
 }

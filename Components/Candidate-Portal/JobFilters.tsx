@@ -46,8 +46,8 @@ export default function JobFilters({ departmentres }: { departmentres: departmen
     workType, toggleWorkType,
     department, toggleDepartment,
     clearAllFilters,
-    activeFiltersCount
-  } = useJobFilters()
+    activeFiltersCount,
+  } = useJobFilters() 
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 30)
