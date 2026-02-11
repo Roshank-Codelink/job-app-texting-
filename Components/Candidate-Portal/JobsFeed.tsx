@@ -4,7 +4,6 @@ import { Briefcase, MapPin, X } from "lucide-react"
 import JobFilters from "./JobFilters"
 import FiltersSidebar from "./FiltersSidebar"
 import JobCard from "./JobCard"
-import { Skeleton } from "@/Components/ui/skeleton"
 import { departmentApiResponse } from "@/types/types"
 import { CandidategetJobs } from "@/api_config/Candidate/manageJobs"
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react"
@@ -23,10 +22,6 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     const urlLocationValue = searchParams.get('location') || ''
     const [searchQuery, setSearchQuery] = useState(urlSearchValue)
     const [locationQuery, setLocationQuery] = useState(urlLocationValue)
-    const [isDataLoading, setIsDataLoading] = useState(false)
-    const [isPending, startTransition] = useTransition()
-    const [isInputInvalid, setIsInputInvalid] = useState(false)
-    const hasClearedManually = useRef(false)
     const router = useRouter()
     const pathname = usePathname()
     const prevSearchParams = useRef(searchParams.toString())
@@ -36,27 +31,10 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
         setAllJobs(jobs?.data || [])
         setPage(1)
         setHasMore((jobs?.data?.length || 0) >= limit)
-        setIsDataLoading(false)
         
         // Sync ref to current params
         prevSearchParams.current = searchParams.toString()
     }, [jobs, searchParams])
-
-    // Detect URL changes and show skeleton
-    useEffect(() => {
-        const currentParams = searchParams.toString()
-        if (currentParams !== prevSearchParams.current) {
-            // Check if it's a page change (infinite scroll doesn't need full skeleton)
-            const params = new URLSearchParams(currentParams)
-            const prevParams = new URLSearchParams(prevSearchParams.current)
-            params.delete('page')
-            prevParams.delete('page')
-            
-            if (params.toString() !== prevParams.toString()) {
-                setIsDataLoading(true)
-            }
-        }
-    }, [searchParams])
 
     // Impression tracking: only when authenticated
     const feedContainerRef = useRef<HTMLDivElement | null>(null)
@@ -95,8 +73,7 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
         const defaultTitle = (session?.user as any)?.jobTitle
 
         // If 'text' is missing and we have a default title, apply it instantly to URL
-        // BUT ONLY if the user hasn't manually cleared it in this session
-        if (!urlText && defaultTitle && !hasClearedManually.current) {
+        if (!urlText && defaultTitle) {
             const params = new URLSearchParams(window.location.search)
             params.set('text', defaultTitle)
             const queryString = params.toString().replace(/\+/g, "%20")
@@ -119,14 +96,6 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
         const value = searchQuery.trim()
         const locationValue = locationQuery.trim()
         
-        if (!value) {
-            setIsInputInvalid(true)
-            // Shake effect or simple validation highlight
-            setTimeout(() => setIsInputInvalid(false), 2000)
-            return
-        }
-        
-        setIsInputInvalid(false)
         // Always allow clearing search even if value is empty
         const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "")
         
@@ -142,9 +111,7 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
         const queryString = params.toString().replace(/\+/g, "%20")
         const url = queryString ? `${pathname}?${queryString}` : pathname
 
-        startTransition(() => {
-            router.push(url, { scroll: false })
-        })
+        router.push(url, { scroll: false })
     }, [searchQuery, locationQuery, router, pathname])
 
 
@@ -272,25 +239,18 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                             type="text"
                             placeholder="Job title or section"
                             value={searchQuery}
-                            onChange={(e) => {
-                                setSearchQuery(e.target.value)
-                                if (e.target.value.trim()) setIsInputInvalid(false)
-                            }}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
                                     handleSearch()
                                 }
                             }}
-                            className={`w-full pl-9 md:pl-10 pr-3 md:pr-4 h-10 md:h-12 bg-white border rounded-lg
+                            className="w-full pl-9 md:pl-10 pr-3 md:pr-4 h-10 md:h-12 bg-white border border-(--profile-image-border-color) rounded-lg
                                    text-sm text-gray-600 placeholder:(--job-post-bg-color)
                                    focus:outline-none focus:ring-2 focus:ring-(--navbar-text-color)
-                                   focus:border-transparent shadow-sm md:shadow-none transition-all
-                                   ${isInputInvalid ? 'border-red-500 ring-2 ring-red-200' : 'border-(--profile-image-border-color)'}`}
+                                   focus:border-transparent shadow-sm md:shadow-none"
                         />
-                        {searchQuery && <X className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-(--job-post-bg-color) cursor-pointer" onClick={() => {
-                            setSearchQuery("")
-                            hasClearedManually.current = true
-                        }} />}
+                        {searchQuery && <X className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-(--job-post-bg-color) cursor-pointer" onClick={() => setSearchQuery("")} />}
                     </div>
                     {/* Location Input and Button - Same row on mobile */}
                     <div className="flex gap-2 md:hidden">
@@ -374,11 +334,7 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                     </div>
                     <div className="mb-6">
                         <h1 className="text-xl md:text-2xl lg:text-2xl font-bold text-(--filter-header-text-color) mb-2">
-                            {(isDataLoading || isPending) ? (
-                                <Skeleton className="h-8 w-64" />
-                            ) : (
-                                `Showing ${jobs?.total || allJobs.length} jobs based on your filter`
-                            )}
+                            Showing {jobs?.total || allJobs.length} jobs based on your filter
                         </h1>
                         <p className="text-xs md:text-sm text-gray-600">
                             Discover your next opportunity
@@ -396,31 +352,7 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                             <div className="hidden md:block">
                                 {SearchBar}
                             </div>
-                            
-                            {(isDataLoading || isPending) ? (
-                                <div className="space-y-4">
-                                    {[...Array(3)].map((_, i) => (
-                                        <div key={i} className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                                            <div className="flex gap-4">
-                                                <Skeleton className="h-12 w-12 rounded-lg" />
-                                                <div className="flex-1 space-y-2">
-                                                    <Skeleton className="h-5 w-1/3" />
-                                                    <Skeleton className="h-4 w-1/4" />
-                                                </div>
-                                            </div>
-                                            <div className="mt-6 space-y-2">
-                                                <Skeleton className="h-4 w-full" />
-                                                <Skeleton className="h-4 w-5/6" />
-                                            </div>
-                                            <div className="mt-6 flex gap-2">
-                                                <Skeleton className="h-8 w-20 rounded-full" />
-                                                <Skeleton className="h-8 w-20 rounded-full" />
-                                                <Skeleton className="h-8 w-20 rounded-full ml-auto" />
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : allJobs.length === 0 ? (
+                            {allJobs.length === 0 ? (
                                 <div className="w-[90%] mx-auto mt-12 bg-white rounded-xl shadow-sm border border-gray-100 px-6 py-14 text-center">
                                     {/* Icon */}
                                     <div className="flex justify-center mb-5">

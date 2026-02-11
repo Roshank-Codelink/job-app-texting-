@@ -12,6 +12,7 @@ export function useJobFilters() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const pathname = usePathname()
+  const [isPending, startTransition] = useTransition()
 
   const [localFilters, setLocalFilters] = useState<Filters>({ 
     date: searchParams.get("date"),
@@ -62,7 +63,9 @@ export function useJobFilters() {
     const url = queryString ? `${pathname}?${queryString}` : pathname
 
     // Urgent navigation for instant URL update
-    router.push(url, { scroll: false })
+    startTransition(() => {
+      router.push(url, { scroll: false })
+    })
   }, [pathname, router])
 
   // setters
@@ -131,6 +134,7 @@ export function useJobFilters() {
     toggleWorkType,
     toggleDepartment,
     clearAllFilters,
+    isPending,
 
     hasFilters: !!(localFilters.date || localFilters.mode || localFilters.type.length || localFilters.department.length),
     activeFiltersCount: (localFilters.date || localFilters.mode || localFilters.type.length || localFilters.department.length) as number,
