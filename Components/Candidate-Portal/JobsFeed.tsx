@@ -23,6 +23,25 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     const [locationQuery, setLocationQuery] = useState(urlLocationValue)
     const router = useRouter()
 
+    // ✅ Apply default jobTitle ONLY on first load
+const defaultAppliedRef = useRef(false)
+
+useEffect(() => {
+  if (defaultAppliedRef.current) return
+
+  const text = searchParams.get("text")
+  const jobTitle = session?.user?.jobTitle
+
+  if (!text && jobTitle) {
+    defaultAppliedRef.current = true
+
+    const params = new URLSearchParams(searchParams.toString())
+    params.set("text", jobTitle)
+
+    router.replace(`/candidate/jobs?${params.toString()}`)
+  }
+}, [searchParams, session, router])
+
     // Impression tracking: only when authenticated
     const feedContainerRef = useRef<HTMLDivElement | null>(null)
     const sentIdsRef = useRef<Set<string>>(new Set())

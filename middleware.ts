@@ -11,8 +11,6 @@ export async function middleware(request: NextRequest) {
     secureCookie: process.env.NODE_ENV === "production",
   });
 
-
-
   const role = (
     (token as any)?.role ||
     (token as any)?.user?.role ||
@@ -24,13 +22,16 @@ export async function middleware(request: NextRequest) {
   );
 
   /* ================= ADMIN ================= */
+
   if (pathname === "/admin-login") {
     if (!token) return NextResponse.next();
+
     if (role === "ADMIN") {
       return NextResponse.redirect(
         new URL("/admin/dashboard", request.url)
       );
     }
+
     return NextResponse.redirect(new URL("/", request.url));
   }
 
@@ -42,7 +43,8 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  /* ================= EMPLOYER AUTH ================= */
+  /* ================= EMPLOYER ================= */
+
   if (
     pathname === "/employer-signin" ||
     pathname === "/employer-signup"
@@ -55,7 +57,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  /* ================= EMPLOYER DASHBOARD ================= */
   if (pathname.startsWith("/employer/dashboard")) {
     if (!token || role !== "EMPLOYER") {
       return NextResponse.redirect(
@@ -64,7 +65,8 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  /* ================= CANDIDATE AUTH ================= */
+  /* ================= CANDIDATE SIGNIN ================= */
+
   if (pathname === "/candidate-signin") {
     if (!token) return NextResponse.next();
 
@@ -75,9 +77,11 @@ export async function middleware(request: NextRequest) {
         );
       }
 
+      // ✅ First time default text
       const jobTitle = (token as any)?.user?.jobTitle ?? "";
       const url = new URL("/candidate/jobs", request.url);
       if (jobTitle) url.searchParams.set("text", jobTitle);
+
       return NextResponse.redirect(url);
     }
 
@@ -85,6 +89,7 @@ export async function middleware(request: NextRequest) {
   }
 
   /* ================= CANDIDATE ROUTES ================= */
+
   if (pathname.startsWith("/candidate")) {
     if (!token || role !== "EMPLOYEE") {
       return NextResponse.redirect(
@@ -99,21 +104,32 @@ export async function middleware(request: NextRequest) {
     }
 
     if (onboarding && pathname === "/candidate-onboarding") {
-      const jobTitle = (token as any)?.user?.jobTitle ?? "";
-      const url = new URL("/candidate/jobs", request.url);
-      if (jobTitle) url.searchParams.set("text", jobTitle);
-      return NextResponse.redirect(url);
+      return NextResponse.redirect(
+        new URL("/candidate/jobs", request.url)
+      );
     }
+  }
 
-    if (pathname === "/candidate/jobs") {
-      const currentText = searchParams.get("text");
-      const jobTitle = (token as any)?.user?.jobTitle ?? "";
+  /* ================= FORCE text ON JOBS PAGE ================= */
 
-      if (!currentText && jobTitle) {
-        const url = new URL(request.url);
-        url.searchParams.set("text", jobTitle);
-        return NextResponse.redirect(url);
-      }
+  if (pathname === "/candidate/jobs") {
+    const jobTitle = (token as any)?.user?.jobTitle ?? "";
+    const currentText = searchParams.get("text");
+
+    // 🔑 check if other filters are present
+    const hasOtherFilters =
+      searchParams.has("location") ||
+      searchParams.has("department") ||
+      searchParams.has("type") ||
+      searchParams.has("mode") ||
+      searchParams.has("date") ||
+      searchParams.has("page");
+
+    // ✅ Force text ONLY when user removes it
+    if (!currentText && jobTitle && !hasOtherFilters) {
+      const url = new URL(request.url);
+      url.searchParams.set("text", jobTitle);
+      return NextResponse.redirect(url);
     }
   }
 
@@ -121,6 +137,7 @@ export async function middleware(request: NextRequest) {
 }
 
 /* ================= MATCHER ================= */
+
 export const config = {
   matcher: [
     "/admin-login",
