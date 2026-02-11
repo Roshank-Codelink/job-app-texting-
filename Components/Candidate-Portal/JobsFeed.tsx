@@ -26,23 +26,18 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     const router = useRouter()
     const pathname = usePathname()
     const [isSearchPending, startSearchTransition] = useTransition()
-    const { isPending: isFilterPending } = useJobFilters()
     const [isDataLoading, setIsDataLoading] = useState(false)
     const prevSearchParams = useRef(searchParams.toString())
-    const prevJobs = useRef(jobs)
 
-    // Sync state when jobs prop changes (Server side re-render)
+    // 1. Sync state and STOP loading when jobs prop changes (from server)
     useEffect(() => {
-        if (jobs !== prevJobs.current) {
-            setAllJobs(jobs?.data || [])
-            setPage(1)
-            setHasMore((jobs?.data?.length || 0) >= limit)
-            setIsDataLoading(false)
-            prevJobs.current = jobs
-        }
+        setAllJobs(jobs?.data || [])
+        setPage(1)
+        setHasMore((jobs?.data?.length || 0) >= limit)
+        setIsDataLoading(false) // Always stop loading when we get new data
     }, [jobs])
 
-    // Detect URL changes to trigger loading state
+    // 2. Detect URL changes to START loading state
     useEffect(() => {
         const currentParams = searchParams.toString()
         if (currentParams !== prevSearchParams.current) {
@@ -52,7 +47,7 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     }, [searchParams])
 
     // Combined pending state
-    const isAnyPending = isSearchPending || isFilterPending || isDataLoading
+    const isAnyPending = isSearchPending || isDataLoading
 
     // Impression tracking: only when authenticated
     const feedContainerRef = useRef<HTMLDivElement | null>(null)
