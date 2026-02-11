@@ -9,8 +9,7 @@ import { CandidategetJobs } from "@/api_config/Candidate/manageJobs"
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react"
 import { useSession } from "next-auth/react"
 import { recordJobImpressionsApi } from "@/api_config/Candidate/manageJobs"
-import { useJobFilters } from "@/hooks/useJobFilters"
-import { Skeleton } from "@/Components/ui/skeleton"
+
 
 const IMPRESSION_DEBOUNCE_MS = 150
 const IMPRESSION_THRESHOLD = 0.5
@@ -25,31 +24,17 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     const [locationQuery, setLocationQuery] = useState(urlLocationValue)
     const router = useRouter()
     const pathname = usePathname()
-    const [isDataLoading, setIsDataLoading] = useState(false)
     const prevSearchParams = useRef(searchParams.toString())
 
-    // 1. Sync data when jobs prop changes and STOP skeleton
+    // 1. Sync data when jobs prop changes
     useEffect(() => {
         setAllJobs(jobs?.data || [])
         setPage(1)
         setHasMore((jobs?.data?.length || 0) >= limit)
-        setIsDataLoading(false) // Data aa gaya, skeleton band
         
-        // Sync ref to current params so we don't trigger loading again immediately
+        // Sync ref to current params
         prevSearchParams.current = searchParams.toString()
     }, [jobs, searchParams])
-
-    // 2. Start skeleton when URL changes
-    useEffect(() => {
-        const currentParams = searchParams.toString()
-        if (currentParams !== prevSearchParams.current) {
-            setIsDataLoading(true) // URL badla, skeleton shuru
-            prevSearchParams.current = currentParams
-        }
-    }, [searchParams])
-
-    // Combined pending state
-    const isAnyPending = isDataLoading
 
     // Impression tracking: only when authenticated
     const feedContainerRef = useRef<HTMLDivElement | null>(null)
@@ -93,6 +78,7 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
         const defaultTitle = (session?.user as any)?.jobTitle
 
         if (!hasAnyParams && defaultTitle) {
+            setSearchQuery(defaultTitle)
             const params = new URLSearchParams()
             params.set('text', defaultTitle)
             const queryString = params.toString().replace(/\+/g, "%20")
@@ -258,7 +244,15 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                                    focus:outline-none focus:ring-2 focus:ring-(--navbar-text-color)
                                    focus:border-transparent shadow-sm md:shadow-none"
                         />
-                        {searchQuery && <X className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-(--job-post-bg-color) cursor-pointer" onClick={() => setSearchQuery("")} />}
+                        {searchQuery && <X className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-(--job-post-bg-color) cursor-pointer" onClick={() => {
+                            setSearchQuery("")
+                            const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "")
+                            params.delete('text')
+                            params.delete('page')
+                            const queryString = params.toString().replace(/\+/g, "%20")
+                            const url = queryString ? `${pathname}?${queryString}` : pathname
+                            router.push(url, { scroll: false })
+                        }} />}
                     </div>
                     {/* Location Input and Button - Same row on mobile */}
                     <div className="flex gap-2 md:hidden">
@@ -360,37 +354,7 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                             <div className="hidden md:block">
                                 {SearchBar}
                             </div>
-                            {isAnyPending ? (
-                                <div className="space-y-4">
-                                    {[...Array(3)].map((_, i) => (
-                                        <div key={i} className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-4">
-                                            <div className="flex items-start justify-between">
-                                                <div className="flex gap-4">
-                                                    <Skeleton className="h-12 w-12 rounded-lg" />
-                                                    <div className="space-y-2">
-                                                        <Skeleton className="h-6 w-48" />
-                                                        <Skeleton className="h-4 w-32" />
-                                                    </div>
-                                                </div>
-                                                <Skeleton className="h-8 w-8 rounded-full" />
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <Skeleton className="h-6 w-20 rounded-full" />
-                                                <Skeleton className="h-6 w-20 rounded-full" />
-                                                <Skeleton className="h-6 w-20 rounded-full" />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Skeleton className="h-4 w-full" />
-                                                <Skeleton className="h-4 w-[90%]" />
-                                            </div>
-                                            <div className="flex justify-between items-center pt-2">
-                                                <Skeleton className="h-4 w-24" />
-                                                <Skeleton className="h-10 w-28 rounded-lg" />
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : allJobs.length === 0 ? (
+                            {allJobs.length === 0 ? (
                                 <div className="w-[90%] mx-auto mt-12 bg-white rounded-xl shadow-sm border border-gray-100 px-6 py-14 text-center">
                                     {/* Icon */}
                                     <div className="flex justify-center mb-5">
