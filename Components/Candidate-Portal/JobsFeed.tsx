@@ -29,20 +29,23 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
 
     // 1. Sync data when jobs prop changes
     useEffect(() => {
+        // Data has arrived, so stop loading
         setAllJobs(jobs?.data || [])
         setPage(1)
         setHasMore((jobs?.data?.length || 0) >= limit)
-        setIsDataLoading(false) // Data aa gaya, loading band
+        setIsDataLoading(false)
         
-        // Sync ref to current params
+        // Update ref to current state so we can detect future changes
         prevSearchParams.current = searchParams.toString()
     }, [jobs, searchParams])
 
-    // 2. Trigger loading when URL changes
+    // 2. DETECT URL CHANGE IMMEDIATELY (For ALL filters)
     useEffect(() => {
         const currentParams = searchParams.toString()
         if (currentParams !== prevSearchParams.current) {
-            setIsDataLoading(true) // URL badla, loading shuru
+            // URL changed (filter applied, search done, or URL cleared)
+            // Trigger skeleton instantly
+            setIsDataLoading(true)
             prevSearchParams.current = currentParams
         }
     }, [searchParams])
@@ -89,15 +92,15 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
         if (!urlText && defaultTitle) {
             setSearchQuery(defaultTitle)
             setLocationQuery(urlLocation || '')
-            
+
             const params = new URLSearchParams(window.location.search)
             params.set('text', defaultTitle)
             const queryString = params.toString().replace(/\+/g, "%20")
             const newUrl = `${pathname}?${queryString}`
-            
+
             // 1. Instant URL update in browser bar
             window.history.replaceState(null, '', newUrl)
-            
+
             // 2. Trigger Next.js navigation to fetch data
             router.replace(newUrl, { scroll: false })
         } else {
@@ -109,16 +112,16 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     const handleSearch = useCallback(() => {
         const value = searchQuery.trim()
         const locationValue = locationQuery.trim()
-        
+
         // Always allow clearing search even if value is empty
         const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "")
-        
+
         if (value) params.set('text', value)
         else params.delete('text')
-        
+
         if (locationValue) params.set('location', locationValue)
         else params.delete('location')
-        
+
         params.delete('page')
 
         // Force %20 instead of +
@@ -374,38 +377,8 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                             <div className="hidden md:block">
                                 {SearchBar}
                             </div>
-                            {isDataLoading ? (
-                                 <div className="space-y-4">
-                                     {[...Array(3)].map((_, i) => (
-                                         <div key={i} className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-4">
-                                             <div className="flex items-start justify-between">
-                                                 <div className="flex gap-4">
-                                                     <div className="h-12 w-12 rounded-lg bg-gray-100 animate-pulse" />
-                                                     <div className="space-y-2">
-                                                         <div className="h-6 w-48 bg-gray-100 animate-pulse rounded" />
-                                                         <div className="h-4 w-32 bg-gray-100 animate-pulse rounded" />
-                                                     </div>
-                                                 </div>
-                                                 <div className="h-8 w-8 rounded-full bg-gray-100 animate-pulse" />
-                                             </div>
-                                             <div className="flex gap-2">
-                                                 <div className="h-6 w-20 rounded-full bg-gray-100 animate-pulse" />
-                                                 <div className="h-6 w-20 rounded-full bg-gray-100 animate-pulse" />
-                                                 <div className="h-6 w-20 rounded-full bg-gray-100 animate-pulse" />
-                                             </div>
-                                             <div className="space-y-2">
-                                                 <div className="h-4 w-full bg-gray-100 animate-pulse rounded" />
-                                                 <div className="h-4 w-[90%] bg-gray-100 animate-pulse rounded" />
-                                             </div>
-                                             <div className="flex justify-between items-center pt-2">
-                                                 <div className="h-4 w-24 bg-gray-100 animate-pulse rounded" />
-                                                 <div className="h-10 w-28 rounded-lg bg-gray-100 animate-pulse" />
-                                             </div>
-                                         </div>
-                                     ))}
-                                 </div>
-                             ) : allJobs.length === 0 && !isLoading ? (
-                                 <div className="w-[90%] mx-auto mt-12 bg-white rounded-xl shadow-sm border border-gray-100 px-6 py-14 text-center">
+                            {allJobs.length === 0 && !isLoading ? (
+                                <div className="w-[90%] mx-auto mt-12 bg-white rounded-xl shadow-sm border border-gray-100 px-6 py-14 text-center">
                                     {/* Icon */}
                                     <div className="flex justify-center mb-5">
                                         <div className="h-14 w-14 rounded-full bg-gray-100 flex items-center justify-center">
