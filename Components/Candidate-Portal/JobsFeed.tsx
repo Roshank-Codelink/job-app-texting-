@@ -16,7 +16,7 @@ const IMPRESSION_THRESHOLD = 0.5
 
 export default function JobsFeed({ jobs, departments }: { jobs: any, departments: departmentApiResponse }) {
     // console.log("jobs", jobs)
-    const { data: session, status } = useSession()
+    const { data: session } = useSession()
     const searchParams = useSearchParams()
     const urlSearchValue = searchParams.get('text') || ''
     const urlLocationValue = searchParams.get('location') || ''
@@ -24,31 +24,17 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     const [locationQuery, setLocationQuery] = useState(urlLocationValue)
     const router = useRouter()
     const pathname = usePathname()
-    const [isDataLoading, setIsDataLoading] = useState(false)
     const prevSearchParams = useRef(searchParams.toString())
 
     // 1. Sync data when jobs prop changes
     useEffect(() => {
-        // Data has arrived, so stop loading
         setAllJobs(jobs?.data || [])
         setPage(1)
         setHasMore((jobs?.data?.length || 0) >= limit)
-        setIsDataLoading(false)
         
-        // Update ref to current state so we can detect future changes
+        // Sync ref to current params
         prevSearchParams.current = searchParams.toString()
     }, [jobs, searchParams])
-
-    // 2. DETECT URL CHANGE IMMEDIATELY (For ALL filters)
-    useEffect(() => {
-        const currentParams = searchParams.toString()
-        if (currentParams !== prevSearchParams.current) {
-            // URL changed (filter applied, search done, or URL cleared)
-            // Trigger skeleton instantly
-            setIsDataLoading(true)
-            prevSearchParams.current = currentParams
-        }
-    }, [searchParams])
 
     // Impression tracking: only when authenticated
     const feedContainerRef = useRef<HTMLDivElement | null>(null)
@@ -82,46 +68,37 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     }, [flushImpressions])
 
     useEffect(() => {
-        if (status === "loading") return
-
         const urlText = searchParams.get('text')
         const urlLocation = searchParams.get('location')
+        setSearchQuery(urlText || '')
+        setLocationQuery(urlLocation || '')
+
+        // Only enforce default jobTitle if NO searchParams exist at all
+        const hasAnyParams = Array.from(searchParams.keys()).length > 0
         const defaultTitle = (session?.user as any)?.jobTitle
 
-        // If 'text' is missing and we have a default title, apply it instantly
-        if (!urlText && defaultTitle) {
+        if (!hasAnyParams && defaultTitle) {
             setSearchQuery(defaultTitle)
-            setLocationQuery(urlLocation || '')
-
-            const params = new URLSearchParams(window.location.search)
+            const params = new URLSearchParams()
             params.set('text', defaultTitle)
             const queryString = params.toString().replace(/\+/g, "%20")
-            const newUrl = `${pathname}?${queryString}`
-
-            // 1. Instant URL update in browser bar
-            window.history.replaceState(null, '', newUrl)
-
-            // 2. Trigger Next.js navigation to fetch data
-            router.replace(newUrl, { scroll: false })
-        } else {
-            setSearchQuery(urlText || '')
-            setLocationQuery(urlLocation || '')
+            router.replace(`${pathname}?${queryString}`)
         }
-    }, [searchParams, session, status, pathname, router])
+    }, [searchParams, session, pathname, router])
 
     const handleSearch = useCallback(() => {
         const value = searchQuery.trim()
         const locationValue = locationQuery.trim()
-
+        
         // Always allow clearing search even if value is empty
         const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "")
-
+        
         if (value) params.set('text', value)
         else params.delete('text')
-
+        
         if (locationValue) params.set('location', locationValue)
         else params.delete('location')
-
+        
         params.delete('page')
 
         // Force %20 instead of +
@@ -377,11 +354,11 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                             <div className="hidden md:block">
                                 {SearchBar}
                             </div>
-                            {allJobs.length === 0 && !isLoading ? (
+                            {allJobs.length === 0 ? (
                                 <div className="w-[90%] mx-auto mt-12 bg-white rounded-xl shadow-sm border border-gray-100 px-6 py-14 text-center">
                                     {/* Icon */}
                                     <div className="flex justify-center mb-5">
-                                        <div className="h-14 w-14 rounded-full bg-gray-100 flex items-center justify-center">
+                                        <div className="h-14 w-14 rogray-00 flex items-center justify-center">
                                             <svg className="h-7 w-7 text-gray-400" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z" />
                                             </svg>
