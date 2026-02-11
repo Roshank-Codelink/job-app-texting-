@@ -16,7 +16,7 @@ const IMPRESSION_THRESHOLD = 0.5
 
 export default function JobsFeed({ jobs, departments }: { jobs: any, departments: departmentApiResponse }) {
     // console.log("jobs", jobs)
-    const { data: session } = useSession()
+    const { data: session, status } = useSession()
     const searchParams = useSearchParams()
     const urlSearchValue = searchParams.get('text') || ''
     const urlLocationValue = searchParams.get('location') || ''
@@ -68,23 +68,32 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     }, [flushImpressions])
 
     useEffect(() => {
+        if (status === "loading") return
+
         const urlText = searchParams.get('text')
         const urlLocation = searchParams.get('location')
-        setSearchQuery(urlText || '')
-        setLocationQuery(urlLocation || '')
-
-        // Only enforce default jobTitle if NO searchParams exist at all
-        const hasAnyParams = Array.from(searchParams.keys()).length > 0
         const defaultTitle = (session?.user as any)?.jobTitle
 
-        if (!hasAnyParams && defaultTitle) {
+        // If 'text' is missing and we have a default title, apply it instantly
+        if (!urlText && defaultTitle) {
             setSearchQuery(defaultTitle)
-            const params = new URLSearchParams()
+            setLocationQuery(urlLocation || '')
+            
+            const params = new URLSearchParams(window.location.search)
             params.set('text', defaultTitle)
             const queryString = params.toString().replace(/\+/g, "%20")
-            router.replace(`${pathname}?${queryString}`)
+            const newUrl = `${pathname}?${queryString}`
+            
+            // 1. Instant URL update in browser bar
+            window.history.replaceState(null, '', newUrl)
+            
+            // 2. Trigger Next.js navigation to fetch data
+            router.replace(newUrl, { scroll: false })
+        } else {
+            setSearchQuery(urlText || '')
+            setLocationQuery(urlLocation || '')
         }
-    }, [searchParams, session, pathname, router])
+    }, [searchParams, session, status, pathname, router])
 
     const handleSearch = useCallback(() => {
         const value = searchQuery.trim()
@@ -354,8 +363,8 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                             <div className="hidden md:block">
                                 {SearchBar}
                             </div>
-                            {allJobs.length === 0 ? (
-                                <div className="w-[90%] mx-auto mt-12 bg-white rounded-xl shadow-sm border border-gray-100 px-6 py-14 text-center">
+                            {allJobs.length === 0 && !isLoading ? (
+                                 <div className="w-[90%] mx-auto mt-12 bg-white rounded-xl shadow-sm border border-gray-100 px-6 py-14 text-center">
                                     {/* Icon */}
                                     <div className="flex justify-center mb-5">
                                         <div className="h-14 w-14 rounded-full bg-gray-100 flex items-center justify-center">
