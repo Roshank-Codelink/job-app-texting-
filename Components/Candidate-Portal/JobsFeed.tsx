@@ -25,8 +25,8 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     const [locationQuery, setLocationQuery] = useState(urlLocationValue)
     const router = useRouter()
     const pathname = usePathname()
-    const [isSearchPending, startSearchTransition] = useTransition()
     const [isDataLoading, setIsDataLoading] = useState(false)
+    const prevSearchParams = useRef(searchParams.toString())
 
     // 1. Sync data when jobs prop changes and STOP skeleton
     useEffect(() => {
@@ -34,15 +34,22 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
         setPage(1)
         setHasMore((jobs?.data?.length || 0) >= limit)
         setIsDataLoading(false) // Data aa gaya, skeleton band
-    }, [jobs])
+        
+        // Sync ref to current params so we don't trigger loading again immediately
+        prevSearchParams.current = searchParams.toString()
+    }, [jobs, searchParams])
 
     // 2. Start skeleton when URL changes
     useEffect(() => {
-        setIsDataLoading(true) // URL badla, skeleton shuru
+        const currentParams = searchParams.toString()
+        if (currentParams !== prevSearchParams.current) {
+            setIsDataLoading(true) // URL badla, skeleton shuru
+            prevSearchParams.current = currentParams
+        }
     }, [searchParams])
 
     // Combined pending state
-    const isAnyPending = isSearchPending || isDataLoading
+    const isAnyPending = isDataLoading
 
     // Impression tracking: only when authenticated
     const feedContainerRef = useRef<HTMLDivElement | null>(null)
@@ -112,9 +119,7 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
         const queryString = params.toString().replace(/\+/g, "%20")
         const url = queryString ? `${pathname}?${queryString}` : pathname
 
-        startSearchTransition(() => {
-            router.push(url, { scroll: false })
-        })
+        router.push(url, { scroll: false })
     }, [searchQuery, locationQuery, router, pathname])
 
 
