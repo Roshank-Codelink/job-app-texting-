@@ -127,4 +127,4 @@ export const config = {
     "/candidate-signin",
     "/candidate-onboarding",
   ],
-};
+  };

@@ -6,9 +6,11 @@ import FiltersSidebar from "./FiltersSidebar"
 import JobCard from "./JobCard"
 import { departmentApiResponse } from "@/types/types"
 import { CandidategetJobs } from "@/api_config/Candidate/manageJobs"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react"
 import { useSession } from "next-auth/react"
 import { recordJobImpressionsApi } from "@/api_config/Candidate/manageJobs"
+import { useJobFilters } from "@/hooks/useJobFilters"
+import { Skeleton } from "@/Components/ui/skeleton"
 
 const IMPRESSION_DEBOUNCE_MS = 150
 const IMPRESSION_THRESHOLD = 0.5
@@ -23,6 +25,11 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     const [locationQuery, setLocationQuery] = useState(urlLocationValue)
     const router = useRouter()
     const pathname = usePathname()
+    const [isSearchPending, startSearchTransition] = useTransition()
+    const { isPending: isFilterPending } = useJobFilters()
+
+    // Combined pending state
+    const isAnyPending = isSearchPending || isFilterPending
 
     // Impression tracking: only when authenticated
     const feedContainerRef = useRef<HTMLDivElement | null>(null)
@@ -86,8 +93,11 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
 
         // Force %20 instead of +
         const queryString = params.toString().replace(/\+/g, "%20")
-        
-        router.push(queryString ? `${pathname}?${queryString}` : pathname)
+        const url = queryString ? `${pathname}?${queryString}` : pathname
+
+        startSearchTransition(() => {
+            router.push(url, { scroll: false })
+        })
     }, [searchQuery, locationQuery, searchParams, router, pathname])
 
 
@@ -313,7 +323,37 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                             <div className="hidden md:block">
                                 {SearchBar}
                             </div>
-                            {allJobs.length === 0 ? (
+                            {isAnyPending ? (
+                                <div className="space-y-4">
+                                    {[...Array(3)].map((_, i) => (
+                                        <div key={i} className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-4">
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex gap-4">
+                                                    <Skeleton className="h-12 w-12 rounded-lg" />
+                                                    <div className="space-y-2">
+                                                        <Skeleton className="h-6 w-48" />
+                                                        <Skeleton className="h-4 w-32" />
+                                                    </div>
+                                                </div>
+                                                <Skeleton className="h-8 w-8 rounded-full" />
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <Skeleton className="h-6 w-20 rounded-full" />
+                                                <Skeleton className="h-6 w-20 rounded-full" />
+                                                <Skeleton className="h-6 w-20 rounded-full" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Skeleton className="h-4 w-full" />
+                                                <Skeleton className="h-4 w-[90%]" />
+                                            </div>
+                                            <div className="flex justify-between items-center pt-2">
+                                                <Skeleton className="h-4 w-24" />
+                                                <Skeleton className="h-10 w-28 rounded-lg" />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : allJobs.length === 0 ? (
                                 <div className="w-[90%] mx-auto mt-12 bg-white rounded-xl shadow-sm border border-gray-100 px-6 py-14 text-center">
                                     {/* Icon */}
                                     <div className="flex justify-center mb-5">
