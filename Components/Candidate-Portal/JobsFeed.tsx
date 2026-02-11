@@ -27,9 +27,32 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     const pathname = usePathname()
     const [isSearchPending, startSearchTransition] = useTransition()
     const { isPending: isFilterPending } = useJobFilters()
+    const [isDataLoading, setIsDataLoading] = useState(false)
+    const prevSearchParams = useRef(searchParams.toString())
+    const prevJobs = useRef(jobs)
+
+    // Sync state when jobs prop changes (Server side re-render)
+    useEffect(() => {
+        if (jobs !== prevJobs.current) {
+            setAllJobs(jobs?.data || [])
+            setPage(1)
+            setHasMore((jobs?.data?.length || 0) >= limit)
+            setIsDataLoading(false)
+            prevJobs.current = jobs
+        }
+    }, [jobs])
+
+    // Detect URL changes to trigger loading state
+    useEffect(() => {
+        const currentParams = searchParams.toString()
+        if (currentParams !== prevSearchParams.current) {
+            setIsDataLoading(true)
+            prevSearchParams.current = currentParams
+        }
+    }, [searchParams])
 
     // Combined pending state
-    const isAnyPending = isSearchPending || isFilterPending
+    const isAnyPending = isSearchPending || isFilterPending || isDataLoading
 
     // Impression tracking: only when authenticated
     const feedContainerRef = useRef<HTMLDivElement | null>(null)
@@ -83,12 +106,16 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     const handleSearch = useCallback(() => {
         const value = searchQuery.trim()
         const locationValue = locationQuery.trim()
-        if (!value && !locationValue) return
-        const params = new URLSearchParams(searchParams.toString())
+        
+        // Always allow clearing search even if value is empty
+        const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "")
+        
         if (value) params.set('text', value)
         else params.delete('text')
+        
         if (locationValue) params.set('location', locationValue)
         else params.delete('location')
+        
         params.delete('page')
 
         // Force %20 instead of +
@@ -98,7 +125,7 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
         startSearchTransition(() => {
             router.push(url, { scroll: false })
         })
-    }, [searchQuery, locationQuery, searchParams, router, pathname])
+    }, [searchQuery, locationQuery, router, pathname])
 
 
     const [allJobs, setAllJobs] = useState(jobs?.data || [])
@@ -226,6 +253,11 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                             placeholder="Job title or section"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    handleSearch()
+                                }
+                            }}
                             className="w-full pl-9 md:pl-10 pr-3 md:pr-4 h-10 md:h-12 bg-white border border-(--profile-image-border-color) rounded-lg
                                    text-sm text-gray-600 placeholder:(--job-post-bg-color)
                                    focus:outline-none focus:ring-2 focus:ring-(--navbar-text-color)
@@ -242,6 +274,11 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                                 placeholder="Location"
                                 value={locationQuery}
                                 onChange={(e) => setLocationQuery(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        handleSearch()
+                                    }
+                                }}
                                 className="w-full pl-9 pr-3 h-10 bg-white border border-(--profile-image-border-color) rounded-lg
                                        text-sm text-gray-600 placeholder:text-(--job-post-bg-color)
                                        focus:outline-none focus:ring-2 focus:ring-(--navbar-text-color)
@@ -269,6 +306,11 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                             placeholder="Location"
                             value={locationQuery}
                             onChange={(e) => setLocationQuery(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    handleSearch()
+                                }
+                            }}
                             className="w-full pl-10 pr-4 h-12 bg-white border border-(--profile-image-border-color) rounded-lg
                                    text-sm text-gray-600 placeholder:text-(--job-post-bg-color)
                                    focus:outline-none focus:ring-2 focus:ring-(--navbar-text-color)

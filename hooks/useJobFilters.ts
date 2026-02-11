@@ -43,7 +43,8 @@ export function useJobFilters() {
 
   // ✅ URL updater
   const updateURL = useCallback((filters: Filters) => {
-    const params = new URLSearchParams(searchParams.toString())
+    // Use window.location.search for latest state to avoid stale searchParams hook values
+    const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "")
 
     filters.date ? params.set("date", filters.date) : params.delete("date")
     filters.mode ? params.set("mode", filters.mode) : params.delete("mode")
@@ -58,14 +59,13 @@ export function useJobFilters() {
 
     params.delete("page") // pagination reset
 
-    const url = params.toString()
-      ? `${pathname}?${params.toString()}`
-      : pathname
+    const queryString = params.toString().replace(/\+/g, "%20")
+    const url = queryString ? `${pathname}?${queryString}` : pathname
 
     startTransition(() => {
       router.push(url, { scroll: false })
     })
-  }, [searchParams, pathname, router])
+  }, [pathname, router])
 
   // setters
   const setDate = (v: string | null) => {
