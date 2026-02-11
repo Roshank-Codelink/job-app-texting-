@@ -27,29 +27,19 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     const pathname = usePathname()
     const [isSearchPending, startSearchTransition] = useTransition()
     const [isDataLoading, setIsDataLoading] = useState(false)
-    const prevSearchParams = useRef(searchParams.toString())
-    const lastJobsRef = useRef(jobs)
 
-    // Combined effect to handle loading state deterministically
+    // 1. Sync data when jobs prop changes and STOP skeleton
     useEffect(() => {
-        const currentParams = searchParams.toString()
-        
-        // If jobs prop changed, it means the server has returned new data
-        if (jobs !== lastJobsRef.current) {
-            setAllJobs(jobs?.data || [])
-            setPage(1)
-            setHasMore((jobs?.data?.length || 0) >= limit)
-            setIsDataLoading(false)
-            lastJobsRef.current = jobs
-            prevSearchParams.current = currentParams // Mark these params as processed
-            return
-        }
+        setAllJobs(jobs?.data || [])
+        setPage(1)
+        setHasMore((jobs?.data?.length || 0) >= limit)
+        setIsDataLoading(false) // Data aa gaya, skeleton band
+    }, [jobs])
 
-        // If URL params changed but jobs haven't updated yet, we are loading
-        if (currentParams !== prevSearchParams.current) {
-            setIsDataLoading(true)
-        }
-    }, [jobs, searchParams])
+    // 2. Start skeleton when URL changes
+    useEffect(() => {
+        setIsDataLoading(true) // URL badla, skeleton shuru
+    }, [searchParams])
 
     // Combined pending state
     const isAnyPending = isSearchPending || isDataLoading
