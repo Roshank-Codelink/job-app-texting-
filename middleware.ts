@@ -45,10 +45,7 @@ export async function middleware(request: NextRequest) {
 
   /* ================= EMPLOYER ================= */
 
-  if (
-    pathname === "/employer-signin" ||
-    pathname === "/employer-signup"
-  ) {
+  if (pathname === "/employer-signin" || pathname === "/employer-signup") {
     if (token && role === "EMPLOYER") {
       return NextResponse.redirect(
         new URL("/employer/dashboard", request.url)
@@ -77,7 +74,7 @@ export async function middleware(request: NextRequest) {
         );
       }
 
-      // ✅ First time default text
+      // ✅ Default text only at entry
       const jobTitle = (token as any)?.user?.jobTitle ?? "";
       const url = new URL("/candidate/jobs", request.url);
       if (jobTitle) url.searchParams.set("text", jobTitle);
@@ -110,23 +107,14 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  /* ================= FORCE text ON JOBS PAGE ================= */
+  /* ================= ENFORCE `text` ON JOBS PAGE ================= */
 
   if (pathname === "/candidate/jobs") {
     const jobTitle = (token as any)?.user?.jobTitle ?? "";
     const currentText = searchParams.get("text");
 
-    // 🔑 check if other filters are present
-    const hasOtherFilters =
-      searchParams.has("location") ||
-      searchParams.has("department") ||
-      searchParams.has("type") ||
-      searchParams.has("mode") ||
-      searchParams.has("date") ||
-      searchParams.has("page");
-
-    // ✅ Force text ONLY when user removes it
-    if (!currentText && jobTitle && !hasOtherFilters) {
+    // ✅ Always enforce text (filters are preserved by client hook)
+    if (!currentText && jobTitle) {
       const url = new URL(request.url);
       url.searchParams.set("text", jobTitle);
       return NextResponse.redirect(url);

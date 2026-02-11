@@ -5,63 +5,69 @@ export function useJobFilters() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  // Read values directly from URL to ensure single source of truth
+  // 🔑 ALWAYS read text from URL
+  const text = searchParams.get("text")
+
   const date = searchParams.get("date")
   const workMode = searchParams.get("mode")
-  
+
   const workTypeParam = searchParams.get("type")
   const workType = workTypeParam ? workTypeParam.split(",") : []
-  
+
   const departmentParam = searchParams.get("department")
   const department = departmentParam ? departmentParam.split(",") : []
 
-  // Helper to update URL
-  const updateFilters = useCallback((updates: {
-    date?: string | null,
-    mode?: string | null,
-    type?: string[],
-    department?: string[]
-  }) => {
-    const params = new URLSearchParams(searchParams.toString())
+  const updateFilters = useCallback(
+    (updates: {
+      date?: string | null
+      mode?: string | null
+      type?: string[]
+      department?: string[]
+    }) => {
+      const params = new URLSearchParams(searchParams.toString())
 
-    // Handle Date
-    if (updates.date !== undefined) {
-      if (updates.date) params.set("date", updates.date)
-      else params.delete("date")
-    }
+      // ✅ PRESERVE text ALWAYS
+      if (text) {
+        params.set("text", text)
+      }
 
-    // Handle Work Mode
-    if (updates.mode !== undefined) {
-      if (updates.mode) params.set("mode", updates.mode)
-      else params.delete("mode")
-    }
+      // Date
+      if (updates.date !== undefined) {
+        updates.date ? params.set("date", updates.date) : params.delete("date")
+      }
 
-    // Handle Work Type
-    if (updates.type !== undefined) {
-      if (updates.type.length > 0) params.set("type", updates.type.join(","))
-      else params.delete("type")
-    }
+      // Mode
+      if (updates.mode !== undefined) {
+        updates.mode ? params.set("mode", updates.mode) : params.delete("mode")
+      }
 
-    // Handle Department
-    if (updates.department !== undefined) {
-      if (updates.department.length > 0) params.set("department", updates.department.join(","))
-      else params.delete("department")
-    }
+      // Type
+      if (updates.type !== undefined) {
+        updates.type.length
+          ? params.set("type", updates.type.join(","))
+          : params.delete("type")
+      }
 
-    // Force %20 instead of +
-    const queryString = params.toString().replace(/\+/g, "%20")
+      // Department
+      if (updates.department !== undefined) {
+        updates.department.length
+          ? params.set("department", updates.department.join(","))
+          : params.delete("department")
+      }
 
-    router.push(
-      queryString ? `/candidate/jobs?${queryString}` : "/candidate/jobs",
-      { scroll: false }
-    )
-  }, [searchParams, router])
+      params.delete("page")
 
-  // Specific setters
-  const setDate = (newDate: string | null) => updateFilters({ date: newDate })
-  const setWorkMode = (newMode: string | null) => updateFilters({ mode: newMode })
-  const setWorkType = (newTypes: string[]) => updateFilters({ type: newTypes })
-  const setDepartment = (newDepts: string[]) => updateFilters({ department: newDepts })
+      const queryString = params.toString().replace(/\+/g, "%20")
+
+      router.push(`/candidate/jobs?${queryString}`, { scroll: false })
+    },
+    [router, searchParams, text]
+  )
+
+  const setDate = (v: string | null) => updateFilters({ date: v })
+  const setWorkMode = (v: string | null) => updateFilters({ mode: v })
+  const setWorkType = (v: string[]) => updateFilters({ type: v })
+  const setDepartment = (v: string[]) => updateFilters({ department: v })
 
   const toggleWorkType = (value: string) => {
     const newTypes = workType.includes(value)
@@ -78,43 +84,27 @@ export function useJobFilters() {
   }
 
   const clearAllFilters = () => {
-    // Keep search and location, only remove filters
-    const params = new URLSearchParams(searchParams.toString())
-    
-    // Explicitly remove filter keys
-    params.delete("date")
-    params.delete("mode")
-    params.delete("type")
-    params.delete("department")
-    params.delete("page") // Reset page too
+    const params = new URLSearchParams()
 
-    // Force %20 instead of +
-    const queryString = params.toString().replace(/\+/g, "%20")
+    // ✅ KEEP text
+    if (text) params.set("text", text)
 
-    // Use push instead of replace to fix mobile navigation stack
-    router.push(
-      queryString ? `/candidate/jobs?${queryString}` : "/candidate/jobs",
-      { scroll: false }
-    )
+    router.push(`/candidate/jobs?${params.toString()}`, { scroll: false })
   }
 
   return {
-    // Values
     date,
     workMode,
     workType,
     department,
-    // Setters
     setDate,
     setWorkMode,
     setWorkType,
     setDepartment,
-    // Helpers
     toggleWorkType,
     toggleDepartment,
     clearAllFilters,
-    // Computed
-    hasFilters: !!(date || workMode || workType.length > 0 || department.length > 0),
-    activeFiltersCount: (date ? 1 : 0) + (workMode ? 1 : 0) + workType.length + department.length
+    hasFilters:
+      !!(date || workMode || workType.length || department.length),
   }
 }
