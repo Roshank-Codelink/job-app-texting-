@@ -1,5 +1,5 @@
 "use client"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { Briefcase, MapPin, X } from "lucide-react"
 import JobFilters from "./JobFilters"
 import FiltersSidebar from "./FiltersSidebar"
@@ -22,25 +22,7 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     const [searchQuery, setSearchQuery] = useState(urlSearchValue)
     const [locationQuery, setLocationQuery] = useState(urlLocationValue)
     const router = useRouter()
-
-    // ✅ Apply default jobTitle ONLY on first load
-const defaultAppliedRef = useRef(false)
-
-useEffect(() => {
-  if (defaultAppliedRef.current) return
-
-  const text = searchParams.get("text")
-  const jobTitle = session?.user?.jobTitle
-
-  if (!text && jobTitle) {
-    defaultAppliedRef.current = true
-
-    const params = new URLSearchParams(searchParams.toString())
-    params.set("text", jobTitle)
-
-    router.replace(`/candidate/jobs?${params.toString()}`)
-  }
-}, [searchParams, session, router])
+    const pathname = usePathname()
 
     // Impression tracking: only when authenticated
     const feedContainerRef = useRef<HTMLDivElement | null>(null)
@@ -74,9 +56,22 @@ useEffect(() => {
     }, [flushImpressions])
 
     useEffect(() => {
-        setSearchQuery(searchParams.get('text') || '')
-        setLocationQuery(searchParams.get('location') || '')
-    }, [searchParams])
+        const urlText = searchParams.get('text')
+        const urlLocation = searchParams.get('location')
+        setSearchQuery(urlText || '')
+        setLocationQuery(urlLocation || '')
+
+        // Only enforce default jobTitle if NO searchParams exist at all
+        const hasAnyParams = Array.from(searchParams.keys()).length > 0
+        const defaultTitle = (session?.user as any)?.jobTitle
+
+        if (!hasAnyParams && defaultTitle) {
+            const params = new URLSearchParams()
+            params.set('text', defaultTitle)
+            const queryString = params.toString().replace(/\+/g, "%20")
+            router.replace(`${pathname}?${queryString}`)
+        }
+    }, [searchParams, session, pathname, router])
 
     const handleSearch = useCallback(() => {
         const value = searchQuery.trim()
@@ -92,8 +87,8 @@ useEffect(() => {
         // Force %20 instead of +
         const queryString = params.toString().replace(/\+/g, "%20")
         
-        router.push(`/candidate/jobs?${queryString}`)
-    }, [searchQuery, locationQuery, searchParams, router])
+        router.push(queryString ? `${pathname}?${queryString}` : pathname)
+    }, [searchQuery, locationQuery, searchParams, router, pathname])
 
 
     const [allJobs, setAllJobs] = useState(jobs?.data || [])

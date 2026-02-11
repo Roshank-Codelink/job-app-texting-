@@ -100,23 +100,13 @@ export async function middleware(request: NextRequest) {
       );
     }
 
+    // onboarding completed → block onboarding page
     if (onboarding && pathname === "/candidate-onboarding") {
-      return NextResponse.redirect(
-        new URL("/candidate/jobs", request.url)
-      );
-    }
-  }
-
-  /* ================= ENFORCE `text` ON JOBS PAGE ================= */
-
-  if (pathname === "/candidate/jobs") {
-    const jobTitle = (token as any)?.user?.jobTitle ?? "";
-    const currentText = searchParams.get("text");
-
-    // ✅ Always enforce text (filters are preserved by client hook)
-    if (!currentText && jobTitle) {
-      const url = new URL(request.url);
-      url.searchParams.set("text", jobTitle);
+      const jobTitle = (token as any)?.user?.jobTitle ?? "";
+      const url = new URL("/candidate/jobs", request.url);
+      if (jobTitle) {
+        url.searchParams.set("text", jobTitle);
+      }
       return NextResponse.redirect(url);
     }
   }
