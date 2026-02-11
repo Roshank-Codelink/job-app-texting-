@@ -132,6 +132,7 @@ export function useJobFilters() {
     toggleDepartment,
     clearAllFilters,
 
-    hasFilters: !!(localFilters.date || localFilters.mode || localFilters.type.length || localFilters.department.length)
+    hasFilters: !!(localFilters.date || localFilters.mode || localFilters.type.length || localFilters.department.length),
+    activeFiltersCount: (localFilters.date || localFilters.mode || localFilters.type.length || localFilters.department.length) as number,
   }
 }
