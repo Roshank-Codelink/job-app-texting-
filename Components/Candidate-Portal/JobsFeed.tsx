@@ -1,6 +1,6 @@
 "use client"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
-import { Briefcase, MapPin, X } from "lucide-react"
+import { Briefcase, MapPin, X, AlertCircle } from "lucide-react"
 import JobFilters from "./JobFilters"
 import FiltersSidebar from "./FiltersSidebar"
 import JobCard from "./JobCard"
@@ -11,7 +11,7 @@ import { CandidategetJobs } from "@/api_config/Candidate/manageJobs"
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react"
 import { useSession } from "next-auth/react"
 import { recordJobImpressionsApi } from "@/api_config/Candidate/manageJobs"
-import { toast } from "react-toastify"
+import { useJobFilters } from "@/hooks/useJobFilters"
 
 
 const IMPRESSION_DEBOUNCE_MS = 150
@@ -25,6 +25,7 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     const urlLocationValue = searchParams.get('location') || ''
     const [searchQuery, setSearchQuery] = useState(urlSearchValue)
     const [locationQuery, setLocationQuery] = useState(urlLocationValue)
+    const [showSearchError, setShowSearchError] = useState(false)
     const router = useRouter()
     const pathname = usePathname()
     const prevSearchParams = useRef(searchParams.toString())
@@ -117,10 +118,11 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
         const locationValue = locationQuery.trim()
 
         if (!value) {
-            toast.error("Please enter a job title, company, skill or department")
+            setShowSearchError(true)
             return
         }
 
+        setShowSearchError(false)
         suppressUrlTextSyncRef.current = false
         setFilterLoadingWithMinTime(true)
         
@@ -286,52 +288,70 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
         return (
             <div className=" bg-[#fafafb] -mx-4 px-4 py-3
                           md:bg-transparent md:mx-0 md:px-2 md:py-2">
-                <div className="flex flex-col md:flex-row gap-2 md:gap-3">
+                <div className="flex flex-col md:flex-row gap-2 md:gap-3 items-start">
                     {/* Job Title Input - Full width on mobile */}
-                    <div className="w-full md:flex-1 relative">
-                        <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-(--job-post-bg-color)" />
-                        <input
-                            type="text"
-                            placeholder="Job title or section"
-                            value={searchQuery}
-                            onChange={(e) => {
-                                suppressUrlTextSyncRef.current = false
-                                setSearchQuery(e.target.value)
-                            }}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    handleSearch()
-                                }
-                            }}
-                            className="w-full pl-9 md:pl-10 pr-3 md:pr-4 h-10 md:h-12 bg-white border border-(--profile-image-border-color) rounded-lg
-                                   text-sm text-gray-600 placeholder:(--job-post-bg-color)
-                                   focus:outline-none focus:ring-2 focus:ring-(--navbar-text-color)
-                                   focus:border-transparent shadow-sm md:shadow-none"
-                        />
-                        {searchQuery && <X className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-(--job-post-bg-color) cursor-pointer" onClick={() => {
-                            suppressUrlTextSyncRef.current = true
-                            setSearchQuery("")
-                        }} />}
-                    </div>
-                    {/* Location Input and Button - Same row on mobile */}
-                    <div className="flex gap-2 md:hidden">
-                        <div className="flex-1 relative">
-                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-(--job-post-bg-color)" />
+                    <div className="w-full md:flex-1">
+                        <div className="relative">
+                            <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-(--job-post-bg-color)" />
                             <input
                                 type="text"
-                                placeholder="Location"
-                                value={locationQuery}
-                                onChange={(e) => setLocationQuery(e.target.value)}
+                                placeholder="Job title or section"
+                                value={searchQuery}
+                                onChange={(e) => {
+                                    suppressUrlTextSyncRef.current = false
+                                    setSearchQuery(e.target.value)
+                                    if (showSearchError) setShowSearchError(false)
+                                }}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
                                         handleSearch()
                                     }
                                 }}
-                                className="w-full pl-9 pr-3 h-10 bg-white border border-(--profile-image-border-color) rounded-lg
-                                       text-sm text-gray-600 placeholder:text-(--job-post-bg-color)
+                                className={`w-full pl-9 md:pl-10 pr-3 md:pr-4 h-10 md:h-12 bg-white border rounded-lg
+                                       text-sm text-gray-600 placeholder:(--job-post-bg-color)
                                        focus:outline-none focus:ring-2 focus:ring-(--navbar-text-color)
-                                       focus:border-transparent shadow-sm"
+                                       focus:border-transparent shadow-sm md:shadow-none transition-colors
+                                       ${showSearchError ? 'border-red-500 ring-1 ring-red-500' : 'border-(--profile-image-border-color)'}`}
                             />
+                            {searchQuery && (
+                                <X 
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-(--job-post-bg-color) cursor-pointer" 
+                                    onClick={() => {
+                                        suppressUrlTextSyncRef.current = true
+                                        setSearchQuery("")
+                                        if (showSearchError) setShowSearchError(false)
+                                    }} 
+                                />
+                            )}
+                        </div>
+                        {showSearchError && (
+                            <div className="mt-1 flex items-center gap-1 text-[#d32f2f] text-[12px] md:text-[13px] font-medium whitespace-nowrap">
+                                <AlertCircle className="h-5 w-5 fill-[#d32f2f] text-white" />
+                                <span>Please enter a job title, company, skill or department</span>
+                            </div>
+                        )}
+                    </div>
+                    {/* Location Input and Button - Same row on mobile */}
+                    <div className="flex gap-2 md:hidden">
+                        <div className="flex-1">
+                            <div className="relative">
+                                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-(--job-post-bg-color)" />
+                                <input
+                                    type="text"
+                                    placeholder="Location"
+                                    value={locationQuery}
+                                    onChange={(e) => setLocationQuery(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            handleSearch()
+                                        }
+                                    }}
+                                    className="w-full pl-9 pr-3 h-10 bg-white border border-(--profile-image-border-color) rounded-lg
+                                           text-sm text-gray-600 placeholder:text-(--job-post-bg-color)
+                                           focus:outline-none focus:ring-2 focus:ring-(--navbar-text-color)
+                                           focus:border-transparent shadow-sm"
+                                />
+                            </div>
                         </div>
                         <button
                             className="px-2 py-2 bg-gradient-to-r from-(--job-post-button-bg-from) to-(--job-post-button-bg-to) 
@@ -347,23 +367,25 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                         </button>
                     </div>
                     {/* Desktop: Location Input */}
-                    <div className="hidden md:flex md:flex-1 relative">
-                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-(--job-post-bg-color)" />
-                        <input
-                            type="text"
-                            placeholder="Location"
-                            value={locationQuery}
-                            onChange={(e) => setLocationQuery(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    handleSearch()
-                                }
-                            }}
-                            className="w-full pl-10 pr-4 h-12 bg-white border border-(--profile-image-border-color) rounded-lg
-                                   text-sm text-gray-600 placeholder:text-(--job-post-bg-color)
-                                   focus:outline-none focus:ring-2 focus:ring-(--navbar-text-color)
-                                   focus:border-transparent shadow-none"
-                        />
+                    <div className="hidden md:block md:flex-1">
+                        <div className="relative">
+                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-(--job-post-bg-color)" />
+                            <input
+                                type="text"
+                                placeholder="Location"
+                                value={locationQuery}
+                                onChange={(e) => setLocationQuery(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        handleSearch()
+                                    }
+                                }}
+                                className="w-full pl-10 pr-4 h-12 bg-white border border-(--profile-image-border-color) rounded-lg
+                                       text-sm text-gray-600 placeholder:text-(--job-post-bg-color)
+                                       focus:outline-none focus:ring-2 focus:ring-(--navbar-text-color)
+                                       focus:border-transparent shadow-none"
+                            />
+                        </div>
                     </div>
                     {/* Desktop: Search Button */}
                     <button className="hidden md:block px-2 py-3 bg-gradient-to-r from-(--job-post-button-bg-from) to-(--job-post-button-bg-to) 
@@ -380,7 +402,7 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                 </div>
             </div>
         );
-    }, [searchQuery, locationQuery, handleSearch])
+    }, [searchQuery, locationQuery, handleSearch, showSearchError])
 
     const filterLoadingValue = useMemo(
         () => ({ setFilterLoading: setFilterLoadingWithMinTime }),
