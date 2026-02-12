@@ -7,6 +7,7 @@ import {
 } from "@/Components/ui/sheet"
 import { useEffect, useState } from "react"
 import { departmentApiResponse } from "@/types/types"
+import { useJobFilters } from "@/hooks/useJobFilters"
 
 const filterOptions = [
   { label: "Date posted", value: "date", icon: Calendar },
@@ -34,30 +35,19 @@ const WORK_TYPE_OPTIONS = [
   { label: "Contract", value: "contract" },
 ]
 
-export default function JobFilters({ 
-  departmentres,
-  date, setDate,
-  workMode, setWorkMode,
-  workType, toggleWorkType,
-  department, toggleDepartment,
-  clearAllFilters,
-  activeFiltersCount
-}: { 
-  departmentres: departmentApiResponse,
-  date: string | null,
-  setDate: (v: string | null) => void,
-  workMode: string | null,
-  setWorkMode: (v: string | null) => void,
-  workType: string[],
-  toggleWorkType: (v: string) => void,
-  department: string[],
-  toggleDepartment: (v: string) => void,
-  clearAllFilters: () => void,
-  activeFiltersCount: number
-}) {
+export default function JobFilters({ departmentres }: { departmentres: departmentApiResponse }) {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [selectedFilter, setSelectedFilter] = useState<string>("date")
   const [isScrolled, setIsScrolled] = useState(false)
+
+  const {
+    date, setDate,
+    workMode, setWorkMode,
+    workType, toggleWorkType,
+    department, toggleDepartment,
+    clearAllFilters,
+    activeFiltersCount,
+  } = useJobFilters() 
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 30)

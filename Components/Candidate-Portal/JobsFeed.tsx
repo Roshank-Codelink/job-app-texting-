@@ -4,12 +4,14 @@ import { Briefcase, MapPin, X } from "lucide-react"
 import JobFilters from "./JobFilters"
 import FiltersSidebar from "./FiltersSidebar"
 import JobCard from "./JobCard"
+import { Skeleton } from "@/Components/ui/skeleton"
+import { FilterLoadingContext } from "./FilterLoadingContext"
 import { departmentApiResponse } from "@/types/types"
 import { CandidategetJobs } from "@/api_config/Candidate/manageJobs"
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react"
 import { useSession } from "next-auth/react"
 import { recordJobImpressionsApi } from "@/api_config/Candidate/manageJobs"
-import { useJobFilters } from "@/hooks/useJobFilters"
+import { toast } from "react-toastify"
 
 
 const IMPRESSION_DEBOUNCE_MS = 150
@@ -21,56 +23,24 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     const searchParams = useSearchParams()
     const urlSearchValue = searchParams.get('text') || ''
     const urlLocationValue = searchParams.get('location') || ''
-    
-    // 1. Hook for filters
-    const { 
-        setDate, setWorkMode, toggleWorkType, toggleDepartment, 
-        clearAllFilters, date, workMode, workType, department,
-        isPending: isFilterPending, hasFilters, activeFiltersCount
-    } = useJobFilters()
-
-    // 2. Local state for search
     const [searchQuery, setSearchQuery] = useState(urlSearchValue)
     const [locationQuery, setLocationQuery] = useState(urlLocationValue)
-    const [isDataLoading, setIsDataLoading] = useState(false)
-    const [isSearchPending, startTransition] = useTransition()
-    const [isInputInvalid, setIsInputInvalid] = useState(false)
-    const hasClearedManually = useRef(false)
-    
     const router = useRouter()
     const pathname = usePathname()
     const prevSearchParams = useRef(searchParams.toString())
+    const autoApplyingDefaultTitleRef = useRef(false)
+    const suppressUrlTextSyncRef = useRef(false)
+    const searchParamsStr = searchParams.toString()
 
-    // Unified loading state
-    const isAnyPending = isFilterPending || isSearchPending || isDataLoading
-
-    // 3. Sync data when jobs prop changes (from server)
+    // 1. Sync data when jobs prop changes
     useEffect(() => {
         setAllJobs(jobs?.data || [])
         setPage(1)
         setHasMore((jobs?.data?.length || 0) >= limit)
-        setIsDataLoading(false) // Data is here, stop loading
         
         // Sync ref to current params
         prevSearchParams.current = searchParams.toString()
     }, [jobs, searchParams])
-
-    // Detect URL changes and show skeleton immediately
-    useEffect(() => {
-        const currentParams = searchParams.toString()
-        if (currentParams !== prevSearchParams.current) {
-            const params = new URLSearchParams(currentParams)
-            const prevParams = new URLSearchParams(prevSearchParams.current)
-            
-            // Ignore page changes for full skeleton (infinite scroll has its own loader)
-            params.delete('page')
-            prevParams.delete('page')
-            
-            if (params.toString() !== prevParams.toString()) {
-                setIsDataLoading(true)
-            }
-        }
-    }, [searchParams])
 
     // Impression tracking: only when authenticated
     const feedContainerRef = useRef<HTMLDivElement | null>(null)
@@ -108,38 +78,53 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
         const urlLocation = searchParams.get('location')
         const defaultTitle = (session?.user as any)?.jobTitle
 
-        // If 'text' is missing and we have a default title, apply it instantly to URL
-        // ONLY if the user hasn't manually cleared it
-        if (!urlText && defaultTitle && !hasClearedManually.current) {
+        if (!urlText && defaultTitle) {
+            autoApplyingDefaultTitleRef.current = true
             const params = new URLSearchParams(window.location.search)
             params.set('text', defaultTitle)
             const queryString = params.toString().replace(/\+/g, "%20")
             const newUrl = `${pathname}?${queryString}`
-            
-            // Update URL instantly
             window.history.replaceState(null, '', newUrl)
             router.replace(newUrl, { scroll: false })
-            
-            // Also sync local state
             setSearchQuery(defaultTitle)
             setLocationQuery(urlLocation || '')
         } else {
-            setSearchQuery(urlText || '')
+            if (!suppressUrlTextSyncRef.current) {
+                setSearchQuery(urlText || '')
+            }
             setLocationQuery(urlLocation || '')
         }
-    }, [searchParams, session, pathname, router])
+    }, [searchParamsStr, session, pathname, router])
+
+    const [allJobs, setAllJobs] = useState(jobs?.data || [])
+    const [page, setPage] = useState(1)
+    const limit = 10
+    const [hasMore, setHasMore] = useState((jobs?.data?.length || 0) >= limit)
+    const [isLoading, setIsLoading] = useState(false)
+    // Start with skeleton when we would show empty state so we always show skeleton first, then result
+    const [isFilterLoading, setIsFilterLoading] = useState(() => (jobs?.data?.length ?? 0) === 0)
+    const filterLoadingStartedRef = useRef(0)
+    const prevSearchParamsRef = useRef<string | null>(null)
+    const MIN_SKELETON_MS = 300
+
+    const setFilterLoadingWithMinTime = useCallback((loading: boolean) => {
+        if (loading) filterLoadingStartedRef.current = Date.now()
+        setIsFilterLoading(loading)
+    }, [])
 
     const handleSearch = useCallback(() => {
         const value = searchQuery.trim()
         const locationValue = locationQuery.trim()
-        
+
         if (!value) {
-            setIsInputInvalid(true)
-            setTimeout(() => setIsInputInvalid(false), 2000)
+            toast.error("Please enter a job title, company, skill or department")
             return
         }
 
-        setIsInputInvalid(false)
+        suppressUrlTextSyncRef.current = false
+        setFilterLoadingWithMinTime(true)
+        
+        // Always allow clearing search even if value is empty
         const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "")
         
         if (value) params.set('text', value)
@@ -154,17 +139,8 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
         const queryString = params.toString().replace(/\+/g, "%20")
         const url = queryString ? `${pathname}?${queryString}` : pathname
 
-        startTransition(() => {
-            router.push(url, { scroll: false })
-        })
-    }, [searchQuery, locationQuery, router, pathname])
-
-
-    const [allJobs, setAllJobs] = useState(jobs?.data || [])
-    const [page, setPage] = useState(1)
-    const limit = 10
-    const [hasMore, setHasMore] = useState((jobs?.data?.length || 0) >= limit)
-    const [isLoading, setIsLoading] = useState(false)
+        router.push(url, { scroll: false })
+    }, [searchQuery, locationQuery, router, pathname, setFilterLoadingWithMinTime])
 
     const loaderRef = useRef<HTMLDivElement | null>(null)
     const isLoadingRef = useRef(false)
@@ -176,12 +152,46 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
     useEffect(() => {
         pageRef.current = page
     }, [page])
+
+    // When URL/searchParams change (remove params, back button, manual edit) → show skeleton until data arrives
     useEffect(() => {
+        const currentStr = searchParams.toString()
+        if (prevSearchParamsRef.current !== null && currentStr !== prevSearchParamsRef.current) {
+            setFilterLoadingWithMinTime(true)
+        }
+        prevSearchParamsRef.current = currentStr
+    }, [searchParams, setFilterLoadingWithMinTime])
+
+    // When jobs prop updates (new data arrived), clear filter loading (after min skeleton time)
+    useEffect(() => {
+        // Initial load with 0 jobs: set ref now so we always wait MIN_SKELETON_MS (avoids flash)
+        if ((jobs?.data?.length ?? 0) === 0 && filterLoadingStartedRef.current === 0) {
+            filterLoadingStartedRef.current = Date.now()
+        }
+
+        // If we're auto-applying default title (first fetch without text → second fetch with text),
+        // don't clear skeleton on the intermediate empty/old response.
+        if (autoApplyingDefaultTitleRef.current && !searchParams.get("text")) {
+            return
+        }
+        if (autoApplyingDefaultTitleRef.current && searchParams.get("text")) {
+            autoApplyingDefaultTitleRef.current = false
+        }
+
         setAllJobs(jobs?.data || [])
         setPage(1)
         pageRef.current = 1
         setHasMore((jobs?.data?.length || 0) >= limit)
-    }, [jobs])
+        prevSearchParamsRef.current = searchParams.toString()
+
+        const elapsed = Date.now() - filterLoadingStartedRef.current
+        if (elapsed >= MIN_SKELETON_MS) {
+            setIsFilterLoading(false)
+        } else {
+            const timer = setTimeout(() => setIsFilterLoading(false), MIN_SKELETON_MS - elapsed)
+            return () => clearTimeout(timer)
+        }
+    }, [jobs, searchParams])
 
     const fetchMoreJobs = useCallback(async () => {
         if (isLoadingRef.current) return;
@@ -285,29 +295,23 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                             placeholder="Job title or section"
                             value={searchQuery}
                             onChange={(e) => {
+                                suppressUrlTextSyncRef.current = false
                                 setSearchQuery(e.target.value)
-                                if (isInputInvalid) setIsInputInvalid(false)
                             }}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
                                     handleSearch()
                                 }
                             }}
-                            className={`w-full pl-9 md:pl-10 pr-3 md:pr-4 h-10 md:h-12 bg-white border rounded-lg
+                            className="w-full pl-9 md:pl-10 pr-3 md:pr-4 h-10 md:h-12 bg-white border border-(--profile-image-border-color) rounded-lg
                                    text-sm text-gray-600 placeholder:(--job-post-bg-color)
                                    focus:outline-none focus:ring-2 focus:ring-(--navbar-text-color)
-                                   focus:border-transparent shadow-sm md:shadow-none transition-colors
-                                   ${isInputInvalid ? "border-red-500 ring-1 ring-red-500" : "border-(--profile-image-border-color)"}`}
+                                   focus:border-transparent shadow-sm md:shadow-none"
                         />
-                        {searchQuery && (
-                            <X 
-                                className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-(--job-post-bg-color) cursor-pointer" 
-                                onClick={() => {
-                                    setSearchQuery("")
-                                    hasClearedManually.current = true
-                                }} 
-                            />
-                        )}
+                        {searchQuery && <X className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-(--job-post-bg-color) cursor-pointer" onClick={() => {
+                            suppressUrlTextSyncRef.current = true
+                            setSearchQuery("")
+                        }} />}
                     </div>
                     {/* Location Input and Button - Same row on mobile */}
                     <div className="flex gap-2 md:hidden">
@@ -377,7 +381,14 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
             </div>
         );
     }, [searchQuery, locationQuery, handleSearch])
+
+    const filterLoadingValue = useMemo(
+        () => ({ setFilterLoading: setFilterLoadingWithMinTime }),
+        [setFilterLoadingWithMinTime]
+    )
+
     return (
+        <FilterLoadingContext.Provider value={filterLoadingValue}>
         <div className="w-full bg-(--Profile-hover-bg) min-h-screen">
             <div className="w-full max-w-[1050px] mx-auto px-4 lg:px-6 pt-0 md:pt-4 pb-4 md:pb-6">
                 <div className="w-full">
@@ -387,19 +398,7 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                     </div>
                     {/* Header Section */}
                     <div className="mb-2 md:mb-4">
-                        <JobFilters 
-                            departmentres={departments} 
-                            date={date}
-                            setDate={setDate}
-                            workMode={workMode}
-                            setWorkMode={setWorkMode}
-                            workType={workType}
-                            toggleWorkType={toggleWorkType}
-                            department={department}
-                            toggleDepartment={toggleDepartment}
-                            clearAllFilters={clearAllFilters}
-                            activeFiltersCount={activeFiltersCount}
-                        />
+                        <JobFilters departmentres={departments} />
                     </div>
                     <div className="mb-6">
                         <h1 className="text-xl md:text-2xl lg:text-2xl font-bold text-(--filter-header-text-color) mb-2">
@@ -413,19 +412,7 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                     <div className="flex flex-col lg:flex-row gap-4 md:gap-6 md:flex-row">
                         {/* Left Sidebar - Filters (iPad and Desktop only, not mobile) */}
                         <div className="hidden md:block shrink-0">
-                            <FiltersSidebar 
-                                departmentres={departments} 
-                                date={date}
-                                setDate={setDate}
-                                workMode={workMode}
-                                setWorkMode={setWorkMode}
-                                workType={workType}
-                                toggleWorkType={toggleWorkType}
-                                department={department}
-                                toggleDepartment={toggleDepartment}
-                                clearAllFilters={clearAllFilters}
-                                hasFilters={hasFilters}
-                            />
+                            <FiltersSidebar departmentres={departments} />
                         </div>
                         {/* Right Side - Job Listings */}
                         <div className="flex-1 min-w-0">
@@ -433,7 +420,27 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                             <div className="hidden md:block">
                                 {SearchBar}
                             </div>
-                            {allJobs.length === 0 ? (
+                            {isFilterLoading ? (
+                                <div className="space-y-4">
+                                    {Array.from({ length: 5 }).map((_, i) => (
+                                        <div key={i} className="bg-white rounded-[10px] border border-gray-200 shadow-sm overflow-hidden p-3 sm:p-4">
+                                            <div className="flex items-start gap-3 pr-14">
+                                                <Skeleton className="h-10 w-10 sm:h-12 sm:w-12 rounded-[10px] shrink-0" />
+                                                <div className="min-w-0 flex-1 space-y-2">
+                                                    <Skeleton className="h-4 w-3/4" />
+                                                    <Skeleton className="h-3 w-1/2" />
+                                                    <Skeleton className="h-3 w-1/3" />
+                                                </div>
+                                            </div>
+                                            <div className="px-1 pb-2 pt-3 space-y-2">
+                                                <Skeleton className="h-3 w-full" />
+                                                <Skeleton className="h-3 w-full" />
+                                                <Skeleton className="h-3 w-2/3" />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : allJobs.length === 0 ? (
                                 <div className="w-[90%] mx-auto mt-12 bg-white rounded-xl shadow-sm border border-gray-100 px-6 py-14 text-center">
                                     {/* Icon */}
                                     <div className="flex justify-center mb-5">
@@ -470,7 +477,7 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                             )}
 
                             {/* Infinite Loader - Only show if we have at least limit number of jobs */}
-                            {hasMore && allJobs.length >= limit && (
+                            {!isFilterLoading && hasMore && allJobs.length >= limit && (
                                 <div className="py-10 text-center" ref={loaderRef}>
                                     {isLoading && (
                                         <div className="flex items-center justify-center gap-2">
@@ -494,6 +501,7 @@ export default function JobsFeed({ jobs, departments }: { jobs: any, departments
                 </div>
             </div>
         </div>
+        </FilterLoadingContext.Provider>
     )
 }
 

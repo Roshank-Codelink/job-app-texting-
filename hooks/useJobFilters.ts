@@ -1,5 +1,6 @@
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
-import { useCallback, useState, useEffect, useTransition } from "react"
+import { useCallback, useState, useEffect } from "react"
+import { useFilterLoading } from "@/Components/Candidate-Portal/FilterLoadingContext"
 
 type Filters = {
   date: string | null
@@ -12,7 +13,7 @@ export function useJobFilters() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const pathname = usePathname()
-  const [isPending, startTransition] = useTransition()
+  const filterLoading = useFilterLoading()
 
   const [localFilters, setLocalFilters] = useState<Filters>({ 
     date: searchParams.get("date"),
@@ -43,6 +44,9 @@ export function useJobFilters() {
 
   // ✅ URL updater
   const updateURL = useCallback((filters: Filters) => {
+    // Show skeleton immediately when user applies filter (before navigation)
+    filterLoading?.setFilterLoading(true)
+
     // Use window.location.search for latest state to avoid stale searchParams hook values
     const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "")
 
@@ -63,10 +67,8 @@ export function useJobFilters() {
     const url = queryString ? `${pathname}?${queryString}` : pathname
 
     // Urgent navigation for instant URL update
-    startTransition(() => {
-      router.push(url, { scroll: false })
-    })
-  }, [pathname, router])
+    router.push(url, { scroll: false })
+  }, [pathname, router, filterLoading])
 
   // setters
   const setDate = (v: string | null) => {
@@ -134,7 +136,6 @@ export function useJobFilters() {
     toggleWorkType,
     toggleDepartment,
     clearAllFilters,
-    isPending,
 
     hasFilters: !!(localFilters.date || localFilters.mode || localFilters.type.length || localFilters.department.length),
     activeFiltersCount: (localFilters.date || localFilters.mode || localFilters.type.length || localFilters.department.length) as number,
