@@ -1,74 +1,66 @@
-import { getAuthToken } from '@/lib/getAuthToken';
-import axios, { AxiosRequestConfig, AxiosError } from 'axios';
-export const API_BASE_URL = process.env.NEXT_PUBLIC_SERVER_API_ENDPOINT;
-type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' ;
+import axios, { AxiosError, AxiosRequestConfig } from "axios";
+import { getAuthToken } from "@/lib/getAuthToken";
+
+export const API_BASE_URL =
+  process.env.NEXT_PUBLIC_SERVER_API_ENDPOINT;
+
+type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+
 export interface ApiResponse<T> {
   error: boolean;
   data: T;
   statusCode: number;
 }
-export const customFetch = async <TResponse>({
+
+export const customFetch = async <T>({
   url,
-  method = 'GET',
+  method = "GET",
   body,
-  headers = {},
   params,
+  headers = {},
 }: {
   url: string;
   method?: HttpMethod;
   body?: any;
-  headers?: Record<string, string>;
   params?: Record<string, any>;
-}): Promise<ApiResponse<TResponse>> => {
-
-
-  const token = await getAuthToken();
+  headers?: Record<string, string>;
+}): Promise<ApiResponse<T>> => {
   try {
-    // Default headers
-    const defaultHeaders: Record<string, string> = {
-      'Content-Type': 'application/json',
-      accept: 'application/json',
-      'Authorization': `Bearer ${token}`,
+    const token = await getAuthToken();
+
+    const finalHeaders: Record<string, string> = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
       ...headers,
     };
 
+    // ✅ ONLY attach token if it exists
+    if (token) {
+      finalHeaders.Authorization = `Bearer ${token}`;
+    }
 
-    // Build axios config
-    const axiosConfig: AxiosRequestConfig = {
+    const config: AxiosRequestConfig = {
       method,
       url: `${API_BASE_URL}${url}`,
-      headers: defaultHeaders,
+      headers: finalHeaders,
       data: body,
-      params: params,
+      params,
     };
 
+    const response = await axios(config);
 
-
-    // Make API call using axios
-    const response = await axios(axiosConfig);
-    // Return successful response
     return {
       error: false,
-      data: response.data as TResponse,
+      data: response.data,
       statusCode: response.status,
     };
   } catch (error) {
-    // Handle axios errors
-    if (axios.isAxiosError(error)) {
-      const axiosError = error as AxiosError;
-      return {
-        error: true,
-        data: (axiosError.response?.data || null) as TResponse,
-        statusCode: axiosError.response?.status || 0,
-      };
-    }
-    // Handle other errors
+    const err = error as AxiosError;
+
     return {
       error: true,
-      data: null as TResponse,
-      statusCode: 0,
+      data: (err.response?.data || null) as T,
+      statusCode: err.response?.status || 500,
     };
   }
-}
-
-
+};

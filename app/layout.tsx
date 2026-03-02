@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 export const metadata: Metadata = {
-  title: "Job Platform",
+  title: "Jobito",
   description: "Job Platform",
   generator: "Next.js",
   manifest: "/manifest.json",

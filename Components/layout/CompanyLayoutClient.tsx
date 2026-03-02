@@ -5,6 +5,8 @@ import Navbar from '@/Components/Common/Navbar';
 import Sidebar from '@/Components/Common/Sidebar';
 import { SidebarProvider } from '@/Components/ui/sidebar';
 import { EmployerLogoProvider } from '@/Providers/EmployerLogoProvider';
+import PaymentStatusModal from '@/Components/Common/PaymentStatusModal';
+import { Suspense } from 'react';
 
 interface CompanyLayoutClientProps {
   children: ReactNode;
@@ -17,19 +19,22 @@ export default function CompanyLayoutClient({ children }: CompanyLayoutClientPro
       {/* ✅ MAIN LAYOUT (always rendered) */}
       <div className="flex flex-col h-screen w-full">
         {/* Navbar */}
-        <div className="h-[60px] w-full bg-white border-b border-[#f1f5f9] sticky top-0 z-50">
+        <div className="h-[60px] w-full bg-white border-b border-(--profile-border-color) sticky top-0 z-50">
           <Navbar />
         </div>
 
         <div className="flex flex-1 w-full min-h-0 overflow-hidden">
           {/* Sidebar */}
-          <div className="w-[280px] md:w-[310px] border-r border-[#f1f5f9] hidden md:block">
+          <div className="w-[280px] md:w-[310px] border-r border-(--profile-border-color) hidden md:block">
             <Sidebar />
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto bg-[#f8fafc] custom-scrollbar">
+          <div className="flex-1 overflow-y-auto bg-(--job-post-button-disabled-bg) custom-scrollbar">
             {children}
+            <Suspense fallback={null}>
+              <PaymentStatusModal />
+            </Suspense>
           </div>
         </div>
       </div>

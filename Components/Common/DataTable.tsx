@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import {
     ColumnDef,
     flexRender,
@@ -58,6 +59,12 @@ export function DataTable<TData, TValue>({
     const totalPages = pagination ? Math.ceil(pagination.totalCount / pagination.limit) : 0
     const currentPage = pagination?.currentPage || 1
     const limit = pagination?.limit || 10
+    const [localLimit, setLocalLimit] = useState(limit.toString())
+
+    useEffect(() => {
+        setLocalLimit(limit.toString())
+    }, [limit])
+
     const totalCount = pagination?.totalCount || 0
     const startItem = totalCount > 0 ? ((currentPage - 1) * limit) + 1 : 0
     const endItem = Math.min(currentPage * limit, totalCount)
@@ -73,6 +80,7 @@ export function DataTable<TData, TValue>({
 
     // Handle limit change
     const handleLimitChange = (newLimit: string) => {
+        setLocalLimit(newLimit)
         const params = new URLSearchParams(searchParams.toString())
         params.set("limit", newLimit)
         params.set("page", "1") // Reset to first page when changing limit
@@ -182,9 +190,12 @@ export function DataTable<TData, TValue>({
                     {/* Left Side - Rows per page */}
                     <div className="flex items-center gap-2">
                         <span className="text-sm text-gray-700">Rows per page</span>
-                        <Select value={limit.toString()} onValueChange={handleLimitChange}>
-                            <SelectTrigger className="h-8 w-[70px]">
-                                <SelectValue />
+                        <Select 
+                            value={localLimit} 
+                            onValueChange={handleLimitChange}
+                        >
+                            <SelectTrigger className="h-8 w-[70px] focus:ring-0 focus:ring-offset-0">
+                                <SelectValue placeholder={localLimit} />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="5">5</SelectItem>

@@ -20,7 +20,7 @@ export const employerInfoApi = async () => {
       method: "GET",
     });
     if (!response.data) {
-      throw new Error("no data found");
+     return null;
     }
     return response.data.data;
   } catch (error) {

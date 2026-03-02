@@ -22,12 +22,13 @@ import UserProfiles from "./UserProfiles";
 import Link from "next/link";
 import { useEmployerLogo } from "@/Providers/EmployerLogoProvider";
 import companyIcon from "@/public/Company_icon_webp.webp";
+import { EmployerCustomerid } from "@/api_config/EmployerInfoApi/payment";
 
 export default function AppSidebar() {
   const pathname = usePathname();
   const [activeItem, setActiveItem] = useState("");
   const { data: session } = useSession();
-  const { companyLogoUrl } = useEmployerLogo();
+  const { companyLogoUrl, isPaid, isLoaded } = useEmployerLogo();
   const user = session?.user;
 
   // Set active item based on current pathname
@@ -42,6 +43,8 @@ export default function AppSidebar() {
       setActiveItem(""); // Default to no selection
     }
   }, [pathname]);
+
+
 
   return (
     <Sidebar className="bg-(--sidebar-bg-color)">
@@ -194,21 +197,23 @@ export default function AppSidebar() {
               </SidebarGroupContent>
             </SidebarGroup>
           </SidebarContent>
-          {/* UPGRADE CARD - At Bottom */}
-          <div className="mt-auto p-2 shrink-0">
-            <div className="bg-gradient-to-br from-(--navbar-bg-button) to-(--sidebar-bg-color) border rounded-lg p-4 flex flex-col items-center gap-3 w-full">
-              <div className="w-12 h-12 bg-(--profile-bg-color) rounded-full flex items-center justify-center">
-                <BiSolidZap className="w-6 h-6 text-(--navbar-text-color)" />
+          {/* UPGRADE CARD - At Bottom - Only show if user is NOT paid and data is loaded */}
+          {isLoaded && !isPaid && (
+            <div className="mt-auto p-2 shrink-0">
+              <div className="bg-gradient-to-br from-(--navbar-bg-button) to-(--sidebar-bg-color) border rounded-lg p-4 flex flex-col items-center gap-3 w-full">
+                <div className="w-12 h-12 bg-(--profile-bg-color) rounded-full flex items-center justify-center">
+                  <BiSolidZap className="w-6 h-6 text-(--navbar-text-color)" />
+                </div>
+                <h3 className="font-bold text-sm text-(--profile-text-color)">Upgrade Plan</h3>
+                <p className="text-xs text-(--profile-title-color) text-center">
+                  Unlock AI features for unlimited job posts.
+                </p>
+                <Link href="/employer/plan-upgrade" className="w-full text-center py-2 cursor-pointer bg-(--profile-text-color) text-(--sidebar-bg-color) text-xs rounded-lg hover:bg-(--profile-text-color) hover:text-(--sidebar-bg-color)">
+                  Upgrade Now
+                </Link>
               </div>
-              <h3 className="font-bold text-sm text-(--profile-text-color)">Upgrade Plan</h3>
-              <p className="text-xs text-(--profile-title-color) text-center">
-                Unlock AI features for unlimited job posts.
-              </p>
-              <Button className="w-full py-2 cursor-pointer bg-(--profile-text-color) text-(--sidebar-bg-color) text-xs rounded-lg hover:bg-(--profile-text-color) hover:text-(--sidebar-bg-color)">
-                Upgrade Now
-              </Button>
             </div>
-          </div>
+          )}
         </div>
         {/* USER PROFILE - At Absolute Bottom - Visible only on mobile */}
         <div className="absolute bottom-0 left-0 right-0 p-2 pb-4 md:hidden">

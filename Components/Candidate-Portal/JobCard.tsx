@@ -1,76 +1,106 @@
-import { useState } from "react"
-import { ThumbsUp, Bookmark, TrendingUp, ShieldCheck } from "lucide-react"
-import Image from "next/image"
-import JobDescription from "./JobDescription"
-import { CandidatelikeJob, CandidatesaveJob } from "@/api_config/Candidate/manageJobs"
-import { error } from "console"
-import companyIcon from "@/public/Company_icon_webp.webp"
-
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { ThumbsUp, Bookmark, TrendingUp, ShieldCheck } from "lucide-react";
+import Image from "next/image";
+import JobDescription from "./JobDescription";
+import {
+  CandidatelikeJob,
+  CandidatesaveJob,
+} from "@/api_config/Candidate/manageJobs";
+import { error } from "console";
+import companyIcon from "@/public/Company_icon_webp.webp";
+import { useSession } from "next-auth/react";
 
 interface JobCardProps {
-
   extractedData: {
-    jobTitle: string,
-    workMode: string | null
-  }
-  rawDescription?: string
-  companyLogo?: string
-  companyName?: string
-  isVerified?: string | undefined
-  jobId: string
-  index?: number
-  isprofileStrength?: string
-  companyAddress?: string,
-  companyWebsite?: string,
-  isLiked?: boolean,
-  isSaved?: boolean,
+    jobTitle: string;
+    workMode: string | null;
+  };
+  rawDescription?: string;
+  companyLogo?: string;
+  companyName?: string;
+  isVerified?: string | undefined;
+  jobId: string;
+  index?: number;
+  isprofileStrength?: string;
+  companyAddress?: string;
+  companyWebsite?: string;
+  isLiked?: boolean;
+  isSaved?: boolean;
 }
 
-export default function JobCard({ jobId, rawDescription, companyLogo, companyName, isVerified, isprofileStrength, extractedData, companyAddress, companyWebsite, isLiked, isSaved }: JobCardProps) {
-  const [isSliderOpen, setIsSliderOpen] = useState(false)
-  const [isLikedState, setIsLikedState] = useState(isLiked || false)
-  const [isSavedState, setIsSavedState] = useState(isSaved || false)
+export default function JobCard({
+  jobId,
+  rawDescription,
+  companyLogo,
+  companyName,
+  isVerified,
+  isprofileStrength,
+  extractedData,
+  companyAddress,
+  companyWebsite,
+  isLiked,
+  isSaved,
+}: JobCardProps) {
+  const [isSliderOpen, setIsSliderOpen] = useState(false);
+  const [isLikedState, setIsLikedState] = useState(isLiked || false);
+  const [isSavedState, setIsSavedState] = useState(isSaved || false);
 
-  const logoUrl = companyLogo ? `${process.env.NEXT_PUBLIC_SERVER_LOGOS_ENDPOINT}/${companyLogo}` : companyIcon.src
-   
-  const handleLike = async () => {
+  const { status } = useSession();
+  const router = useRouter();
+
+  const isLoggedIn = status === "authenticated";
+  const logoUrl = companyLogo
+    ? `${process.env.NEXT_PUBLIC_SERVER_LOGOS_ENDPOINT}/${companyLogo}`
+    : companyIcon.src;
+
+  const handleLike = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isLoggedIn) {
+      router.push("/candidate-signin");
+      return;
+    }
     try {
-      const action = isLikedState ? "unlike" : "like"
-      const response = await CandidatelikeJob(jobId, action)
+      const action = isLikedState ? "unlike" : "like";
+      const response = await CandidatelikeJob(jobId, action);
       if (response?.success) {
-        setIsLikedState(!isLikedState)
+        setIsLikedState(!isLikedState);
       }
-      console.log("joblikeResponse", response)
+      console.log("joblikeResponse", response);
     } catch (error) {
       console.log("Error liking job:", error);
       throw error;
     }
-  }
+  };
 
-  const handleSave = async () => {
+  const handleSave = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isLoggedIn) {
+      router.push("/candidate-signin");
+      return;
+    }
     try {
-      const action = isSavedState ? "unsave" : "save"
+      const action = isSavedState ? "unsave" : "save";
 
-      const response = await CandidatesaveJob(jobId, action)
+      const response = await CandidatesaveJob(jobId, action);
       if (response?.success) {
-        setIsSavedState(!isSavedState)
+        setIsSavedState(!isSavedState);
       }
-      console.log("jobsaveResponse", response)
+      console.log("jobsaveResponse", response);
     } catch (error) {
       console.log("Error saving job:", error);
-      throw error
-    } {
-
+      throw error;
     }
-  }
-
+  };
 
   return (
-    <div className="bg-white rounded-[10px] border border-gray-200 shadow-sm overflow-hidden">
+    <div onClick={() => setIsSliderOpen(true)} className="bg-white rounded-[10px] border border-gray-200 shadow-sm overflow-hidden cursor-pointer ">
       {/* Company Header */}
       <div className="relative p-3 sm:p-4">
-
         {/* RIGHT TOP ACTIONS */}
+
+
+
         <div className="absolute top-2 right-2 sm:top-4 sm:right-4 flex items-center gap-1.5 sm:gap-2 z-10">
           <button
             onClick={handleLike}
@@ -79,7 +109,10 @@ export default function JobCard({ jobId, rawDescription, companyLogo, companyNam
               : "text-(--profile-title-color) hover:text-(--navbar-text-color) hover:bg-(--navbar-bg-button)"
               }`}
           >
-            <ThumbsUp className={`w-4 h-4 sm:w-5 sm:h-5 ${isLikedState ? "fill-current" : ""}`} />
+            <ThumbsUp
+              className={`w-4 h-4 sm:w-5 sm:h-5 ${isLikedState ? "fill-current" : ""
+                }`}
+            />
           </button>
 
           <button
@@ -89,19 +122,19 @@ export default function JobCard({ jobId, rawDescription, companyLogo, companyNam
               : "text-(--profile-title-color) hover:text-(--job-post-button-bg-to) hover:bg-(--navbar-bg-button)"
               }`}
           >
-            <Bookmark className={`w-4 h-4 sm:w-5 sm:h-5 ${isSavedState ? "fill-current" : ""}`} />
+            <Bookmark
+              className={`w-4 h-4 sm:w-5 sm:h-5 ${isSavedState ? "fill-current" : ""
+                }`}
+            />
           </button>
         </div>
 
         {/* LEFT SIDE */}
         <div className="flex items-start sm:items-center gap-3 pr-14 sm:pr-20">
-
           {/* LOGO */}
           <div className="relative shrink-0">
             <Image
-              src={
-                logoUrl
-              }
+              src={logoUrl}
               className="w-10 h-10 sm:w-12 sm:h-12 rounded-[10px]  p-1 object-contain border border-(--profile-image-border-color)"
               alt={companyName || "Company"}
               width={80}
@@ -126,14 +159,15 @@ export default function JobCard({ jobId, rawDescription, companyLogo, companyNam
           {/* TEXT */}
           <div className="min-w-0">
             <p
-              className="font-semibold text-(--filter-header-text-color) cursor-pointer hover:text-(--navbar-text-color) transition-colors text-sm sm:text-base line-clamp-2"
-              onClick={() => setIsSliderOpen(true)}
+              className="font-semibold text-(--filter-header-text-color) hover:text-(--navbar-text-color) transition-colors text-sm sm:text-base line-clamp-2"
             >
               {extractedData.jobTitle}
             </p>
 
             <div className="flex items-center gap-1 mt-0.5">
-              <p className="text-xs text-(--profile-title-color) truncate">{companyName}</p>
+              <p className="text-xs text-(--profile-title-color) truncate">
+                {companyName}
+              </p>
               <Image
                 src="/Verify.svg"
                 alt="Verified"
@@ -143,11 +177,12 @@ export default function JobCard({ jobId, rawDescription, companyLogo, companyNam
               />
             </div>
 
-            <p className="text-xs text-(--profile-title-color) mt-0.5">Hiring • Now</p>
+            <p className="text-xs text-(--profile-title-color) mt-0.5">
+              Hiring • Now
+            </p>
           </div>
         </div>
       </div>
-
 
       {/* Job Content */}
       <div className="px-4 pb-4">
@@ -158,20 +193,21 @@ export default function JobCard({ jobId, rawDescription, companyLogo, companyNam
       </div>
 
       {/* Job Description Slider */}
-      <JobDescription
-        isOpen={isSliderOpen}
-        onClose={() => setIsSliderOpen(false)}
-        companyName={companyName}
-        isprofileStrength={isprofileStrength}
-        companyLogo={logoUrl}
-        isVerified={isVerified}
-        rawDescription={rawDescription}
-        extractedData={extractedData}
-        companyWebsite={companyWebsite}
-        companyAddress={companyAddress}
-        jobId={jobId}
-
-      />
+      <div onClick={(e) => e.stopPropagation()}>
+        <JobDescription
+          isOpen={isSliderOpen}
+          onClose={() => setIsSliderOpen(false)}
+          companyName={companyName}
+          isprofileStrength={isprofileStrength}
+          companyLogo={logoUrl}
+          isVerified={isVerified}
+          rawDescription={rawDescription}
+          extractedData={extractedData}
+          companyWebsite={companyWebsite}
+          companyAddress={companyAddress}
+          jobId={jobId}
+        />
+      </div>
     </div>
-  )
+  );
 }

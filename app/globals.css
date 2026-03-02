@@ -114,65 +114,114 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
+
 /* custom theme variables */
 
-  :root {
-    --navbar-bg-parent: #fffdff;
-    --navbar-bg-button: #f0f9ff;
-    --navbar-text-color: #0ea5e9;
-    --navbar-logo-text-color: #1e293b;
+:root {
+  --navbar-bg-parent: #fffdff;
+  --navbar-bg-button: #f0f9ff;
+  --navbar-text-color: #0ea5e9;
+  --navbar-logo-text-color: #1e293b;
 
-    --signin-bg-color-to: #dcfce7;
-
-
+  --signin-bg-color-to: #dcfce7;
 
 
-  
-    --Profile-hover-bg: #f9fafb; /* gray-50 */
-    --profile-border-color: #f1f5f9; /* slate-100 */
-    --profile-image-border-color: #e5e7eb; /* gray-200 */
-    --profile-menu-text-color: #374151;/* gray-700 */
-    --profile-title-color: #6b7280; /* gray-500 */
-    --job-post-bg-color: #9CA3AF;  /* slate-400 */
-    --job-post-text-color:  #3b82f6;  /* blue-500 */
-    --job-post-icone-color: #eff6ff;  /* blue-50*/
-    --filter-header-text-color:#0B1020; /* gray-900 */
 
 
-    --job-post-button-bg-from:#38bdf8;
-    --job-post-button-bg-to:#2dd4bf;
-    --job-post-button-hover:#14b8a6;
-    --job-post-button-border-color:#e2e8f0; /* slate-200 */
-    --job-post-button-disabled-text-color:#64748b; /* slate-600 */
-    --job-post-button-disabled-bg:#f8fafc; /* slate-50 */
-    
-    --post-card-bg-color:#1f2937; /* gray-800 */
+
+  --Profile-hover-bg: #f9fafb;
+  /* gray-50 */
+  --profile-border-color: #f1f5f9;
+  /* slate-100 */
+  --profile-image-border-color: #e5e7eb;
+  /* gray-200 */
+  --profile-menu-text-color: #374151;
+  /* gray-700 */
+  --profile-title-color: #6b7280;
+  /* gray-500 */
+  --job-post-bg-color: #9CA3AF;
+  /* slate-400 */
+  --job-post-text-color: #3b82f6;
+  /* blue-500 */
+  --job-post-icone-color: #eff6ff;
+  /* blue-50*/
+  --filter-header-text-color: #0B1020;
+  /* gray-900 */
 
 
-    
-    --profile-liner-from-color: #3b82f6; /* blue-500 */
-    --profile-liner-to-color: #9333ea;   /* purple-600 */
-  
-    --profile-text-color: #1e293b;  /* slate-800 */
+  --job-post-button-bg-from: #38bdf8;
+  --job-post-button-bg-to: #2dd4bf;
+  --job-post-button-hover: #14b8a6;
+  --job-post-button-border-color: #e2e8f0;
+  /* slate-200 */
+  --job-post-button-disabled-text-color: #64748b;
+  /* slate-600 */
+  --job-post-button-disabled-bg: #f8fafc;
+  /* slate-50 */
 
-    --profile-name-color: #111827; /* gray-900 */
-    --profile-menu-sign-out-color: #ef4444; /* red-500 */
-    --profile-menu-sign-out-bg: #fef2f2; /* red-50 */
-    --sidebar-bg-color: #ffffff; 
-    --sidebar-menu-icone-color: #64748b;
+  --post-card-bg-color: #1f2937;
+  /* gray-800 */
+
+
+
+  --profile-liner-from-color: #3b82f6;
+  /* blue-500 */
+  --profile-liner-to-color: #9333ea;
+  /* purple-600 */
+
+  --profile-text-color: #1e293b;
+  /* slate-800 */
+
+  --profile-name-color: #111827;
+  /* gray-900 */
+  --profile-menu-sign-out-color: #ef4444;
+  /* red-500 */
+  --profile-menu-sign-out-bg: #fef2f2;
+  /* red-50 */
+  --sidebar-bg-color: #ffffff;
+  --sidebar-menu-icone-color: #64748b;
 
   --otp-hover-color: #0284c7;
 
-    
-  --profile-header-bg-color: oklch(0.967 0.003 264.542); /* gray-100 */
-  --profile-header-border-color: oklch(0.872 0.01 258.338); /* gray-300 */
-  }
-  
 
-  
+  --profile-header-bg-color: oklch(0.967 0.003 264.542);
+  /* gray-100 */
+  --profile-header-border-color: oklch(0.872 0.01 258.338);
+  /* gray-300 */
 
 
-  
+
+  /* landing page navbar */
+  --navbar-menu-text: #475569;
+  --navbar-login-color: #e0fdfa;
+
+  --active-job-title-text: #0F172A;
+
+  --candidate-blob-1: #DBEAFE;
+  --candidate-blob-2: #BFDBFE;
+  --candidate-blob-3: #93C5FD;
+  --footer-bg-color: #020617;
+  --pricing-title-color: #031B4E;
+  --hero-dark-text: #0B1221;
+  --muted-text-400: #94A3B8;
+  --slate-700-text: #334155;
+  --brand-blue: #0070f3;
+  --brand-blue-20: #0070f333;
+  --app-body-bg: #fafafb;
+  --traffic-red: #FF5F56;
+  --traffic-yellow: #FFBD2E;
+  --traffic-green: #27C93F;
+  --tag-bg-color: #F3F4F6;
+  --tag-text-color: #495569;
+  --button-secondary-text: #334115;
+  --feature-icon-bg: #E0F2FE;
+}
+
+
+
+
+
+
 
 
 
@@ -180,29 +229,40 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
-    @apply bg-[#fafafb] text-foreground;
+    @apply bg-(--app-body-bg) text-foreground;
   }
+}
+
+
+.cropper-view-box,
+.cropper-face {
+  border-radius: 50% !important;
 }
 
 /* Custom Scrollbar Styling */
 .custom-scrollbar::-webkit-scrollbar {
   width: 8px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: var(--profile-border-color);
   border-radius: 10px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #94a3b8;
+  background: var(--muted-text-400);
   border-radius: 10px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
+  background: var(--sidebar-menu-icone-color);
 }
+
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #94a3b8 #f1f5f9;
+  scrollbar-color: var(--muted-text-400) var(--profile-border-color);
 }
 
 /* Toast Notification - Responsive Styling */
@@ -245,7 +305,7 @@
     height: 20px !important;
   }
 
-  .Toastify__close-button > svg {
+  .Toastify__close-button>svg {
     width: 16px !important;
     height: 16px !important;
   }
@@ -284,7 +344,7 @@
     height: 22px !important;
   }
 
-  .Toastify__close-button > svg {
+  .Toastify__close-button>svg {
     width: 18px !important;
     height: 18px !important;
   }
@@ -322,4 +382,28 @@
   border-radius: 12px !important;
 }
 
+/* CropperJS Custom Styling */
+.cropper-point {
+  background-color: #0369a1 !important;
+  /* Darker Blue (sky-700) */
+  width: 12px !important;
+  height: 12px !important;
+  opacity: 1 !important;
+  border: 2px solid white !important;
+  border-radius: 4px !important;
+  box-shadow: 0 0 8px rgba(3, 105, 161, 0.45) !important;
+}
 
+.cropper-line {
+  background-color: #0369a1 !important;
+  height: 2px !important;
+}
+
+.cropper-view-box {
+  outline: 2px solid #0369a1 !important;
+  outline-color: rgba(3, 105, 161, 0.75) !important;
+}
+
+.cropper-modal {
+  opacity: 0.8 !important;
+}

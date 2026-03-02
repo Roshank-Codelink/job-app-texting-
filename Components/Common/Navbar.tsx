@@ -10,6 +10,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEmployerLogo } from "@/Providers/EmployerLogoProvider";
 import companyIcon from "@/public/Company_icon_webp.webp";
+import { FaBriefcase } from "react-icons/fa";
 
 export default function Navbar() {
   const { openMobile, setOpenMobile } = useSidebar();
@@ -26,12 +27,17 @@ export default function Navbar() {
   return (
     <div className="w-full h-full flex items-center justify-between px-3 sm:px-4 md:px-5 lg:px-6 bg-(--navbar-bg-parent)">
       <div className="left-content w-auto md:w-[11%] h-full flex items-center gap-1 sm:gap-1.5 md:gap-2 min-w-0">
-        <div className="logo w-[22px] h-[22px] sm:w-[24px] sm:h-[24px] md:w-[29px] md:h-[29px] shrink-0">
-          <Image src="/Gemini_Generated_Image_hjxynfhjxynfhjxy.png" alt="logo" width={100} height={100} className="w-full h-full" />
-        </div>
-        <div className="logo-text min-w-0">
-          <Link href="/employer/dashboard"><h1 className="font-bold text-base sm:text-lg md:text-xl text-(--navbar-logo-text-color) whitespace-nowrap">Jobito</h1></Link>
-        </div>
+        <Link
+          href="/employer/dashboard"
+          className="flex items-center gap-2 sm:gap-3 group"
+        >
+          <div className="w-[30px] h-[30px] sm:w-[34px] sm:h-[34px] md:w-[38px] md:h-[38px] shrink-0 rounded-[10px] bg-gradient-to-r from-(--job-post-button-bg-from) to-(--job-post-button-bg-to) flex items-center justify-center transition-transform group-hover:scale-105">
+            <FaBriefcase className="w-[60%] h-[60%] text-white" />
+          </div>
+          <h1 className="font-bold text-[24px] sm:text-2xl md:text-3xl text-slate-900 tracking-tight">
+            Jobito<span className="text-(--job-post-button-bg-to)">.</span>
+          </h1>
+        </Link>
       </div>
       <div className="right-content w-auto h-full flex items-center gap-2 sm:gap-3 md:gap-4 shrink-0">
         {/* <div className="notification-icon shrink-0">

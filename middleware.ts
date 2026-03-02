@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 export async function middleware(request: NextRequest) {
-  const { pathname, searchParams } = request.nextUrl;
+  const { pathname } = request.nextUrl;
 
   const token = await getToken({
     req: request,
@@ -17,21 +17,28 @@ export async function middleware(request: NextRequest) {
     ""
   ).toUpperCase();
 
-  const onboarding = Boolean(
-    (token as any)?.user?.isOnboardingCompleted
-  );
+  const onboarding = Boolean((token as any)?.user?.isOnboardingCompleted);
 
-  /* ================= ADMIN ================= */
+  /* =========================================================
+     1. PUBLIC ROUTE (CANDIDATE JOBS)
+     👉 Guest + Logged-in dono ke liye
+     👉 QUERY PARAMS PRESERVE
+     ========================================================= */
+  if (pathname === "/candidate/jobs") {
 
+    return NextResponse.next();
+  }
+
+  /* =========================================================
+     2. ADMIN
+     ========================================================= */
   if (pathname === "/admin-login") {
     if (!token) return NextResponse.next();
-
     if (role === "ADMIN") {
       return NextResponse.redirect(
         new URL("/admin/dashboard", request.url)
       );
     }
-
     return NextResponse.redirect(new URL("/", request.url));
   }
 
@@ -43,9 +50,13 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  /* ================= EMPLOYER ================= */
-
-  if (pathname === "/employer-signin" || pathname === "/employer-signup") {
+  /* =========================================================
+     3. EMPLOYER
+     ========================================================= */
+  if (
+    pathname === "/employer-signin" ||
+    pathname === "/employer-signup"
+  ) {
     if (token && role === "EMPLOYER") {
       return NextResponse.redirect(
         new URL("/employer/dashboard", request.url)
@@ -62,8 +73,9 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  /* ================= CANDIDATE SIGNIN ================= */
-
+  /* =========================================================
+     4. CANDIDATE SIGNIN
+     ========================================================= */
   if (pathname === "/candidate-signin") {
     if (!token) return NextResponse.next();
 
@@ -74,19 +86,21 @@ export async function middleware(request: NextRequest) {
         );
       }
 
-      // ✅ Default text only at entry
+      // ✅ Auto redirect with jobTitle
       const jobTitle = (token as any)?.user?.jobTitle ?? "";
       const url = new URL("/candidate/jobs", request.url);
-      if (jobTitle) url.searchParams.set("text", jobTitle);
-
+      if (jobTitle) {
+        url.searchParams.set("text", jobTitle);
+      }
       return NextResponse.redirect(url);
     }
 
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  /* ================= CANDIDATE ROUTES ================= */
-
+  /* =========================================================
+     5. CANDIDATE PRIVATE ROUTES
+     ========================================================= */
   if (pathname.startsWith("/candidate")) {
     if (!token || role !== "EMPLOYEE") {
       return NextResponse.redirect(
@@ -100,7 +114,6 @@ export async function middleware(request: NextRequest) {
       );
     }
 
-    // onboarding completed → block onboarding page
     if (onboarding && pathname === "/candidate-onboarding") {
       const jobTitle = (token as any)?.user?.jobTitle ?? "";
       const url = new URL("/candidate/jobs", request.url);
@@ -114,8 +127,9 @@ export async function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-/* ================= MATCHER ================= */
-
+/* =========================================================
+   MIDDLEWARE MATCHER
+   ========================================================= */
 export const config = {
   matcher: [
     "/admin-login",
@@ -127,4 +141,4 @@ export const config = {
     "/candidate-signin",
     "/candidate-onboarding",
   ],
-  };
+};

@@ -47,7 +47,7 @@ export default function JobFilters({ departmentres }: { departmentres: departmen
     department, toggleDepartment,
     clearAllFilters,
     activeFiltersCount,
-  } = useJobFilters() 
+  } = useJobFilters()
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 30)
@@ -68,8 +68,8 @@ export default function JobFilters({ departmentres }: { departmentres: departmen
 
   const DEPARTMENT_OPTIONS =
     departmentres?.data?.map(dep => ({
-      label: dep.department, 
-      value: dep._id, 
+      label: dep.department,
+      value: dep._id,
     })) || []
 
 

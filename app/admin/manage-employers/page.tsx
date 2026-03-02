@@ -10,6 +10,7 @@ const ManageEmployersPage = async ({ searchParams }: { searchParams: Promise<{ p
     limit: resolvedSearchParams.limit || 10,
   });
 
+
   return (
     <div className="w-full p-4 md:p-6">
       <h1 className="text-2xl font-bold mb-4">Manage Employers</h1>

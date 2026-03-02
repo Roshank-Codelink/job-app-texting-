@@ -6,11 +6,11 @@ import { employerInfoApi } from "@/api_config/EmployerInfoApi/employerInfo";
 
 export default async function Profile() {
     const employerInfo = await employerInfoApi();
-    console.log("Employer Info:", employerInfo);
+    // console.log("Employer Info:", employerInfo);
 
     return (
         <div className="w-full h-full ">
-            <EmployerProfile employerInfo={employerInfo} />
+            {employerInfo && <EmployerProfile employerInfo={employerInfo} />}
         </div>
     )
 }

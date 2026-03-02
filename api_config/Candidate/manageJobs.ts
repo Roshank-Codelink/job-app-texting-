@@ -33,6 +33,7 @@ export const CandidategetJobs = async ({ searchParams }: JobsPageProps) => {
     url: `/jobs?${queryString}`,
     method: "GET",
   });
+  console.log(response);
   return response.data;
 };
 

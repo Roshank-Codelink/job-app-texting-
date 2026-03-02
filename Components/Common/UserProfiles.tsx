@@ -8,7 +8,7 @@ import {
 } from "@/Components/ui/popover";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { User, Settings, HelpCircle, LogOut } from "lucide-react";
+import { User, Settings, HelpCircle, LogOut, ChevronDown } from "lucide-react";
 import { LogoutAPI } from "@/api_config/shared/sharedapi";
 import { signOut } from "next-auth/react";
 
@@ -54,13 +54,16 @@ export default function UserProfiles({
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
                 <button className={cn(
-                    "flex items-center cursor-pointer w-full relative",
+                    "flex items-center cursor-pointer relative transition-all outline-none",
                     isSidebar
-                        ? "px-3 py-2.5 rounded-lg hover:bg-(--Profile-hover-bg) transition-colors cursor-pointer"
-                        : "gap-1.5 sm:gap-2 md:gap-3 border-l border-(--profile-border-color) pl-2 sm:pl-3 md:pl-[16px]"
+                        ? "px-3 py-2.5 rounded-lg hover:bg-(--Profile-hover-bg) w-full"
+                        : "gap-2 px-2 py-1 rounded-full border border-slate-200 bg-white hover:shadow-sm"
                 )}>
                     {/* Profile Picture */}
-                    <div className="relative shrink-0">
+                    <div className={cn(
+                        "relative shrink-0 overflow-hidden",
+                        isSidebar ? "w-10 h-10 rounded-lg" : "w-8 h-8 rounded-full"
+                    )}>
                         {imageUrl ? (
                             <Image
                                 src={imageUrl}
@@ -68,45 +71,34 @@ export default function UserProfiles({
                                 width={80}
                                 height={80}
                                 sizes="40px"
-                                className={cn(
-                                    "object-contain",
-                                    isSidebar
-                                        ? "w-10 h-10 rounded-lg"
-                                        : "rounded-xl  w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10"
-                                )}
+                                className="w-full h-full object-cover"
                                 unoptimized={imageUrl.startsWith("http")}
                             />
                         ) : (
-                            <div className={cn(
-                                "bg-linear-to-br from-(--profile-liner-from-color) to-(--profile-liner-to-color) flex items-center justify-center",
-                                isSidebar
-                                    ? "w-10 h-10 rounded-lg"
-                                    : "rounded-full  w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10"
-                            )}>
+                            <div className="w-full h-full bg-linear-to-br from-(--profile-liner-from-color) to-(--profile-liner-to-color) flex items-center justify-center">
                                 <span className={cn(
                                     "text-(--navbar-bg-parent) font-semibold",
-                                    isSidebar ? "text-sm" : "text-[10px] sm:text-xs md:text-sm"
+                                    isSidebar ? "text-sm" : "text-xs"
                                 )}>
                                     {getInitials(user?.name)}
                                 </span>
                             </div>
                         )}
                     </div>
-                    {/* Text Content */}
-                    <div className="flex flex-col items-start text-left flex-1 min-w-0 ml-3">
-                        <h3 className={cn(
-                            "font-semibold text-(--profile-text-color) leading-tight",
-                            isSidebar ? "text-sm" : "text-xs sm:text-sm md:text-base whitespace-nowrap"
-                        )}>
-                            {user?.name}
-                        </h3>
-                        <p className={cn(
-                            "text-(--profile-title-color) leading-tight",
-                            isSidebar ? "text-xs" : "text-[10px] sm:text-xs md:text-sm whitespace-nowrap"
-                        )}>
-                            {user?.companyName}
-                        </p>
-                    </div>
+
+                    {/* Show text only in Sidebar, show Chevron only in Navbar */}
+                    {isSidebar ? (
+                        <div className="flex flex-col items-start text-left flex-1 min-w-0 ml-3">
+                            <h3 className="font-semibold text-(--profile-text-color) leading-tight text-sm">
+                                {user?.name}
+                            </h3>
+                            <p className="text-(--profile-title-color) leading-tight text-xs">
+                                {user?.companyName}
+                            </p>
+                        </div>
+                    ) : (
+                        <ChevronDown className="h-4 w-4 text-slate-600 ml-1" />
+                    )}
                 </button>
             </PopoverTrigger>
             <PopoverContent

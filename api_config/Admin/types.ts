@@ -24,6 +24,7 @@ export interface EmployersData {
   name: string;
   contactNumber: string;
   status: string;
+  paymentStatus: string;
 }
 
 

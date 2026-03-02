@@ -26,9 +26,6 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 
-
-
-
 const EmployerTable = React.memo(({ employerData }: { employerData: GetEmployersResponse }) => {
     const router = useRouter();
     const [isProcessing, setIsProcessing] = useState<string | null>(null);
@@ -107,6 +104,22 @@ const EmployerTable = React.memo(({ employerData }: { employerData: GetEmployers
         {
             header: "Contact Number",
             accessorKey: "contactNumber",
+        },
+        {
+            header: "Payment Status",
+            accessorKey: "paymentStatus",
+            cell: ({ row }: { row: Row<EmployersData> }) => {
+                const paymentStatus = row.original.paymentStatus;
+                const isPaid = paymentStatus === "Paid";
+                return (
+                    <div className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${isPaid
+                            ? "bg-gradient-to-r from-[#38bdf8] to-[#2dd4bf] text-white"
+                            : "bg-gray-100 text-gray-500 border border-gray-200"
+                        }`}>
+                        {paymentStatus}
+                    </div>
+                );
+            },
         },
         {
             header: "Status",

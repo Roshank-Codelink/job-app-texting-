@@ -10,6 +10,7 @@ export interface EmployerInfoData {
   contactNumber: string;
   profileStrength?: string;
   companyLogo?: string;
+  isPaid?: boolean;
 }
 
 export interface EmployerInfoResponse {
@@ -138,7 +139,21 @@ export interface JobPostResponseType {
 export interface JobPost{
     description:string;
 }
+export interface PaymentResponseType {
+  checkoutUrl: string;
+};
 
+export interface VerifyPaymentResponseType {
+    success: boolean;
+    message: string;
+    error: boolean;
+    statusCode: number;
+    data?: {
+        message: string;
+    };
+}
 
-
-
+export interface EmployerCustomeridResponseType {
+    message: string;
+    customerId: string;
+}

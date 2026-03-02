@@ -1,15 +1,17 @@
 "use client";
+
 import {
     InputOTP,
     InputOTPGroup,
     InputOTPSlot,
-} from "@/Components/ui/input-otp"
+} from "@/Components/ui/input-otp";
 import { OtpValidation } from "@/Validation/AuthValidation";
-import { Formik, Form, ErrorMessage } from 'formik';
+import { Formik, Form, ErrorMessage } from "formik";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { getSession, signIn, useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { getSession, signIn } from "next-auth/react";
+import { FiEdit3, FiMail } from "react-icons/fi";
+import { Loader2 } from "lucide-react";
 
 interface OtpProps {
     email?: string;
@@ -18,21 +20,21 @@ interface OtpProps {
 
 export default function Otp({ email, onEdit }: OtpProps) {
     const router = useRouter();
-    // const { data: session } = useSession();
-    // console.log("Session ss:", session);
-    // ✅ Hook at top level
     const handleSubmit = async (values: { otp: string }) => {
         try {
             if (!email) {
                 toast.error("Email is required");
                 return;
             }
+            const callbackUrl = "/candidate/jobs";
             const result = await signIn("credentials", {
                 email,
                 otp: values.otp,
                 redirect: false,
+                callbackUrl,
             });
-            console.log(result)
+            console.log(result);
+
             if (result?.error) {
                 toast.error("Invalid OTP");
                 return;
@@ -47,10 +49,10 @@ export default function Otp({ email, onEdit }: OtpProps) {
                 console.log("Onboarding completed");
                 toast.success("Login successful!");
                 router.push(`/candidate/jobs?text=${encodeURIComponent(jobTitle)}`);
-            }else{
+            } else {
                 toast.success("Login successful!");
                 console.log("Onboarding not completed");
-                router.push('/candidate-onboarding')
+                router.push("/candidate-onboarding");
             }
         } catch (error) {
             console.error("OTP Error:", error);
@@ -59,92 +61,108 @@ export default function Otp({ email, onEdit }: OtpProps) {
     };
 
     return (
-        <div>
-            {/* Email Display with Edit Button */}
+        <div className="w-full">
+            {/* Email Display Card */}
             {email && (
-                <div className="mb-4 flex items-center justify-between">
-                    <div>
-                        <label className="text-xs font-semibold text-(--profile-menu-text-color) block mb-1">
-                            We have sent an OTP on your email address
-                        </label>
-                        <p className="text-sm text-(--profile-menu-text-color)">
-                            {email}
-                        </p>
+                <div className="mb-6 p-3 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-sky-100 flex items-center justify-center text-sky-600">
+                            <FiMail className="w-4 h-4" />
+                        </div>
+                        <div>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Sent to</p>
+                            <p className="text-xs font-semibold text-slate-700 truncate max-w-[140px]">{email}</p>
+                        </div>
                     </div>
                     {onEdit && (
                         <button
                             type="button"
                             onClick={onEdit}
-                            className="flex cursor-pointer items-center gap-1 text-xs text-(--navbar-text-color) hover:text-(--otp-hover-color) transition-colors"
+                            className="p-2 text-slate-400 hover:text-(--navbar-text-color) hover:bg-white rounded-lg transition-all cursor-pointer"
                             title="Edit email"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                            </svg>
-                            Edit
+                            <FiEdit3 className="w-4 h-4" />
                         </button>
                     )}
                 </div>
             )}
-            {/* OTP Input Section */}
             <Formik
-                initialValues={{ otp: '' }}
+                initialValues={{ otp: "" }}
                 validationSchema={OtpValidation}
                 onSubmit={handleSubmit}
                 validateOnChange={true}
                 validateOnBlur={true}
             >
                 {({ values, setFieldValue, setFieldTouched, isValid, dirty, isSubmitting }) => (
-                    <Form>
-                        <div className="mb-4">
-                            <label className="text-xs font-semibold text-(--profile-menu-text-color) block mb-1.5">
-                                Enter OTP <span className="text-(--profile-menu-sign-in-color)">*</span>
+                    <Form className="w-full space-y-5">
+
+                        {/* OTP Input Section */}
+                        <div className="space-y-3">
+                            <label className="text-xs font-semibold text-slate-600 block mb-2.5">
+                                Verification Code <span className="text-red-500">*</span>
                             </label>
-                            <InputOTP
-                                maxLength={6}
-                                value={values.otp}
-                                onChange={(newValue) => {
-                                    // Filter out any non-numeric characters - only allow digits 0-9
-                                    const numericValue = newValue.replace(/\D/g, '');
-                                    setFieldValue('otp', numericValue);
-                                    setFieldTouched('otp', true, false);
-                                }}
-                            >
-                                <InputOTPGroup className="gap-2">
-                                    <InputOTPSlot index={0} className="w-11 h-11 border-2 border-(--job-post-button-border-color) rounded-lg shadow-none! ring-0 focus:border-(--navbar-text-color) data-[active=true]:border-(--navbar-text-color) data-[active=true]:ring-0" />
-                                    <InputOTPSlot index={1} className="w-11 h-11 border-2 border-(--job-post-button-border-color) rounded-lg shadow-none! ring-0 focus:border-(--navbar-text-color) data-[active=true]:border-(--navbar-text-color) data-[active=true]:ring-0" />
-                                    <InputOTPSlot index={2} className="w-11 h-11 border-2 border-(--job-post-button-border-color) rounded-lg shadow-none! ring-0 focus:border-(--navbar-text-color) data-[active=true]:border-(--navbar-text-color) data-[active=true]:ring-0" />
-                                    <InputOTPSlot index={3} className="w-11 h-11 border-2 border-(--job-post-button-border-color) rounded-lg shadow-none! ring-0 focus:border-(--navbar-text-color) data-[active=true]:border-(--navbar-text-color) data-[active=true]:ring-0" />
-                                    <InputOTPSlot index={4} className="w-11 h-11 border-2 border-(--job-post-button-border-color) rounded-lg shadow-none! ring-0 focus:border-(--navbar-text-color) data-[active=true]:border-(--navbar-text-color) data-[active=true]:ring-0" />
-                                    <InputOTPSlot index={5} className="w-11 h-11 border-2 border-(--job-post-button-border-color) rounded-lg shadow-none! ring-0 focus:border-(--navbar-text-color) data-[active=true]:border-(--navbar-text-color) data-[active=true]:ring-0" />
-                                </InputOTPGroup>
-                            </InputOTP>
-                            {/* Error Message Display */}
+
+                            <div className="">
+                                <InputOTP
+                                    maxLength={6}
+                                    value={values.otp}
+                                    onChange={(newValue) => {
+                                        const numericValue = newValue.replace(/\D/g, "");
+                                        setFieldValue("otp", numericValue);
+                                        setFieldTouched("otp", true, false);
+                                    }}
+                                >
+                                    <InputOTPGroup className="gap-2 sm:gap-3 xl:gap-4">
+                                        {[0, 1, 2, 3, 4, 5].map((idx) => (
+                                            <InputOTPSlot
+                                                key={idx}
+                                                index={idx}
+                                                className="w-10 h-11 sm:w-12 sm:h-12 border-2 rounded-[8px] first:rounded-[8px] last:rounded-[8px] bg-slate-50 text-slate-700 font-medium data-[active=true]:border-(--navbar-text-color) data-[active=true]:bg-white"
+                                            />
+                                        ))}
+                                    </InputOTPGroup>
+                                </InputOTP>
+                            </div>
+
                             <ErrorMessage name="otp">
                                 {(msg) => (
-                                    <div className="mt-3 text-xs text-red-500 font-medium">
+                                    <div className="text-[13px] text-red-500 font-medium ml-1 flex items-center gap-1">
                                         {msg}
                                     </div>
                                 )}
                             </ErrorMessage>
                         </div>
-                        {/* Verify Button */}
+
                         <button
                             type="submit"
                             disabled={!email || !isValid || !dirty || isSubmitting}
-                            className="w-full bg-gradient-to-r cursor-pointer from-(--job-post-button-bg-from) to-(--job-post-button-bg-to) text-(--navbar-bg-parent) py-2.5 rounded-lg font-semibold hover:from-(--navbar-text-color) hover:to-(--job-post-button-hover) transition-all shadow-lg shadow-cyan-500/30 text-sm mb-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-(--job-post-button-bg-from) disabled:hover:to-(--job-post-button-bg-to"
+                            className="w-full bg-gradient-to-r from-(--job-post-button-bg-from) to-(--job-post-button-bg-to) text-white py-2 rounded-full lg:rounded-xl font-bold tracking-wide text-sm hover:shadow-[0_6px_20px_0_rgba(56,189,248,0.45)] hover:brightness-105 active:scale-[0.98] transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer mt-1 disabled:opacity-50"
                         >
-                            {isSubmitting ? 'Verifying...' : 'Verify OTP'}
+                            {isSubmitting ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    Verifying...
+                                </>
+                            ) : (
+                                "Verify & Continue"
+                            )}
                         </button>
+
+                        {/* Resend Code */}
+                        <div className="text-center pt-2">
+                            <p className="text-xs text-slate-500">
+                                Didn&apos;t receive the code?{" "}
+                                <button
+                                    type="button"
+                                    className="font-bold text-(--navbar-text-color) hover:underline cursor-pointer transition-all ml-1"
+                                >
+                                    Resend Code
+                                </button>
+                            </p>
+                        </div>
                     </Form>
                 )}
             </Formik>
-            {/* Resend Code */}
-            <div className="text-center">
-                <button className="text-xs text-(--profile-title-color)  transition-colors">
-                    Didn't receive code? <span className="font-semibold text-(--navbar-text-color) cursor-pointer">Resend</span>
-                </button>
-            </div>
         </div>
-    )
+    );
 }

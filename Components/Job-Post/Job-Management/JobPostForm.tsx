@@ -9,7 +9,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import Link from "@tiptap/extension-link";
 import TurndownService from "turndown";
-import { AIEnhanceJob,PostJob } from "@/api_config/EmployerInfoApi/jobpost";
+import { AIEnhanceJob, PostJob } from "@/api_config/EmployerInfoApi/jobpost";
 import AILoader from "./AILoader";
 import PostingLoader from "./PostingLoader";
 import { CharacterCount } from '@tiptap/extensions'
@@ -56,17 +56,17 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
         }
     });
     const editor = useEditor({
-        immediatelyRender: false,   
+        immediatelyRender: false,
         extensions: [
             LimitPasteHTML.configure(),
             StarterKit.configure({
-                bold: {},  
-                italic: {},  
+                bold: {},
+                italic: {},
                 strike: false,
                 heading: false,
-                orderedList: {}, 
-                bulletList: {}, 
-                hardBreak: {},  
+                orderedList: {},
+                bulletList: {},
+                hardBreak: {},
             }),
             Link.configure({
                 openOnClick: false,
@@ -150,7 +150,7 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
         // editor.commands.setContent(html);
         const htmlContent = editor.getHTML();
         const cleanedHTML = cleanTipTapHTML(htmlContent);
-      
+
         try {
             const response = await AIEnhanceJob({
                 description: cleanedHTML,
@@ -197,7 +197,7 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
             setError(`Job description must be at least ${DiableWordCount} words long.`);
             return;
         }
-         
+
         // ✅ Get FULL FORMATTED HTML (bold, italic, lists… preserved)
         const html = editor.getHTML();
         const cleanedHTML = cleanTipTapHTML(html);
@@ -261,7 +261,7 @@ export default function JobPostForm({ refreshJobs }: { refreshJobs: () => void }
                             width={80}
                             height={80}
                             sizes="40px"
-                            className="rounded-2 object-contain w-8 h-8 sm:w-10 sm:h-10 shrink-0"
+                            className="rounded-[8px] object-contain w-8 h-8 sm:w-10 sm:h-10 shrink-0"
                             unoptimized={displayImageUrl.startsWith("http")}
                         />
                         <div className="flex-1 text-sm sm:text-base text-(--job-post-bg-color) min-w-0">
